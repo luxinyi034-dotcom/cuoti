@@ -282,6 +282,7 @@ code{font-family:var(--f-num);font-size:12px;color:var(--warm)}
 .grade.big div{padding:16px 6px;font-size:15px}
 .grade.big small{font-size:11px}
 .done{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:var(--right-soft);color:var(--right);font-size:13px}
+.ai-tag{font-size:10px;font-weight:500;padding:1px 7px;border-radius:999px;background:var(--caramel-soft);color:var(--caramel-deep)}
 @media (max-width:420px){.type-row{grid-template-columns:1fr}.glass-demo{grid-template-columns:1fr}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
@@ -329,13 +330,13 @@ code{font-family:var(--f-num);font-size:12px;color:var(--warm)}
 <div class="wrap">
 
 <header class="top">
-  <p class="eyebrow">cuoti · 设计稿画布 · v0.2 草案</p>
+  <p class="eyebrow">cuoti · 设计稿画布 · v0.3</p>
   <h1>错题本<em>设计规范</em></h1>
   <p class="lede">配色来自参考图一：浓缩咖啡深棕、焦糖、奶油纸色。风格来自参考图二：磨砂玻璃卡片、细线图标、大圆角、柔和的光影。第 1 排是规范本身；第 2、3 排是 iPad 上的样子（主要用的）；后面是手机上的样子。题目、数字都是示例内容。</p>
   <div class="todo">
-    <span class="done"><svg class="i xs" data-i="check"></svg>已定：录入用 E1 一页填完</span>
-    <span class="done"><svg class="i xs" data-i="check"></svg>已定：主要在 iPad 上用</span>
-    <span class="flag"><i></i><b>请你看：</b>第 2、3 排的 iPad 排版</span>
+    <span class="done"><svg class="i xs" data-i="check"></svg>已定：录入用 E1、iPad 排版 I1–I5</span>
+    <span class="done"><svg class="i xs" data-i="check"></svg>手机版 v1 已做好</span>
+    <span class="flag"><i></i><b>请你看：</b>第 7 排 拍照自动识别（R1–R5）</span>
   </div>
 </header>
 
@@ -1056,6 +1057,147 @@ code{font-family:var(--f-num);font-size:12px;color:var(--warm)}
           </div>
         </div>
         <div class="bottombar"><span class="btn o">再练一遍还不会的</span><span class="btn p" style="flex:.8">回到首页</span></div>
+      </div></div>
+    </figure>
+
+  </div>
+</section>
+
+<!-- ============ 第 7 排：拍照识别（v2） ============ -->
+<section class="row">
+  <div class="row-h"><span>第 7 排 · v2 新增</span><h2>拍照自动识别（AI）</h2><p>拍完照 → 框出要认的部分 → AI 识别 → 题目、我的答案、正确答案自动填好，你检查一下再保存。题目内容是示例。</p></div>
+  <div class="boards">
+
+    <!-- R1 框选 -->
+    <figure class="board">
+      <figcaption class="cap"><b><span>R1</span>拍完照：框出要认的部分</b><small>默认框住整张照片。拖四个角可以只框一道题；不框也行，AI 会自己分出哪些是题目、哪些是你写的答案。</small></figcaption>
+      <div class="phone"><div class="screen">
+        <div class="body nobar">
+          <div class="hd"><span class="cbtn g"><svg class="i" data-i="x"></svg></span><span class="hd-c">框出这道题</span><span class="btn t" style="height:38px">重拍</span></div>
+          <div style="position:relative;border-radius:var(--r-m);overflow:hidden;background:#3b2a1e;padding:14px 10px">
+            <div class="photo" style="height:300px;font-size:12px;line-height:1.85;transform:rotate(-1deg)">
+              <span style="opacity:.5">6. 已知 sin α = 3/5，求 cos 2α 的值。</span><br>
+              <b>7.</b> 质量为 2 kg 的物块静止在倾角 30° 的斜面上，求斜面对物块的静摩擦力大小（g 取 10 m/s²）。<br>
+              <span style="color:#9c3b2a">解：f = mg·cos30° = 17.3 N</span><br>
+              <span style="color:#2f6b3a">✗ 应为 mg·sin30° = 10 N</span><br>
+              <span style="opacity:.5">8. 一个小球从 20 m 高处自由落下……</span>
+            </div>
+            <div style="position:absolute;left:18px;right:18px;top:62px;height:150px;border:2px solid var(--caramel);border-radius:10px;box-shadow:0 0 0 999px rgba(30,18,10,.45)"></div>
+            <i style="position:absolute;left:12px;top:56px;width:14px;height:14px;border-radius:50%;background:#fff;border:2px solid var(--caramel)"></i>
+            <i style="position:absolute;right:12px;top:56px;width:14px;height:14px;border-radius:50%;background:#fff;border:2px solid var(--caramel)"></i>
+            <i style="position:absolute;left:12px;top:204px;width:14px;height:14px;border-radius:50%;background:#fff;border:2px solid var(--caramel)"></i>
+            <i style="position:absolute;right:12px;top:204px;width:14px;height:14px;border-radius:50%;background:#fff;border:2px solid var(--caramel)"></i>
+          </div>
+          <p class="aux" style="text-align:center;margin:0">拖四个角调整框的大小</p>
+          <div class="g pad" style="display:grid;gap:8px">
+            <b style="font-size:12.5px">让 AI 填这些</b>
+            <div class="chips"><span class="chip on"><svg class="i xs" data-i="check"></svg>题目</span><span class="chip on"><svg class="i xs" data-i="check"></svg>我的答案</span><span class="chip on"><svg class="i xs" data-i="check"></svg>正确答案（照片上有批改时）</span><span class="chip">学科</span></div>
+          </div>
+        </div>
+        <div class="bottombar"><span class="btn o" style="flex:.7">不识别，直接填</span><span class="btn p"><svg class="i s" data-i="sparkle"></svg>识别</span></div>
+      </div></div>
+    </figure>
+
+    <!-- R2 识别中 -->
+    <figure class="board">
+      <figcaption class="cap"><b><span>R2</span>识别中</b><small>一般 5–15 秒。可以先往下填错因，识别好了自动填进上面的空格，不打断你。</small></figcaption>
+      <div class="phone"><div class="screen">
+        <div class="body nobar">
+          <div class="hd"><span class="cbtn g"><svg class="i" data-i="x"></svg></span><span class="hd-c">录入错题</span><span class="btn t" style="height:38px">存草稿</span></div>
+          <div style="position:relative">
+            <div class="photo" style="height:120px;opacity:.65"><b>7.</b> 质量为 2 kg 的物块静止在倾角 30° 的斜面上，求斜面对物块的静摩擦力大小（g 取 10 m/s²）。</div>
+          </div>
+          <div class="g pad" style="display:flex;gap:12px;align-items:center">
+            <span style="width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--caramel-soft);color:var(--caramel-deep)"><svg class="i s" data-i="sparkle"></svg></span>
+            <div style="flex:1;display:grid;gap:6px"><b style="font-size:12.5px">AI 正在识别…</b><div class="prog"><b style="width:55%;background:var(--caramel)"></b></div></div>
+            <span class="btn t" style="height:auto;font-size:11.5px;color:var(--warm)">取消</span>
+          </div>
+          <div class="field"><label>题目</label><div class="inp" style="color:var(--muted)">识别好了会自动填在这里</div></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <div class="field"><label>我的答案</label><div class="inp" style="color:var(--muted)">等识别…</div></div>
+            <div class="field"><label>正确答案</label><div class="inp" style="color:var(--muted)">等识别…</div></div>
+          </div>
+          <div class="field"><label>为什么错（可多选）</label>
+            <div class="chips"><span class="chip c">概念不清</span><span class="chip c on">粗心</span><span class="chip c">计算失误</span><span class="chip c">审题不清</span><span class="chip c">方法不会</span><span class="chip c">记忆错误</span></div>
+          </div>
+        </div>
+        <div class="bottombar"><span class="btn p" style="opacity:.5"><svg class="i s" data-i="check"></svg>保存，明天复习</span></div>
+      </div></div>
+    </figure>
+
+    <!-- R3 识别完成 -->
+    <figure class="board">
+      <figcaption class="cap"><b><span>R3</span>识别好了：检查一下</b><small>AI 填的空格旁边有小标记，改过就消失。公式、上下标照原样写出来（m/s²、HNO₃）。</small></figcaption>
+      <div class="phone"><div class="screen">
+        <div class="body nobar">
+          <div class="hd"><span class="cbtn g"><svg class="i" data-i="x"></svg></span><span class="hd-c">录入错题</span><span class="btn t" style="height:38px">存草稿</span></div>
+          <div class="g pad" style="display:flex;gap:10px;align-items:flex-start;padding:10px 12px;background:rgba(241,224,204,.7)">
+            <svg class="i s" data-i="sparkle" style="color:var(--caramel-deep);margin-top:2px"></svg>
+            <span style="font-size:12px;color:var(--caramel-deep)">AI 填好了 3 项，认错的地方直接改。</span>
+          </div>
+          <div class="chips"><span class="chip"><svg class="i xs" data-i="math"></svg>数学</span><span class="chip on"><svg class="i xs" data-i="phys"></svg>物理</span><span class="chip"><svg class="i xs" data-i="eng"></svg>英语</span><span class="chip"><svg class="i xs" data-i="chem"></svg>化学</span></div>
+          <div class="field"><label style="display:flex;justify-content:space-between">题目<span class="ai-tag">AI 识别</span></label><div class="inp">质量为 2 kg 的物块静止在倾角 30° 的斜面上，求斜面对物块的静摩擦力大小（g 取 10 m/s²）。</div></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <div class="field"><label style="display:flex;justify-content:space-between">我的答案<span class="ai-tag">AI</span></label><div class="inp">f = mg·cos30° = 17.3 N</div></div>
+            <div class="field"><label style="display:flex;justify-content:space-between">正确答案<span class="ai-tag">AI</span></label><div class="inp focus">mg·sin30° = 10 N</div></div>
+          </div>
+          <div class="field"><label>为什么错（可多选）</label>
+            <div class="chips"><span class="chip c">概念不清</span><span class="chip c on">粗心</span><span class="chip c on">计算失误</span><span class="chip c">审题不清</span><span class="chip c">方法不会</span><span class="chip c">记忆错误</span></div>
+          </div>
+        </div>
+        <div class="bottombar"><span class="btn p"><svg class="i s" data-i="check"></svg>保存，明天复习</span></div>
+      </div></div>
+    </figure>
+
+    <!-- R4 设置 -->
+    <figure class="board">
+      <figcaption class="cap"><b><span>R4</span>我的 → AI 识别设置</b><small>第一次用要填一次 API 密钥。密钥只存在这台手机上，不会放进备份文件。</small></figcaption>
+      <div class="phone"><div class="screen">
+        <div class="body">
+          <div class="hd"><span class="cbtn g"><svg class="i" data-i="back"></svg></span><span class="hd-c">AI 识别</span><span style="width:38px"></span></div>
+          <div class="g l pad" style="display:grid;gap:12px">
+            <div class="field"><label>API 密钥</label><div class="inp">sk-ant-api03-••••••••••••XQ8f</div></div>
+            <div class="hd"><span style="display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--right)"><svg class="i xs" data-i="check"></svg>已连上，可以用</span><span class="btn o sm">再测一次</span></div>
+          </div>
+          <div class="g pad" style="display:grid;gap:6px;font-size:12px">
+            <b style="font-size:13px">大概多少钱</b>
+            <span class="warm">每识别一张照片约 <b class="num" style="font-size:15px;color:var(--ink);font-weight:400">0.2</b> 元。每天录 10 道，一个月约 60 元。</span>
+            <span class="aux">本月已识别 37 张，约 7.4 元</span>
+          </div>
+          <div class="g pad" style="display:grid;gap:6px;font-size:12px">
+            <b style="font-size:13px">照片会去哪里</b>
+            <span class="warm">点“识别”时，框里的那部分照片会发给 Anthropic 的 AI 服务认字，认完不保存。不点“识别”的照片不会离开手机。</span>
+          </div>
+          <div class="g pad" style="display:flex;justify-content:space-between;align-items:center;font-size:12.5px">
+            <span>拍完照自动识别</span>
+            <span style="width:44px;height:26px;border-radius:999px;background:var(--espresso);position:relative"><i style="position:absolute;right:3px;top:3px;width:20px;height:20px;border-radius:50%;background:#fff"></i></span>
+          </div>
+          <span class="btn t" style="justify-self:center;color:var(--warm);font-size:12px">删除这台手机上的密钥</span>
+        </div>
+        <nav class="tabbar" data-tab="me"></nav>
+      </div></div>
+    </figure>
+
+    <!-- R5 失败 -->
+    <figure class="board">
+      <figcaption class="cap"><b><span>R5</span>没识别出来</b><small>没网、密钥不对、照片太糊时，说清楚原因和怎么办；照片和已经填的内容都留着，可以手动填完。</small></figcaption>
+      <div class="phone"><div class="screen">
+        <div class="body nobar">
+          <div class="hd"><span class="cbtn g"><svg class="i" data-i="x"></svg></span><span class="hd-c">录入错题</span><span class="btn t" style="height:38px">存草稿</span></div>
+          <div class="photo" style="height:120px"><b>7.</b> 质量为 2 kg 的物块静止在倾角 30° 的斜面上，求斜面对物块的静摩擦力大小（g 取 10 m/s²）。</div>
+          <div class="g pad" style="display:grid;gap:10px">
+            <div style="display:flex;gap:10px;align-items:flex-start"><svg class="i s" data-i="cloud" style="color:var(--warm);margin-top:2px"></svg><div style="display:grid;gap:2px"><b style="font-size:13px">没连上网，这次没识别</b><span class="aux">照片已经存好了。可以先手动填，或者有网了再点“重新识别”。</span></div></div>
+            <div style="display:flex;gap:8px;justify-content:flex-end"><span class="btn o sm"><svg class="i s" data-i="review"></svg>重新识别</span></div>
+          </div>
+          <div class="g pad" style="display:grid;gap:4px;font-size:11.5px">
+            <b style="font-size:12.5px">其他情况会这样说</b>
+            <span class="warm">· 密钥不对或过期了 → 去“我的 → AI 识别”换一个</span>
+            <span class="warm">· 照片里没认出字 → 换个角度重拍，或者框小一点</span>
+            <span class="warm">· 账户余额不够 → 到 Anthropic 网站充值</span>
+          </div>
+          <div class="field"><label>题目</label><div class="inp" style="color:var(--muted)">把题目打出来（有照片可以不填）</div></div>
+        </div>
+        <div class="bottombar"><span class="btn p"><svg class="i s" data-i="check"></svg>保存，明天复习</span></div>
       </div></div>
     </figure>
 
