@@ -165,6 +165,23 @@ textarea.inp{min-height:48px;overflow:hidden}
 .stat3>div{display:grid}
 .stat3>div+div{border-left:1px solid var(--line)}
 .stat3 .num{font-size:28px}
+.ai-tag{font-size:10.5px;font-weight:500;padding:1px 8px;border-radius:999px;background:var(--caramel-soft);color:var(--caramel-deep)}
+.ai-ic{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:var(--caramel-soft);color:var(--caramel-deep);flex:none}
+.ai-done{background:rgba(241,224,204,.75)}
+.prog b.busy{width:40%;background:var(--caramel);animation:busy 1.2s ease-in-out infinite alternate}
+@keyframes busy{from{margin-left:0}to{margin-left:60%}}
+.ok-line{display:inline-flex;align-items:center;gap:5px;font-size:13px;color:var(--right)}
+.switch{width:46px;height:28px;border-radius:999px;background:var(--line);position:relative;flex:none;transition:background .2s}
+.switch i{position:absolute;left:3px;top:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:left .2s}
+.switch.on{background:var(--espresso)}
+.switch.on i{left:21px}
+.crop-wrap{display:grid;justify-items:center;background:#2f2118;border-radius:var(--r-m);padding:18px 14px}
+.crop-stage{position:relative;max-width:100%;overflow:hidden;border-radius:6px;touch-action:none;user-select:none;-webkit-user-select:none}
+.crop-stage img{max-width:100%;max-height:56vh;width:auto;height:auto;display:block;pointer-events:none;border-radius:6px}
+.crop-box{position:absolute;border:2px solid var(--caramel);border-radius:8px;box-shadow:0 0 0 999px rgba(30,18,10,.5)}
+.crop-h{position:absolute;width:30px;height:30px;touch-action:none;cursor:grab}
+.crop-h::after{content:"";position:absolute;left:7px;top:7px;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--caramel)}
+.crop-h.tl{left:-16px;top:-16px}.crop-h.tr{right:-16px;top:-16px}.crop-h.bl{left:-16px;bottom:-16px}.crop-h.br{right:-16px;bottom:-16px}
 .empty-card{display:grid;justify-items:center;text-align:center;gap:12px;padding:30px 20px 22px}
 .empty-card .ic{width:70px;height:70px;border-radius:22px;display:grid;place-items:center;background:var(--caramel-soft);color:var(--caramel-deep)}
 .row-btn{display:flex;align-items:center;gap:12px;padding:13px 2px;width:100%;text-align:left;border-top:1px solid var(--line);font-size:14px}
@@ -231,8 +248,13 @@ textarea.inp{min-height:48px;overflow:hidden}
 'use strict';
 
 /* ================= 基本设置 ================= */
-var APP_VERSION = 'v1';
+var APP_VERSION = 'v2';
 var CHANGELOG = [
+  { v: 'v2', date: '2026-10-20', items: [
+    '拍照后可以用 AI 自动识别：题目、我的答案、正确答案（照片上有批改时）和学科一次填好',
+    '识别前先框出要认的部分；AI 只填空着的格子，不改你已经填的内容',
+    '用智谱的免费看图模型，在“我的 → AI 识别”里填一次密钥就能用'
+  ]},
   { v: 'v1', date: '2026-10-20', items: [
     '第一版：录入错题（拍照 + 文字，一页填完）',
     '错题本：按学科筛选、按掌握情况分组、搜索',
@@ -361,7 +383,7 @@ async function snapshotRaw(str, reason, kind){
   if (all[0] && all[0].data === str) return;
   var count = 0; try { count = JSON.parse(str).items.length; } catch (e) {}
   for (var i = 0; i < 5; i++) {
-    try { await iput('snaps', 'snap-' + now() + '-' + i, { t: now(), reason: reason, version: APP_VERSION, kind: kind || 'event', data: str, count: count }); break; }
+    try { await iput('snaps', 'snap-' + now() + '-' + uid(), { t: now(), reason: reason, version: APP_VERSION, kind: kind || 'event', data: str, count: count }); break; }
     catch (e) { if (!(await dropOldestSnap())) break; }
   }
   await pruneSnaps();
@@ -505,6 +527,8 @@ function render(){
   else if (r === 'book') { html = vBook(); tab = 'book'; }
   else if (r === 'item') html = vItem();
   else if (r === 'add') html = vAdd();
+  else if (r === 'crop') html = vCrop();
+  else if (r === 'ai') html = vAI();
   else if (r === 'review') html = vReview();
   else if (r === 'done') html = vDone();
   else if (r === 'stats') { html = vStats(); tab = 'stats'; }
@@ -513,10 +537,12 @@ function render(){
   if (MODE === 'demo') top = '<div class="banner">这是预览版，里面是示例题目。在这里录的题只存在预览里；正式版开通后请用正式版的地址。</div>';
   if (MODE === 'archive') top = '<div class="banner">这是旧版本 ' + esc(window.CUOTI_ARCHIVE || '') + ' 的预览，用的是你数据的一份副本，在这里改动不会影响真正的记录。<a href="../" style="color:inherit">回到最新版</a></div>';
   notices.forEach(function(n){ top += '<div class="banner">' + esc(n) + '</div>'; });
+  var act = document.activeElement, keep = act && act.id && view.contains(act) ? { id: act.id, s: act.selectionStart, e: act.selectionEnd } : null;
   view.innerHTML = top + html;
   bar.innerHTML = tab ? tabbar(tab) : barFor(r);
   hydratePhotos(view);
   view.querySelectorAll('textarea.inp').forEach(autoGrow);
+  if (keep) { var el = document.getElementById(keep.id); if (el) { try { el.focus({ preventScroll: true }); if (keep.s != null) el.setSelectionRange(keep.s, keep.e); } catch (e) {} } }
 }
 function tabbar(on){
   var t = [['home','首页','home'],['book','错题本','book'],null,['stats','统计','chart'],['me','我的','user']];
@@ -676,12 +702,13 @@ function vAdd(){
     (route.resumed ? '<div class="banner">接着上次没填完的继续。</div>' : '') +
     (d.photo ? '<div class="photo-wrap" style="display:grid;gap:8px"><button class="photo-box" data-act="viewPhoto" data-photo="' + d.photo + '"><img data-photo="' + d.photo + '" alt="题目照片"></button>' +
         '<div class="hd"><span class="aux">照片会和题目一起保存</span><span><button class="btn t" data-act="pickPhoto">' + ic('camera', 'xs') + '重拍</button><button class="btn t" style="color:var(--warm)" data-act="dPhotoDel">删掉照片</button></span></div></div>'
-             : '<button class="photo-pick" data-act="pickPhoto"><span class="ic">' + ic('camera', '" style="width:26px;height:26px') + '</span><b style="font-weight:500">拍照或从相册选</b><span class="aux">有照片的话，下面的题目可以不打字</span></button>') +
+             : '<button class="photo-pick" data-act="pickPhoto"><span class="ic">' + ic('camera', '" style="width:26px;height:26px') + '</span><b style="font-weight:500">拍照或从相册选</b><span class="aux">' + (AI.key ? '拍完可以让 AI 自动识别题目' : '有照片的话，下面的题目可以不打字') + '</span></button>') +
+    aiCard(d) +
     '<div class="field"><span class="flabel">学科</span><div class="chips">' + subj + '</div></div>' +
-    '<div class="field"><label for="f-q">题目</label><textarea id="f-q" class="inp" rows="2" data-f="q" placeholder="把题目打出来（有照片可以不填）">' + esc(d.q) + '</textarea></div>' +
+    '<div class="field">' + aiLabel(d, 'q', '题目', 'f-q') + '<textarea id="f-q" class="inp" rows="2" data-f="q" placeholder="把题目打出来（有照片可以不填）">' + esc(d.q) + '</textarea></div>' +
     '<div class="two">' +
-      '<div class="field"><label for="f-my">我的答案</label><textarea id="f-my" class="inp" rows="1" data-f="my" placeholder="当时写的">' + esc(d.my) + '</textarea></div>' +
-      '<div class="field"><label for="f-right">正确答案</label><textarea id="f-right" class="inp" rows="1" data-f="right" placeholder="对的答案">' + esc(d.right) + '</textarea></div>' +
+      '<div class="field">' + aiLabel(d, 'my', '我的答案', 'f-my') + '<textarea id="f-my" class="inp" rows="1" data-f="my" placeholder="当时写的">' + esc(d.my) + '</textarea></div>' +
+      '<div class="field">' + aiLabel(d, 'right', '正确答案', 'f-right') + '<textarea id="f-right" class="inp" rows="1" data-f="right" placeholder="对的答案">' + esc(d.right) + '</textarea></div>' +
     '</div>' +
     '<div class="field"><span class="flabel">为什么错（可多选）</span><div class="chips">' + causes + '</div></div>' +
     '<div class="field"><label for="f-note">提醒自己一句</label><textarea id="f-note" class="inp" rows="1" data-f="note" placeholder="比如：斜面上摩擦力 = mg·sinθ，不是 cos">' + esc(d.note) + '</textarea></div>' +
@@ -692,6 +719,7 @@ function vAdd(){
     (editing ? '' : '<div class="field"><span class="flabel">第一次复习</span><div class="seg g">' + FIRST_REVIEW.map(function(f){ return '<button data-act="dFirst" data-n="' + f[0] + '"' + (d.first === f[0] ? ' class="on"' : '') + '>' + f[1] + '</button>'; }).join('') + '</div></div>');
 }
 function barFor(r){
+  if (r === 'crop') return '<div class="bottombar"><button class="btn o" style="flex:.75" data-act="cropSkip">不识别，直接填</button><button class="btn p" data-act="cropGo">' + ic('sparkle', 's') + '识别</button></div>';
   if (r === 'add') {
     var d = draft, label = d.id ? '保存修改' : '保存，' + (FIRST_REVIEW.filter(function(f){ return f[0] === d.first; })[0] || FIRST_REVIEW[0])[1] + '复习';
     return '<div class="bottombar"><button class="btn p" data-act="saveDraft">' + ic('check', 's') + label + '</button></div>';
@@ -820,6 +848,7 @@ function vMe(){
     '<div class="g pad" style="display:grid;gap:6px;font-size:13.5px"><b style="font-size:15px">添加到主屏幕</b>' +
       '<span class="warm">iPhone：用 Safari 打开，点底部的分享按钮 →“添加到主屏幕”。安卓：浏览器菜单 →“添加到主屏幕”或“安装应用”。以后从主屏幕图标打开，更新会自动出现。</span>' +
       '<span class="aux">注意：主屏幕上的错题本和浏览器里打开的网页，数据是分开存的。选一个固定用。</span></div>' +
+    '<button class="g pad" data-act="openAI" style="display:flex;align-items:center;gap:12px;text-align:left;width:100%">' + ic('sparkle', '" style="color:var(--caramel)') + '<span style="flex:1;display:grid"><b style="font-size:15px">AI 识别</b><span class="aux">' + (AI.key ? '已设置 · ' + (AI.model === 'glm-4.6v' ? '收费版' : '免费版') + (AI.auto ? ' · 拍完自动识别' : '') : '拍照后自动识别题目，需要填一次智谱密钥') + '</span></span>' + ic('chev', 's" style="color:var(--muted)') + '</button>' +
     '<div class="g pad" style="display:grid;gap:6px"><div class="hd"><b style="font-size:15px">版本</b><span class="num" style="font-size:16px">' + APP_VERSION + '</span></div>' +
       CHANGELOG.map(function(c, i){ return '<div style="display:grid;gap:3px;font-size:13.5px"><span class="aux">' + c.v + ' · ' + c.date + (i === 0 ? ' · 当前版本' : '') + '</span>' + c.items.map(function(x){ return '<span class="warm">· ' + esc(x) + '</span>'; }).join('') + '</div>'; }).join('') +
       (CHANGELOG.length > 1 ? '<span class="aux" style="margin-top:6px">以前的版本：' + CHANGELOG.slice(1).map(function(c){ return '<a href="' + c.v + '/" style="color:var(--caramel)">' + c.v + '</a>'; }).join('、') + '（打开是旧版本预览，用数据副本）</span>' : '') +
@@ -838,6 +867,7 @@ function startAdd(withPhoto){
   var saved = null;
   try { saved = JSON.parse(localStorage.getItem(DB_NAME + '.draft') || 'null'); } catch (e) {}
   draft = saved && draftDirty(saved) ? Object.assign(newDraft(), saved) : newDraft();
+  if (draft.ai && draft.ai.status === 'busy') draft.ai = null;
   go('add', { resumed: !!(saved && draftDirty(saved)) });
   if (withPhoto) document.getElementById('photoInput').click();
 }
@@ -894,12 +924,31 @@ var ACT = {
   closeAdd: function(el){
     if (draft.id) { history.back(); return; }
     if (draftDirty(draft)) { el.dataset.confirm = '再点一次，不要这次填的'; if (!arm(el)) return; clearDraftLocal(); }
+    if (aiCtrl) aiCtrl.abort();
     draft = null; go('home', null, true);
   },
+  aiCrop: function(){ if (!draft || !draft.photo) return; go('crop', { photo: draft.photo, box: draft.aiBox || { x: 0.05, y: 0.05, w: 0.9, h: 0.9 } }); },
+  cropSkip: function(){ if (history.state && history.state.r && history.state.r.name === 'crop' && history.length > 1) history.back(); else go('add', null, true); },
+  cropGo: function(){ if (!draft) return; draft.aiBox = route.box; history.back(); setTimeout(function(){ runAI(draft && draft.aiBox); }, 0); },
+  aiRetry: function(){ runAI(draft && draft.aiBox); },
+  aiCancel: function(){ if (aiCtrl) aiCtrl.abort(); },
+  openAI: function(){ aiTest = null; go('ai'); },
+  aiModel: async function(el){ AI.model = el.dataset.m; await saveAI(); render(); },
+  aiAuto: async function(){ AI.auto = !AI.auto; await saveAI(); render(); },
+  aiTest: async function(){
+    var v = (document.getElementById('f-aikey') || {}).value || '';
+    AI.key = v.trim(); await saveAI();
+    if (!AI.key) { aiTest = null; render(); return; }
+    aiTest = 'busy'; render();
+    try { await callZhipu([{ type: 'text', text: '只回复一个字：好' }]); aiTest = 'ok'; }
+    catch (e) { var m = aiError(e); aiTest = m[0] + '。' + m[1]; }
+    if (route.name === 'ai') render();
+  },
+  aiDelKey: async function(el){ if (!arm(el)) return; AI.key = ''; aiTest = null; await saveAI(); toast('密钥删掉了'); render(); },
   keepDraft: function(){ saveDraftLocal(); toast('草稿存好了，下次点“＋”接着填'); go('home', null, true); },
   pickPhoto: function(){ document.getElementById('photoInput').click(); },
   dPhotoDel: function(){ draft.photo = null; saveDraftLocal(); render(); },
-  dSubj: function(el){ draft.subject = el.dataset.s; saveDraftLocal(); render(); },
+  dSubj: function(el){ draft.subject = el.dataset.s; draft.aiSubjectTouched = true; saveDraftLocal(); render(); },
   dCause: function(el){
     var c = el.dataset.c, i = draft.causes.indexOf(c);
     if (i >= 0) draft.causes.splice(i, 1); else draft.causes.push(c);
@@ -964,7 +1013,12 @@ document.addEventListener('input', function(e){
     var l = document.getElementById('bookList'); if (l) { l.innerHTML = bookListHtml(); hydratePhotos(l); }
     return;
   }
-  if (draft) { draft[f] = e.target.value; saveDraftLocal(); }
+  if (draft) {
+    draft[f] = e.target.value;
+    var ai = draft.aiFields ? draft.aiFields.indexOf(f) : -1;
+    if (ai >= 0) { draft.aiFields.splice(ai, 1); var t = view.querySelector('.ai-tag[data-tag="' + f + '"]'); if (t) t.remove(); }
+    saveDraftLocal();
+  }
   if (e.target.tagName === 'TEXTAREA') autoGrow(e.target);
 });
 document.addEventListener('compositionend', function(e){
@@ -987,9 +1041,183 @@ document.getElementById('photoInput').addEventListener('change', async function(
   try {
     var blob = await compressImage(f), id = 'p-' + uid();
     await iput('photos', id, blob);
-    draft.photo = id; saveDraftLocal(); render();
+    draft.photo = id; draft.ai = null; draft.aiBox = null; saveDraftLocal();
+    if (AI.key && !draft.id) {
+      if (AI.auto) { if (route.name !== 'add') go('add', null, true); else render(); runAI(); }
+      else go('crop', { photo: id, box: { x: 0.05, y: 0.05, w: 0.9, h: 0.9 } }, route.name === 'crop');
+    } else render();
   } catch (er) { toast('这张照片没能读取，换一张试试', true); }
 });
+
+/* ================= AI 识别（智谱，网页直接调用） ================= */
+// 密钥只存在这台手机的 kv/'ai' 里：不进错题数据 S，不进自动备份，也不进导出的备份文件。
+var ZHIPU_URL = 'https://open.bigmodel.cn/api/paas/v4/chat/completions';
+var AI_MODELS = [['glm-4.6v-flash', '免费版'], ['glm-4.6v', '收费版（更准）']];
+var AI = { key: '', model: 'glm-4.6v-flash', auto: false, count: {} };
+var AI_PROMPT = [
+  '这是一张学生错题的照片（可能只是其中一部分）。请只做“认字和整理”，不要自己解题。',
+  '只输出一个 JSON 对象，不要输出别的文字：',
+  '{"subject":"math|phys|chem|eng|chn|other","question":"…","my_answer":"…","correct_answer":"…"}',
+  '- question：题目原文（含选项），按原样换行。',
+  '- my_answer：学生自己写的答案或解题过程；没有就填 ""。',
+  '- correct_answer：照片上老师批改或订正写出的正确答案；照片上没有就填 ""，不要自己算。',
+  '- subject：数学 math、物理 phys、化学 chem、英语 eng、语文 chn，其他 other。',
+  '- 公式照原样写，上下标用 Unicode：m/s²、HNO₃、x₁；分数写成 a/b；负号用 −。'
+].join('\n');
+async function loadAI(){ try { var v = await iget('kv', 'ai'); if (v) AI = Object.assign(AI, v); } catch (e) {} }
+async function saveAI(){ try { await iput('kv', 'ai', JSON.parse(JSON.stringify(AI))); } catch (e) { toast('设置没存上：' + (e && e.message || e), true); } }
+function monthKey(){ return today().slice(0, 7); }
+
+function cropToDataUrl(photoId, box){
+  return getPhoto(photoId).then(function(u){
+    if (!u) throw Object.assign(new Error('照片找不到了'), { kind: 'photo' });
+    return new Promise(function(res, rej){
+      var img = new Image();
+      img.onload = function(){
+        var W = img.naturalWidth, H = img.naturalHeight, b = box || { x: 0, y: 0, w: 1, h: 1 };
+        var sx = Math.round(b.x * W), sy = Math.round(b.y * H), sw = Math.max(16, Math.round(b.w * W)), sh = Math.max(16, Math.round(b.h * H));
+        var k = Math.min(1, 1600 / Math.max(sw, sh)), c = document.createElement('canvas');
+        c.width = Math.round(sw * k); c.height = Math.round(sh * k);
+        c.getContext('2d').drawImage(img, sx, sy, sw, sh, 0, 0, c.width, c.height);
+        res(c.toDataURL('image/jpeg', 0.85));
+      };
+      img.onerror = function(){ rej(new Error('照片读不出来')); };
+      img.src = u;
+    });
+  });
+}
+async function callZhipu(content, signal){
+  var r = await fetch(ZHIPU_URL, {
+    method: 'POST', signal: signal,
+    headers: { 'Authorization': 'Bearer ' + AI.key.trim(), 'Content-Type': 'application/json' },
+    body: JSON.stringify({ model: AI.model, messages: [{ role: 'user', content: content }], thinking: { type: 'disabled' }, temperature: 0.1 })
+  });
+  var txt = await r.text(), j = null;
+  try { j = JSON.parse(txt); } catch (e) {}
+  if (!r.ok || !j || !j.choices) {
+    var er = j && j.error || {};
+    throw Object.assign(new Error(er.message || txt.slice(0, 160) || ('HTTP ' + r.status)), { status: r.status, code: String(er.code || '') });
+  }
+  var c = j.choices[0].message.content;
+  return Array.isArray(c) ? c.map(function(x){ return x.text || ''; }).join('') : String(c || '');
+}
+function parseAI(text){
+  var s = text.replace(/```(?:json)?/g, ''), a = s.indexOf('{'), b = s.lastIndexOf('}');
+  if (a < 0 || b <= a) return null;
+  try {
+    var o = JSON.parse(s.slice(a, b + 1)), str = function(v){ return typeof v === 'string' ? v.trim() : ''; };
+    return { subject: SUBJ[o.subject] ? o.subject : '', q: str(o.question), my: str(o.my_answer), right: str(o.correct_answer) };
+  } catch (e) { return null; }
+}
+function aiError(e){
+  if (e && e.kind === 'empty') return ['照片里没认出题目', '换个角度重拍，或者把框框小一点再试。'];
+  if (e && e.kind === 'photo') return ['照片找不到了', '重新拍一张试试。'];
+  if (e instanceof TypeError || (e && e.status === 0)) return ['连不上智谱，这次没识别', '可能是没网。有网了再点“重新识别”；照片已经存好了，也可以先手动填。'];
+  var s = e && e.status, code = e && e.code || '';
+  if (s === 401 || code === '1000' || code === '1001' || code === '1002') return ['密钥不对或过期了', '到“我的 → AI 识别”换一个密钥。'];
+  if (code === '1113') return ['智谱账户余额不足', '免费版不扣钱；用收费版要先到智谱开放平台充值，或者在“我的 → AI 识别”换回免费版。'];
+  if (s === 429 || code === '1302' || code === '1303' || code === '1305') return ['免费版现在太忙', '等一会儿再点“重新识别”。'];
+  return ['没识别出来', (e && e.message ? '智谱返回：' + e.message : '') + ' 可以再试一次，或者先手动填。'];
+}
+var aiCtrl = null;
+async function runAI(box){
+  var d = draft;
+  if (!d || !d.photo || !AI.key) return;
+  if (aiCtrl) aiCtrl.abort();
+  var ctrl = aiCtrl = new AbortController();
+  d.ai = { status: 'busy' }; if (route.name === 'add' && draft === d) render();
+  try {
+    var url = await cropToDataUrl(d.photo, box || d.aiBox);
+    var text;
+    try { text = await callZhipu([{ type: 'image_url', image_url: { url: url } }, { type: 'text', text: AI_PROMPT }], ctrl.signal); }
+    catch (e1) {
+      if (e1.status !== 400 || ctrl.signal.aborted) throw e1;
+      // 有的接口只收不带 data: 前缀的 base64，换个写法再试一次
+      text = await callZhipu([{ type: 'image_url', image_url: { url: url.split(',')[1] } }, { type: 'text', text: AI_PROMPT }], ctrl.signal);
+    }
+    var o = parseAI(text);
+    if (!o || !(o.q || o.my || o.right)) throw { kind: 'empty' };
+    var n = 0;
+    d.aiFields = d.aiFields || [];
+    [['q', o.q], ['my', o.my], ['right', o.right]].forEach(function(x){
+      if (x[1] && !String(d[x[0]] || '').trim()) { d[x[0]] = x[1]; d.aiFields.push(x[0]); n++; }
+    });
+    if (o.subject && !d.aiSubjectTouched) d.subject = o.subject;
+    d.ai = { status: 'done', n: n };
+    AI.count[monthKey()] = (AI.count[monthKey()] || 0) + 1; saveAI();
+  } catch (e) {
+    if (ctrl.signal.aborted) { if (d.ai && d.ai.status === 'busy') d.ai = null; }
+    else { var m = aiError(e); d.ai = { status: 'error', title: m[0], msg: m[1] }; }
+  }
+  if (aiCtrl === ctrl) aiCtrl = null;
+  if (draft === d) { saveDraftLocal(); if (route.name === 'add') render(); }
+}
+function aiCard(d){
+  if (!d.photo) return '';
+  var a = d.ai;
+  if (!AI.key) return (d.id ? '' : '<div class="g pad aux" style="font-size:12.5px;display:flex;gap:8px;align-items:center">' + ic('sparkle', 's" style="color:var(--caramel)') + '<span style="flex:1">想拍完照自动识别题目？</span><button class="btn t" style="height:auto" data-act="openAI">去设置</button></div>');
+  if (!a) return '<div style="display:flex;justify-content:flex-end"><button class="btn o sm" data-act="aiCrop">' + ic('sparkle', 's') + '识别照片里的题目</button></div>';
+  if (a.status === 'busy') return '<div class="g pad" style="display:flex;gap:12px;align-items:center" role="status"><span class="ai-ic">' + ic('sparkle', 's') + '</span><div style="flex:1;display:grid;gap:6px"><b style="font-size:13.5px">AI 正在识别…</b><div class="prog"><b class="busy"></b></div></div><button class="btn t" style="height:auto;color:var(--warm)" data-act="aiCancel">取消</button></div>';
+  if (a.status === 'done') return '<div class="g pad ai-done" style="display:flex;gap:10px;align-items:flex-start">' + ic('sparkle', 's" style="color:var(--caramel-deep);margin-top:3px') + '<span style="flex:1;font-size:13px;color:var(--caramel-deep)">' + (a.n ? 'AI 填好了 ' + a.n + ' 项，认错的地方直接改。' : 'AI 认出来了，不过你已经都填了，没有改动。') + '</span><button class="btn t" style="height:auto;font-size:12.5px" data-act="aiCrop">重新识别</button></div>';
+  return '<div class="g pad" style="display:grid;gap:10px"><div style="display:flex;gap:10px;align-items:flex-start">' + ic('cloud', 's" style="color:var(--warm);margin-top:3px') + '<div style="display:grid;gap:2px"><b style="font-size:14px">' + esc(a.title) + '</b><span class="aux" style="font-size:12.5px">' + esc(a.msg) + '</span></div></div>' +
+    '<div style="display:flex;justify-content:flex-end;gap:8px">' + (/密钥/.test(a.title) ? '<button class="btn t" data-act="openAI">去换密钥</button>' : '') + '<button class="btn o sm" data-act="aiRetry">' + ic('review', 's') + '重新识别</button></div></div>';
+}
+function aiLabel(d, f, text, forId){
+  return '<label for="' + forId + '" style="display:flex;justify-content:space-between;align-items:center">' + text + ((d.aiFields || []).indexOf(f) >= 0 ? '<span class="ai-tag" data-tag="' + f + '">AI 识别</span>' : '') + '</label>';
+}
+
+/* R1 框选 */
+function vCrop(){
+  var b = route.box;
+  return '<div class="hd"><button class="cbtn g" data-act="cropSkip" aria-label="不识别">' + ic('x') + '</button><span class="hd-c">框出要识别的部分</span><button class="btn t" data-act="pickPhoto">重拍</button></div>' +
+    '<div class="crop-wrap"><div class="crop-stage"><img id="cropImg" data-photo="' + route.photo + '" alt="题目照片">' +
+      '<div class="crop-box" id="cropBox" style="left:' + b.x * 100 + '%;top:' + b.y * 100 + '%;width:' + b.w * 100 + '%;height:' + b.h * 100 + '%">' +
+        ['tl','tr','bl','br'].map(function(h){ return '<i class="crop-h ' + h + '" data-h="' + h + '"></i>'; }).join('') + '</div></div></div>' +
+    '<p class="aux" style="text-align:center">拖四个角调整框的大小；不调也行，AI 会自己分出题目和你写的答案</p>' +
+    '<div class="g pad" style="font-size:13px;color:var(--warm)">AI 会填题目、我的答案、正确答案（照片上有批改时）和学科；你已经填了的格子不会被改。识别时这块照片会发给智谱。</div>';
+}
+var cropDrag = null;
+document.addEventListener('pointerdown', function(e){
+  var h = e.target.closest && e.target.closest('.crop-h');
+  if (!h || route.name !== 'crop') return;
+  e.preventDefault();
+  cropDrag = { h: h.dataset.h, rect: document.getElementById('cropImg').getBoundingClientRect() };
+  try { h.setPointerCapture(e.pointerId); } catch (er) {}
+});
+document.addEventListener('pointermove', function(e){
+  if (!cropDrag) return;
+  var r = cropDrag.rect, b = route.box, min = 0.08;
+  var px = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width)), py = Math.min(1, Math.max(0, (e.clientY - r.top) / r.height));
+  var x1 = b.x, y1 = b.y, x2 = b.x + b.w, y2 = b.y + b.h, h = cropDrag.h;
+  if (h[1] === 'l') x1 = Math.min(px, x2 - min); else x2 = Math.max(px, x1 + min);
+  if (h[0] === 't') y1 = Math.min(py, y2 - min); else y2 = Math.max(py, y1 + min);
+  route.box = { x: x1, y: y1, w: x2 - x1, h: y2 - y1 };
+  var el = document.getElementById('cropBox');
+  if (el) { el.style.left = x1 * 100 + '%'; el.style.top = y1 * 100 + '%'; el.style.width = (x2 - x1) * 100 + '%'; el.style.height = (y2 - y1) * 100 + '%'; }
+});
+document.addEventListener('pointerup', function(){ cropDrag = null; });
+document.addEventListener('pointercancel', function(){ cropDrag = null; });
+
+/* R4 AI 识别设置 */
+var aiTest = null;
+function vAI(){
+  var n = AI.count[monthKey()] || 0;
+  var st = aiTest === 'busy' ? '<span class="aux">测试中…</span>' : aiTest === 'ok' ? '<span class="ok-line">' + ic('check', 'xs') + '已连上，可以用</span>' : aiTest ? '<span class="aux" style="color:var(--wrong)">' + esc(aiTest) + '</span>' : '';
+  return '<div class="hd"><button class="cbtn g" data-act="back" aria-label="返回">' + ic('back') + '</button><span class="hd-c">AI 识别</span><span style="width:40px"></span></div>' +
+    '<div class="g l pad" style="display:grid;gap:12px">' +
+      '<div class="field"><label for="f-aikey">智谱 API 密钥</label><input id="f-aikey" class="inp" type="password" autocomplete="off" spellcheck="false" placeholder="粘贴密钥" value="' + esc(AI.key) + '"></div>' +
+      '<div class="hd">' + (st || '<span class="aux">' + (AI.key ? '已保存' : '还没填') + '</span>') + '<button class="btn o sm" data-act="aiTest">' + (AI.key ? '保存并测试' : '保存') + '</button></div>' +
+    '</div>' +
+    '<div class="g pad" style="display:grid;gap:8px;font-size:13px"><b style="font-size:14px">怎么拿到密钥</b>' +
+      '<span class="warm">1. 打开 open.bigmodel.cn（智谱开放平台），用手机号注册登录。<br>2. 右上角头像 →“API Keys”→“添加新的 API Key”。<br>3. 复制密钥，粘贴到上面，点“保存并测试”。</span>' +
+      '<span class="aux">免费版不用充值。</span></div>' +
+    '<div class="g pad" style="display:grid;gap:8px;font-size:13px"><b style="font-size:14px">用哪个模型</b>' +
+      '<div class="seg g">' + AI_MODELS.map(function(m){ return '<button data-act="aiModel" data-m="' + m[0] + '"' + (AI.model === m[0] ? ' class="on"' : '') + '>' + m[1] + '</button>'; }).join('') + '</div>' +
+      '<span class="aux">免费版 GLM-4.6V-Flash 不花钱，用的人多时可能要等或者让你稍后再试。收费版 GLM-4.6V 按智谱的价格从账户扣钱。本月已识别 ' + n + ' 张。</span></div>' +
+    '<div class="g pad" style="display:grid;gap:6px;font-size:13px"><b style="font-size:14px">照片会去哪里</b><span class="warm">点“识别”时，框里的那部分照片会发给智谱的 AI 服务认字。不点“识别”的照片不会离开手机。</span></div>' +
+    '<button class="g pad" data-act="aiAuto" role="switch" aria-checked="' + AI.auto + '" style="display:flex;justify-content:space-between;align-items:center;font-size:14px;text-align:left"><span style="display:grid"><span>拍完照自动识别</span><span class="aux">打开后跳过框选，直接识别整张照片</span></span><span class="switch' + (AI.auto ? ' on' : '') + '"><i></i></span></button>' +
+    (AI.key ? '<div style="text-align:center"><button class="danger-text" data-act="aiDelKey" data-confirm="再点一次，删除密钥">删除这台手机上的密钥</button></div>' : '');
+}
 
 /* 导出 / 导入备份文件 */
 function blobToDataUrl(b){ return new Promise(function(res){ var r = new FileReader(); r.onload = function(){ res(r.result); }; r.readAsDataURL(b); }); }
@@ -1062,6 +1290,7 @@ async function boot(){
     try { var m = await iget('kv', 'main', mainDb); if (m) await iput('kv', 'main', m); } catch (e) {}
   }
   S = await load();
+  await loadAI();
   if (MODE === 'demo' && !S.items.length && !RAW_AT_LOAD) seedDemo();
   if (MODE === 'main' && !saveBlocked) {
     if (RAW_AT_LOAD && S.meta.lastVersion && S.meta.lastVersion !== APP_VERSION) await snapshotRaw(RAW_AT_LOAD, '升级到 ' + APP_VERSION + ' 之前');

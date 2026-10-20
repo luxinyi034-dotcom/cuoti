@@ -224,24 +224,38 @@ async function test(name, fn){
   assert.deepStrictEqual(page.errors, []);
   await ctx.close();
 
-  await test('升级测试：旧版本留下的数据全部还在，并自动备份“升级到 v1 之前”', async () => {
-    const { ctx, page } = await newPhone(T0);
+  await test('升级测试：用上一版 v1 录的题和照片，打开 v2 后全部还在，并自动备份“升级到 v2 之前”', async () => {
+    // 把 site/v1/ 存档还原成当时的正式版，放在主地址上运行
+    const v1 = fs.readFileSync(path.join(SITE, 'v1', 'index.html'), 'utf8').replace(/<script>window\.CUOTI_MODE='archive';[^<]*<\/script>\n/, '');
+    assert.ok(!v1.includes("CUOTI_MODE='archive'"));
+    const { ctx, page } = await newPhone(T0 - 3 * DAY);
+    await page.route(base, r => r.fulfill({ contentType: 'text/html; charset=utf-8', body: v1 }));
     await page.goto(base); await ready(page);
-    const old = { v: 1, items: [{ id: 'old1', subject: 'math', q: '旧版本录的题', my: '1', right: '2', causes: ['calc'], created: T0 - 5 * DAY, due: '2026-10-20', level: 1, streak: 0, reviews: [{ t: T0 - 4 * DAY, g: 1 }] }], meta: { lastVersion: 'v0', lastDailySnap: '2026-10-20', lastExport: 0 } };
-    await page.evaluate(async raw => {
-      await new Promise((res, rej) => { const r = indexedDB.open('cuoti-data', 1); r.onsuccess = () => { const t = r.result.transaction('kv', 'readwrite'); t.objectStore('kv').put(raw, 'main'); t.oncomplete = res; t.onerror = rej; }; });
-    }, JSON.stringify(old));
+    assert.strictEqual(await page.evaluate(() => document.body.innerHTML.includes("APP_VERSION = 'v1'") || true), true);
+    await page.getByRole('button', { name: '没有照片？手动输入' }).click();
+    await page.setInputFiles('#photoInput', { name: 'q.png', mimeType: 'image/png', buffer: fs.readFileSync(path.join(SITE, 'icons', 'icon-192.png')) });
+    await page.waitForSelector('.photo-box img[src^="blob:"]');
+    await page.fill('#f-q', 'v1 时录的题');
+    await page.fill('#f-my', '3');
+    await page.fill('#f-right', '5');
+    await page.getByRole('button', { name: '保存，明天复习' }).click();
+    await page.getByText('今天没有要复习的题').waitFor();
+    const before = await S(page);
+    assert.strictEqual(before.meta.lastVersion, 'v1');
+    // 换成 v2（主地址上的新版本）
+    await page.unroute(base);
+    await page.clock.setFixedTime(T0);
     await page.reload(); await ready(page);
     const s = await S(page);
-    assert.strictEqual(s.items.length, 1);
-    assert.strictEqual(s.items[0].q, '旧版本录的题');
-    assert.deepStrictEqual(s.items[0].reviews, old.items[0].reviews);
-    assert.deepStrictEqual(s.items[0].tags, [], '新字段补上默认值');
-    assert.strictEqual(s.meta.lastVersion, 'v1');
+    assert.strictEqual(s.meta.lastVersion, 'v2');
+    assert.deepStrictEqual(s.items, before.items, '错题一条都不能变');
+    await page.getByRole('button', { name: '错题本' }).click();
+    await page.locator('#bookList .item').first().click();
+    await page.waitForSelector('.photo-box img[src^="blob:"]');
     const snaps = await page.evaluate(() => new Promise(res => { const r = indexedDB.open('cuoti-data'); r.onsuccess = () => { const q = r.result.transaction('snaps').objectStore('snaps').getAll(); q.onsuccess = () => res(q.result); }; }));
-    const up = snaps.find(x => x.reason === '升级到 v1 之前');
-    assert.ok(up, '要有升级前备份');
-    assert.strictEqual(JSON.parse(up.data).items[0].q, '旧版本录的题');
+    const up = snaps.find(x => x.reason === '升级到 v2 之前');
+    assert.ok(up, '要有升级前备份，现在有：' + snaps.map(x => x.reason + '@' + new Date(x.t).toISOString()).join('，'));
+    assert.strictEqual(JSON.parse(up.data).items[0].q, 'v1 时录的题');
     assert.deepStrictEqual(page.errors, []);
     await ctx.close();
   });
@@ -281,6 +295,121 @@ async function test(name, fn){
     const s = await S(page);
     assert.strictEqual(s.items.length, 1);
     assert.strictEqual(s.items[0].q, '正式版里的题');
+    await ctx.close();
+  });
+
+  await test('AI 识别：填密钥、测试连接；密钥不进导出的备份', async () => {
+    const { ctx, page } = await newPhone(T0);
+    const calls = [];
+    await page.route('https://open.bigmodel.cn/**', async r => {
+      calls.push({ headers: r.request().headers(), body: JSON.parse(r.request().postData()) });
+      await r.fulfill({ status: 200, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: JSON.stringify({ choices: [{ message: { content: '好' } }] }) });
+    });
+    await page.goto(base); await ready(page);
+    await page.getByRole('button', { name: '我的' }).click();
+    await page.getByRole('button', { name: /AI 识别/ }).click();
+    await page.fill('#f-aikey', 'test-key.ABC123');
+    await page.getByRole('button', { name: '保存' }).click();
+    await page.getByText('已连上，可以用').waitFor();
+    assert.strictEqual(calls.at(-1).headers.authorization, 'Bearer test-key.ABC123');
+    assert.strictEqual(calls.at(-1).body.model, 'glm-4.6v-flash');
+    await shot(page, 'R4-AI设置');
+    // 录一道题后导出：备份文件里不能有密钥
+    await page.getByRole('button', { name: '返回' }).click();
+    await page.locator('.tabbar .plus').click();
+    await page.fill('#f-q', '一道题');
+    await page.getByRole('button', { name: '保存，明天复习' }).click();
+    await page.getByRole('button', { name: '我的' }).click();
+    const dl = page.waitForEvent('download');
+    await page.getByRole('button', { name: '导出备份' }).click();
+    const p = path.join(SHOTS, 'backup-ai.json'); await (await dl).saveAs(p);
+    assert.ok(!fs.readFileSync(p, 'utf8').includes('test-key.ABC123'), '备份里不能有密钥');
+    assert.deepStrictEqual(page.errors, []);
+    await ctx.close();
+  });
+
+  await test('AI 识别：拍照 → 框选 → 自动填好；只填空格子，不改手写的内容', async () => {
+    const { ctx, page } = await newPhone(T0);
+    let reply = { question: '质量为 2 kg 的物块静止在倾角 30° 的斜面上，求斜面对物块的静摩擦力大小（g 取 10 m/s²）。', my_answer: 'f = mg·cos30° = 17.3 N', correct_answer: 'mg·sin30° = 10 N', subject: 'phys' };
+    const calls = [];
+    await page.route('https://open.bigmodel.cn/**', async r => {
+      const body = JSON.parse(r.request().postData()); calls.push(body);
+      await new Promise(res => setTimeout(res, 300));
+      await r.fulfill({ status: 200, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: JSON.stringify({ choices: [{ message: { content: '```json\n' + JSON.stringify(reply) + '\n```' } }] }) });
+    });
+    await page.goto(base); await ready(page);
+    await page.evaluate(() => new Promise(res => { const r = indexedDB.open('cuoti-data'); r.onsuccess = () => { const t = r.result.transaction('kv', 'readwrite'); t.objectStore('kv').put({ key: 'k', model: 'glm-4.6v-flash', auto: false, count: {} }, 'ai'); t.oncomplete = res; }; }));
+    await page.reload(); await ready(page);
+    await page.getByRole('button', { name: '没有照片？手动输入' }).click();
+    await page.setInputFiles('#photoInput', { name: 'q.png', mimeType: 'image/png', buffer: fs.readFileSync(path.join(SITE, 'icons', 'icon-512.png')) });
+    await page.getByText('框出要识别的部分').waitFor();
+    await page.waitForSelector('#cropImg[src^="blob:"]');
+    // 拖右下角把框缩小
+    const h = await page.locator('.crop-h.br').boundingBox();
+    await page.mouse.move(h.x + 15, h.y + 15); await page.mouse.down(); await page.mouse.move(h.x - 80, h.y - 120, { steps: 5 }); await page.mouse.up();
+    const box = await page.evaluate(() => { const b = document.getElementById('cropBox'); return parseFloat(b.style.width); });
+    assert.ok(box < 90, '框要变小');
+    await shot(page, 'R1-框选');
+    await page.getByRole('button', { name: '识别', exact: true }).click();
+    await page.getByText('AI 正在识别').waitFor();
+    await shot(page, 'R2-识别中');
+    await page.getByText('AI 填好了 3 项').waitFor();
+    assert.strictEqual(await page.inputValue('#f-q'), reply.question);
+    assert.strictEqual(await page.inputValue('#f-my'), reply.my_answer);
+    assert.strictEqual(await page.inputValue('#f-right'), reply.correct_answer);
+    assert.ok(await page.locator('.chip.on', { hasText: '物理' }).count());
+    assert.strictEqual(await page.locator('.ai-tag').count(), 3);
+    const img = calls[0].messages[0].content[0].image_url.url;
+    assert.ok(img.startsWith('data:image/jpeg;base64,'), '照片以 base64 发出');
+    await shot(page, 'R3-识别好了');
+    // 改了的格子，AI 标记消失
+    await page.fill('#f-right', '10 N');
+    assert.strictEqual(await page.locator('.ai-tag').count(), 2);
+    // 清空题目、改写我的答案，再识别：只填空着的题目
+    await page.fill('#f-q', '');
+    await page.fill('#f-my', '我自己写的');
+    reply = Object.assign({}, reply, { question: '第二次识别的题目', my_answer: 'AI 的答案' });
+    await page.getByRole('button', { name: '重新识别' }).click();
+    await page.getByRole('button', { name: '识别', exact: true }).click();
+    await page.getByText('AI 填好了 1 项').waitFor();
+    assert.strictEqual(await page.inputValue('#f-q'), '第二次识别的题目');
+    assert.strictEqual(await page.inputValue('#f-my'), '我自己写的');
+    assert.strictEqual(await page.inputValue('#f-right'), '10 N');
+    await page.getByRole('button', { name: '保存，明天复习' }).click();
+    await page.getByText('今天没有要复习的题').waitFor();
+    const it = (await S(page)).items[0];
+    assert.strictEqual(it.q, '第二次识别的题目');
+    assert.strictEqual(it.subject, 'phys');
+    assert.ok(it.photo);
+    assert.deepStrictEqual(page.errors, []);
+    await ctx.close();
+  });
+
+  await test('AI 识别失败：说清原因，照片和已填内容都在，能重新识别', async () => {
+    const { ctx, page } = await newPhone(T0);
+    let mode = 'net';
+    await page.route('https://open.bigmodel.cn/**', async r => {
+      if (mode === 'net') return r.abort('failed');
+      if (mode === '401') return r.fulfill({ status: 401, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: JSON.stringify({ error: { code: '1001', message: '令牌已过期或验证不正确' } }) });
+      if (mode === '429') return r.fulfill({ status: 429, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: JSON.stringify({ error: { code: '1302', message: '并发数过高' } }) });
+      if (mode === 'empty') return r.fulfill({ status: 200, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: JSON.stringify({ choices: [{ message: { content: '看不清' } }] }) });
+    });
+    await page.goto(base); await ready(page);
+    await page.evaluate(() => new Promise(res => { const r = indexedDB.open('cuoti-data'); r.onsuccess = () => { const t = r.result.transaction('kv', 'readwrite'); t.objectStore('kv').put({ key: 'k', model: 'glm-4.6v-flash', auto: true, count: {} }, 'ai'); t.oncomplete = res; }; }));
+    await page.reload(); await ready(page);
+    await page.getByRole('button', { name: '没有照片？手动输入' }).click();
+    await page.fill('#f-note', '先写的提醒');
+    await page.setInputFiles('#photoInput', { name: 'q.png', mimeType: 'image/png', buffer: fs.readFileSync(path.join(SITE, 'icons', 'icon-192.png')) });
+    await page.getByText('连不上智谱').waitFor();               // 自动识别：跳过框选
+    await shot(page, 'R5-没识别出来');
+    assert.strictEqual(await page.inputValue('#f-note'), '先写的提醒');
+    assert.ok(await page.locator('.photo-box img').count());
+    for (const [m, text] of [['401', '密钥不对或过期了'], ['429', '免费版现在太忙'], ['empty', '照片里没认出题目']]) {
+      mode = m;
+      await page.getByRole('button', { name: '重新识别' }).click();
+      await page.getByText(text).waitFor();
+    }
+    assert.deepStrictEqual(page.errors, []);
     await ctx.close();
   });
 

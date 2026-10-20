@@ -1,5 +1,5 @@
 // 离线缓存：缓存名带版本号；页面“先联网”，没网时用缓存
-const CACHE = 'cuoti-v1';
+const CACHE = 'cuoti-v2';
 const CORE = ['./', './index.html', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png'];
 
 self.addEventListener('install', e => {
