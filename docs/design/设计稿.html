@@ -232,6 +232,56 @@ code{font-family:var(--f-num);font-size:12px;color:var(--warm)}
 .decide{display:grid;gap:8px;max-width:520px;padding:16px 18px;border-radius:var(--r-m);background:var(--espresso);color:var(--espresso-ink);font-size:13px}
 .decide b{font-family:var(--f-title);font-size:16px}
 .foot{margin-top:64px;font-size:12px;color:var(--warm);max-width:62ch}
+
+/* ===== iPad 设计稿 ===== */
+.board.wide{width:min(1000px,100%)}
+.scale{position:relative;width:100%;max-width:1000px}
+.scale.port{width:min(600px,100%)}
+.scale>.ipad{position:absolute;top:0;left:0;transform-origin:0 0}
+.ipad{width:1208px;height:848px;border-radius:40px;padding:14px;background:var(--bezel);box-shadow:0 40px 80px -40px rgba(43,26,16,.6),inset 0 0 0 1.5px #5a3f2e}
+.ipad.port{width:848px;height:1208px}
+.ipad .screen{border-radius:26px;font-size:14px}
+.ipad .island{display:none}
+.ipad .sb{height:30px;padding:0 26px;font-size:12.5px}
+.ip{position:absolute;inset:30px 0 0;display:grid;grid-template-columns:236px 1fr}
+.ip.rail{grid-template-columns:88px 1fr}
+.ip.full{display:block}
+.main{padding:14px 28px 24px;display:flex;flex-direction:column;gap:18px;overflow:hidden;min-width:0}
+.main>*{flex:none}
+.side{margin:8px 0 18px 16px;border-radius:24px;padding:18px 14px;display:flex;flex-direction:column;gap:4px}
+.side.r{margin-left:14px;padding:18px 10px;align-items:center}
+.brand{display:flex;align-items:center;gap:10px;padding:2px 8px 16px}
+.logo{width:36px;height:36px;border-radius:12px;background:var(--espresso);color:var(--espresso-ink);display:grid;place-items:center;font-family:var(--f-title);font-weight:600;font-size:18px}
+.brand b{font-family:var(--f-title);font-size:20px;font-weight:600}
+.add{display:flex;align-items:center;gap:10px;height:48px;padding:0 9px;border-radius:16px;background:rgba(255,255,255,.72);border:1px solid var(--line);font-weight:500;font-size:14px;margin-bottom:12px}
+.add .pc{width:30px;height:30px;border-radius:50%;background:var(--caramel);color:#FFF8F0;display:grid;place-items:center}
+.side.r .add{width:52px;height:52px;padding:0;justify-content:center}
+.nav-i{display:flex;align-items:center;gap:12px;height:44px;padding:0 12px;border-radius:14px;color:var(--warm);font-size:14px}
+.nav-i.on{background:#FFFCF8;color:var(--ink);font-weight:600;box-shadow:0 4px 12px -6px rgba(74,43,27,.35)}
+.nav-i.on .i{color:var(--espresso)}
+.side.r .nav-i{width:52px;height:52px;padding:0;justify-content:center;position:relative}
+.nav-i .cnt{margin-left:auto;font-family:var(--f-num);font-size:12.5px;color:var(--muted)}
+.nav-i .bdg{margin-left:auto;min-width:22px;height:20px;border-radius:10px;background:var(--caramel-soft);color:var(--caramel-deep);font-size:11px;display:grid;place-items:center;padding:0 6px;font-weight:500}
+.side.r .bdg{position:absolute;top:4px;right:2px;margin:0;min-width:18px;height:16px;font-size:10px;padding:0 4px}
+.side-foot{margin-top:auto;padding:12px;border-radius:16px;font-size:12px;display:grid;gap:4px;background:rgba(255,255,255,.45);border:1px solid var(--glass-edge)}
+.side-foot b{display:flex;align-items:center;gap:6px;font-weight:500}
+.side-foot a{color:var(--caramel)}
+.side.r .side-foot{padding:10px;display:grid;place-items:center}
+.search{display:flex;align-items:center;gap:8px;height:42px;padding:0 16px;border-radius:999px;color:var(--muted);font-size:13px}
+.wide-qa{grid-template-columns:repeat(3,1fr);padding:14px 16px;gap:10px}
+.wide-qa>div{display:flex;justify-content:flex-start;align-items:center;gap:12px;text-align:left}
+.wide-qa span:last-child{display:grid;line-height:1.35}
+.wide-qa b{font-size:13.5px;color:var(--ink);font-weight:500}
+.wide-qa small{font-size:11.5px;color:var(--muted)}
+.tiles.sm .tile{width:52px;height:58px;border-radius:14px;font-size:10.5px}
+.item.sel{background:rgba(255,252,248,.92);box-shadow:inset 0 0 0 1.5px var(--espresso),var(--shadow)}
+.photo.big{height:330px;font-size:15px;line-height:1.9;padding:20px 22px}
+.photo.big .crop{inset:12px 12px 52px 12px}
+.chips.big .chip{height:32px;padding:0 14px;font-size:13px}
+.opt.big{padding:13px 16px;font-size:16px}
+.grade.big div{padding:16px 6px;font-size:15px}
+.grade.big small{font-size:11px}
+.done{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:var(--right-soft);color:var(--right);font-size:13px}
 @media (max-width:420px){.type-row{grid-template-columns:1fr}.glass-demo{grid-template-columns:1fr}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
@@ -279,12 +329,13 @@ code{font-family:var(--f-num);font-size:12px;color:var(--warm)}
 <div class="wrap">
 
 <header class="top">
-  <p class="eyebrow">cuoti · 设计稿画布 · v0.1 草案</p>
+  <p class="eyebrow">cuoti · 设计稿画布 · v0.2 草案</p>
   <h1>错题本<em>设计规范</em></h1>
-  <p class="lede">配色来自参考图一：浓缩咖啡深棕、焦糖、奶油纸色。风格来自参考图二：磨砂玻璃卡片、细线图标、大圆角、柔和的光影。第 1 排是规范本身，后面 3 排是按规范画出来的页面设计稿。题目、数字都是示例内容。</p>
+  <p class="lede">配色来自参考图一：浓缩咖啡深棕、焦糖、奶油纸色。风格来自参考图二：磨砂玻璃卡片、细线图标、大圆角、柔和的光影。第 1 排是规范本身；第 2、3 排是 iPad 上的样子（主要用的）；后面是手机上的样子。题目、数字都是示例内容。</p>
   <div class="todo">
-    <span class="flag"><i></i><b>需要你选：</b>录入用 E1 还是 E2</span>
-    <span class="flag"><i></i><b>需要你说：</b>主要在手机还是 iPad 上用</span>
+    <span class="done"><svg class="i xs" data-i="check"></svg>已定：录入用 E1 一页填完</span>
+    <span class="done"><svg class="i xs" data-i="check"></svg>已定：主要在 iPad 上用</span>
+    <span class="flag"><i></i><b>请你看：</b>第 2、3 排的 iPad 排版</span>
   </div>
 </header>
 
@@ -415,9 +466,324 @@ code{font-family:var(--f-num);font-size:12px;color:var(--warm)}
   </div>
 </section>
 
-<!-- ============ 第 2 排：主要页面 ============ -->
+<!-- ============ 第 2 排：iPad 横屏 ============ -->
 <section class="row">
-  <div class="row-h"><span>第 2 排</span><h2>主要页面</h2><p>手机竖屏 390×844，按比例缩小。底部导航：首页 · 错题本 · ＋录入 · 统计 · 我的。</p></div>
+  <div class="row-h"><span>第 2 排</span><h2>iPad 横屏 · 主要用的样子</h2><p>iPad 横屏 1180×820，按比例缩小。手机上的底部导航在 iPad 上换成左侧边栏：横屏宽，左手就能点到，错题本也能左右分栏。</p></div>
+  <div class="boards">
+
+    <!-- I1 首页 -->
+    <figure class="board wide">
+      <figcaption class="cap"><b><span>I1</span>首页 · 横屏</b><small>左边是今天要做的事，右边是这周的情况。录入入口固定在侧边栏顶上，任何页面都能一下点到。</small></figcaption>
+      <div class="scale"><div class="ipad"><div class="screen">
+        <div class="ip">
+          <aside class="side g" data-on="home"></aside>
+          <div class="main">
+            <div class="hd" style="align-items:flex-end">
+              <div style="display:grid;gap:2px"><span class="date">10 月 20 日 · 周二</span><h3 class="hello" style="font-size:30px">晚上好，<em>今天复习 12 题</em></h3></div>
+              <div style="display:flex;gap:10px;align-items:center"><div class="g search" style="width:260px"><svg class="i s" data-i="search"></svg><span>搜题目、知识点、错因…</span></div><span class="cbtn g"><svg class="i" data-i="bell"></svg><i class="dot-badge"></i></span></div>
+            </div>
+            <div style="display:grid;grid-template-columns:1.45fr 1fr;gap:18px;align-items:start">
+              <div style="display:grid;gap:18px">
+                <div class="g l" style="display:grid;grid-template-columns:auto 1fr;gap:26px;align-items:center;padding:22px 26px">
+                  <div class="ring" style="width:132px;height:132px"><svg width="132" height="132"><circle cx="66" cy="66" r="56" fill="none" stroke="rgba(74,43,27,.1)" stroke-width="8"/><circle cx="66" cy="66" r="56" fill="none" stroke="var(--espresso)" stroke-width="8" stroke-linecap="round" stroke-dasharray="146.6 352"/></svg><div class="ctr"><span class="num" style="font-size:36px">5<span style="font-size:18px;color:var(--muted)"> / 12</span></span><span class="aux">已复习</span></div></div>
+                  <div style="display:grid;gap:12px">
+                    <div style="display:grid;gap:2px"><b style="font-size:17px">今日复习</b><span class="warm" style="font-size:13px">还剩 7 题，大约 15 分钟。</span></div>
+                    <div class="chips"><span class="chip"><svg class="i xs" data-i="math"></svg>数学 3</span><span class="chip"><svg class="i xs" data-i="eng"></svg>英语 2</span><span class="chip"><svg class="i xs" data-i="phys"></svg>物理 1</span><span class="chip"><svg class="i xs" data-i="chem"></svg>化学 1</span></div>
+                    <div style="display:flex;gap:6px;align-items:center"><span class="btn p"><svg class="i s" data-i="review"></svg>继续复习</span><span class="btn t">看看今天有哪些题</span></div>
+                  </div>
+                </div>
+                <div class="g qa wide-qa">
+                  <div><span class="ic"><svg class="i" data-i="camera"></svg></span><span><b>拍照录入</b><small>拍下题目，自动识别文字</small></span></div>
+                  <div><span class="ic"><svg class="i" data-i="pen"></svg></span><span><b>手动录入</b><small>没有照片时直接打字</small></span></div>
+                  <div><span class="ic"><svg class="i" data-i="scan"></svg></span><span><b>扫描试卷</b><small>一张卷子录好几道</small></span></div>
+                </div>
+                <div class="sec"><b>最近错题</b><a>查看全部</a></div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                  <div class="g item">
+                    <div class="item-top"><span class="subj"><svg class="i s" data-i="math"></svg>数学 · 绝对值不等式</span><span class="dots"><i class="f"></i><i></i><i></i></span></div>
+                    <p class="item-q clamp">解不等式 <span class="en">|2x − 1| &lt; x + 1</span>，并写出解集。</p>
+                    <div class="item-b"><span class="chip c">审题不清</span><span class="when"><svg class="i xs" data-i="clock"></svg>今天</span></div>
+                  </div>
+                  <div class="g item">
+                    <div class="item-top"><span class="subj"><svg class="i s" data-i="eng"></svg>英语 · 倒装句</span><span class="dots"><i class="f"></i><i class="f"></i><i></i></span></div>
+                    <p class="item-q clamp en">Not until he came back ____ that he had lost his key.</p>
+                    <div class="item-b"><span class="chip c">概念不清</span><span class="when"><svg class="i xs" data-i="clock"></svg>今天</span></div>
+                  </div>
+                  <div class="g item">
+                    <div class="item-top"><span class="subj"><svg class="i s" data-i="phys"></svg>物理 · 斜面受力分析</span><span class="dots"><i class="f"></i><i></i><i></i></span></div>
+                    <p class="item-q clamp">质量为 <span class="en">2 kg</span> 的物块静止在倾角 <span class="en">30°</span> 的斜面上，求斜面对物块的静摩擦力大小。</p>
+                    <div class="item-b"><div class="chips"><span class="chip c">粗心</span><span class="chip c">计算失误</span></div><span class="when"><svg class="i xs" data-i="clock"></svg>明天</span></div>
+                  </div>
+                  <div class="g item">
+                    <div class="item-top"><span class="subj"><svg class="i s" data-i="chem"></svg>化学 · 氧化还原配平</span><span class="dots"><i class="f"></i><i class="f"></i><i></i></span></div>
+                    <p class="item-q clamp">配平：<span class="en">Cu + HNO₃（稀）→ Cu(NO₃)₂ + NO↑ + H₂O</span></p>
+                    <div class="item-b"><span class="chip c">概念不清</span><span class="when"><svg class="i xs" data-i="clock"></svg>3 天后</span></div>
+                  </div>
+                </div>
+              </div>
+              <div style="display:grid;gap:18px">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                  <div class="g pad" style="display:grid;gap:2px;padding:16px"><svg class="i s" data-i="flame" style="color:var(--caramel)"></svg><span class="num" style="font-size:30px;color:var(--caramel)">9</span><span class="aux">连续复习 9 天</span></div>
+                  <div class="g pad" style="display:grid;gap:4px;padding:16px"><span class="aux">已掌握</span><span class="num" style="font-size:30px">61%</span><div class="prog"><b style="width:61%"></b></div></div>
+                </div>
+                <div class="g pad" style="display:grid;gap:6px;padding:16px">
+                  <div class="hd"><b style="font-size:13.5px">每天新增</b><span class="aux">本周共 <span class="num" style="font-size:13px;color:var(--ink)">23</span> 题</span></div>
+                  <svg viewBox="0 0 290 92" width="100%" height="110" role="img" aria-label="本周每天新增错题：周一 2，周二 5，周三 3，周四 4，周五 1，周六 6，周日 2">
+                    <g stroke="rgba(74,43,27,.08)" stroke-width="1"><path d="M10 14H280M10 38H280M10 62H280"/></g>
+                    <path d="M12 50 L56 20 L100 40 L144 30 L188 60 L232 10 L276 50 L276 70 L12 70Z" fill="url(#ar)"/>
+                    <polyline points="12,50 56,20 100,40 144,30 188,60 232,10 276,50" fill="none" stroke="#4A2B1B" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/>
+                    <circle cx="232" cy="10" r="3.5" fill="#4A2B1B"/><text x="232" y="28" text-anchor="middle" font-family="Fraunces,Georgia,serif" font-size="10" fill="#7A6455">6</text>
+                    <g font-size="9.5" fill="#A8968A" text-anchor="middle" font-family="Noto Sans SC,sans-serif"><text x="12" y="86">一</text><text x="56" y="86">二</text><text x="100" y="86">三</text><text x="144" y="86">四</text><text x="188" y="86">五</text><text x="232" y="86">六</text><text x="276" y="86">日</text></g>
+                  </svg>
+                </div>
+                <div class="g pad" style="display:grid;gap:10px;padding:16px">
+                  <div class="hd"><b style="font-size:13.5px">最常错在哪</b><a class="aux" style="color:var(--caramel)">看统计</a></div>
+                  <div class="bars">
+                    <div class="bar"><span>概念不清</span><i><b style="width:34%"></b></i><span>34%</span></div>
+                    <div class="bar"><span>粗心</span><i><b style="width:22%;opacity:.8"></b></i><span>22%</span></div>
+                    <div class="bar"><span>计算失误</span><i><b style="width:18%;opacity:.65"></b></i><span>18%</span></div>
+                    <div class="bar"><span>审题不清</span><i><b style="width:12%;opacity:.5"></b></i><span>12%</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div></div></div>
+    </figure>
+
+    <!-- I2 错题本 -->
+    <figure class="board wide">
+      <figcaption class="cap"><b><span>I2</span>错题本 · 左边列表，右边详情</b><small>点左边一道题，右边直接显示详情，不用来回跳页面。手机上的 B 和 C 在这里合成一页。</small></figcaption>
+      <div class="scale"><div class="ipad"><div class="screen">
+        <div class="ip">
+          <aside class="side g" data-on="book"></aside>
+          <div class="main" style="display:grid;grid-template-columns:372px 1fr;gap:20px;align-items:stretch">
+            <div style="display:flex;flex-direction:column;gap:14px;min-width:0;overflow:hidden">
+              <div class="hd"><h3 class="hello" style="font-size:26px">错题本</h3><span class="cbtn g"><svg class="i" data-i="filter"></svg></span></div>
+              <div class="g search"><svg class="i s" data-i="search"></svg><span>搜题目、知识点、错因…</span></div>
+              <div class="tiles sm">
+                <div class="tile g on"><svg class="i" data-i="book"></svg>全部</div>
+                <div class="tile g"><svg class="i" data-i="math"></svg>数学</div>
+                <div class="tile g"><svg class="i" data-i="phys"></svg>物理</div>
+                <div class="tile g"><svg class="i" data-i="eng"></svg>英语</div>
+                <div class="tile g"><svg class="i" data-i="chem"></svg>化学</div>
+                <div class="tile g"><svg class="i" data-i="chn"></svg>语文</div>
+              </div>
+              <div class="seg g"><span class="on">全部 <span class="num">186</span></span><span>未掌握 <span class="num">74</span></span><span>已掌握 <span class="num">112</span></span></div>
+              <div class="list">
+                <div class="g item sel">
+                  <div class="item-top"><span class="subj"><svg class="i s" data-i="math"></svg>数学 · 绝对值不等式</span><span class="dots"><i class="f"></i><i></i><i></i></span></div>
+                  <p class="item-q clamp">解不等式 <span class="en">|2x − 1| &lt; x + 1</span>，并写出解集。</p>
+                  <div class="item-b"><span class="chip c">审题不清</span><span class="when"><svg class="i xs" data-i="clock"></svg>明天</span></div>
+                </div>
+                <div class="g item">
+                  <div class="item-top"><span class="subj"><svg class="i s" data-i="phys"></svg>物理 · 斜面受力分析</span><span class="dots"><i class="f"></i><i></i><i></i></span></div>
+                  <p class="item-q clamp">质量为 <span class="en">2 kg</span> 的物块静止在倾角 <span class="en">30°</span> 的斜面上，求斜面对物块的静摩擦力大小（<span class="en">g</span> 取 <span class="en">10 m/s²</span>）。</p>
+                  <div class="item-b"><div class="chips"><span class="chip c">粗心</span><span class="chip c">计算失误</span></div><span class="when"><svg class="i xs" data-i="clock"></svg>明天</span></div>
+                </div>
+                <div class="g item">
+                  <div class="item-top"><span class="subj"><svg class="i s" data-i="eng"></svg>英语 · 倒装句</span><span class="dots"><i class="f"></i><i class="f"></i><i></i></span></div>
+                  <p class="item-q clamp en">Not until he came back ____ that he had lost his key.</p>
+                  <div class="item-b"><span class="chip c">概念不清</span><span class="when"><svg class="i xs" data-i="clock"></svg>3 天后</span></div>
+                </div>
+                <div class="g item">
+                  <div class="item-top"><span class="subj"><svg class="i s" data-i="chn"></svg>语文 · 古诗默写</span><span class="dots"><i class="f"></i><i class="f"></i><i class="f"></i></span></div>
+                  <p class="item-q clamp">“________，天涯若比邻。”（王勃《送杜少府之任蜀州》）</p>
+                  <div class="item-b"><span class="chip c">记忆错误</span><span class="when" style="color:var(--right)"><svg class="i xs" data-i="check"></svg>已掌握</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="g l" style="display:flex;flex-direction:column;gap:16px;padding:24px 26px;min-width:0">
+              <div class="hd"><span class="subj" style="font-size:13px"><svg class="i s" data-i="math"></svg>数学 · 绝对值不等式<span class="aux" style="margin-left:8px">10 月 14 日录入</span></span><div style="display:flex;gap:8px"><span class="btn o sm"><svg class="i s" data-i="pen"></svg>编辑</span><span class="cbtn g" style="width:34px;height:34px"><svg class="i" data-i="more"></svg></span></div></div>
+              <p style="margin:0;font-size:18px;line-height:1.7">解不等式 <span class="en">|2x − 1| &lt; x + 1</span>，并写出解集。</p>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                <div class="ans w"><small><svg class="i xs" data-i="x"></svg>我的答案</small><p class="en" style="font-size:17px">x &lt; 2</p></div>
+                <div class="ans r"><small><svg class="i xs" data-i="check"></svg>正确答案</small><p class="en" style="font-size:17px">0 &lt; x &lt; 2</p></div>
+              </div>
+              <div style="display:grid;gap:6px;padding:14px 16px;border-radius:var(--r-m);background:rgba(255,255,255,.45)">
+                <b style="display:flex;align-items:center;gap:6px;font-size:13.5px"><svg class="i s" data-i="bulb" style="color:var(--caramel)"></svg>解析</b>
+                <p style="margin:0;font-size:13.5px;color:var(--warm)">原式等价于 <span class="en">−(x + 1) &lt; 2x − 1 &lt; x + 1</span>。右边解出 <span class="en">x &lt; 2</span>，左边解出 <span class="en">x &gt; 0</span>，两边取交集。我只解了右边。</p>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+                <div style="display:grid;gap:8px;align-content:start"><b style="font-size:13.5px">为什么错</b><div class="chips"><span class="chip c on">审题不清</span><span class="chip c">方法不会</span><span class="chip">绝对值</span><span class="chip">不等式组</span></div>
+                  <div class="inp" style="margin-top:4px;font-size:12.5px">提醒自己：绝对值小于一个式子，要拆成两边一起解。</div></div>
+                <div style="display:grid;gap:4px;align-content:start"><div class="hd"><b style="font-size:13.5px">复习记录</b><span class="dots"><i class="f"></i><i></i><i></i></span></div>
+                  <div class="tl">
+                    <div><em>10/14</em><i class="f"></i><span>录入</span></div>
+                    <div><em>10/15</em><i class="f"></i><span>复习 · <span style="color:var(--wrong)">还不会</span></span></div>
+                    <div><em>10/17</em><i class="f"></i><span>复习 · 有点会</span></div>
+                    <div><em>10/21</em><i></i><span class="muted">下次复习 · 明天</span></div>
+                  </div></div>
+              </div>
+              <div class="hd" style="margin-top:auto;padding-top:14px;border-top:1px solid var(--line)"><span class="aux">第 1 / 186 题 · 键盘 ↑ ↓ 切换</span><span class="btn p"><svg class="i s" data-i="review"></svg>复习这一题</span></div>
+            </div>
+          </div>
+        </div>
+      </div></div></div>
+    </figure>
+
+    <!-- I3 录入 E1 -->
+    <figure class="board wide">
+      <figcaption class="cap"><b><span>I3</span>录入错题 · E1 一页填完（已选定）</b><small>横屏左右分开：左边是照片和识别出来的题目，右边填答案和错因。不用往下滑，一屏全部填完。</small></figcaption>
+      <div class="scale"><div class="ipad"><div class="screen">
+        <div class="ip full">
+          <div class="main" style="height:100%;padding:10px 32px 26px">
+            <div class="hd"><span class="cbtn g"><svg class="i" data-i="x"></svg></span><span class="hd-c" style="font-size:17px">录入错题</span><span class="btn t">存草稿</span></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:22px;flex:1;min-height:0">
+              <div class="g l" style="display:flex;flex-direction:column;gap:14px;padding:22px">
+                <div class="photo big"><b>7.</b> 质量为 2 kg 的物块静止在倾角 30° 的斜面上，求斜面对物块的静摩擦力大小（g 取 10 m/s²）。<br><span style="color:#9c3b2a">解：f = mg·cos30° = 17.3 N</span><br><span style="color:#9c3b2a;opacity:.8">　答：摩擦力约为 17.3 N。</span><div class="crop"></div></div>
+                <div class="hd"><span class="aux">框里的部分已识别成文字，可以改</span><span class="btn t" style="height:auto;font-size:12.5px"><svg class="i xs" data-i="camera"></svg>重拍</span></div>
+                <div class="field"><label>题目</label><div class="inp" style="font-size:13.5px">质量为 2 kg 的物块静止在倾角 30° 的斜面上，求斜面对物块的静摩擦力大小（g 取 10 m/s²）。</div></div>
+                <div class="field"><label>学科</label><div class="chips"><span class="chip"><svg class="i xs" data-i="math"></svg>数学</span><span class="chip on"><svg class="i xs" data-i="phys"></svg>物理</span><span class="chip"><svg class="i xs" data-i="eng"></svg>英语</span><span class="chip"><svg class="i xs" data-i="chem"></svg>化学</span><span class="chip"><svg class="i xs" data-i="chn"></svg>语文</span></div></div>
+              </div>
+              <div class="g l" style="display:flex;flex-direction:column;gap:18px;padding:22px">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                  <div class="field"><label>我的答案</label><div class="inp">17.3 N</div></div>
+                  <div class="field"><label>正确答案</label><div class="inp focus">10 N</div></div>
+                </div>
+                <div class="field"><label>为什么错（可多选）</label>
+                  <div class="chips big"><span class="chip c">概念不清</span><span class="chip c on">粗心</span><span class="chip c on">计算失误</span><span class="chip c">审题不清</span><span class="chip c">方法不会</span><span class="chip c">记忆错误</span></div>
+                </div>
+                <div class="field"><label>提醒自己一句</label><div class="inp" style="min-height:64px">静摩擦力和重力沿斜面的分力平衡：f = mg·sinθ，不是 cos。</div></div>
+                <div class="field"><label>知识点</label><div class="chips"><span class="chip">斜面受力分析</span><span class="chip">静摩擦力</span><span class="chip"><svg class="i xs" data-i="plus"></svg>添加</span></div></div>
+                <div class="field"><label>来源（选填）</label><div class="inp">10 月期中考试 · 第 7 题</div></div>
+                <div class="field"><label>第一次复习</label><div class="seg g" style="width:320px"><span class="on">明天</span><span>3 天后</span><span>7 天后</span></div></div>
+                <div class="hd" style="margin-top:auto"><span class="aux">保存后，明天会出现在今日复习里</span><span class="btn p"><svg class="i s" data-i="check"></svg>保存，明天复习</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div></div></div>
+    </figure>
+
+    <!-- I4 复习 -->
+    <figure class="board wide">
+      <figcaption class="cap"><b><span>I4</span>复习 · 横屏</b><small>左边做题，右边看答案和要点；打分按钮在右下角，右手拇指够得到。复习时隐藏侧边栏，专心做题。</small></figcaption>
+      <div class="scale"><div class="ipad"><div class="screen">
+        <div class="ip full">
+          <div class="main" style="height:100%;padding:10px 32px 26px">
+            <div class="hd" style="gap:16px"><span class="cbtn g"><svg class="i" data-i="x"></svg></span><div style="flex:1"><div class="prog" style="height:5px"><b style="width:42%"></b></div></div><span class="num" style="font-size:17px">5 <span class="muted">/ 12</span></span></div>
+            <div style="display:grid;grid-template-columns:1.1fr 1fr;gap:22px;flex:1;min-height:0">
+              <div class="g l" style="display:flex;flex-direction:column;gap:18px;padding:28px">
+                <div class="hd"><span class="subj" style="font-size:13px"><svg class="i s" data-i="eng"></svg>英语 · 倒装句</span><span class="aux">第 3 次复习</span></div>
+                <p class="en" style="margin:0;font-size:24px;line-height:1.55">Not until he came back ____ that he had lost his key.</p>
+                <div class="opts" style="gap:10px">
+                  <div class="opt r big"><b>A</b><span class="en">did he realize</span><span class="tag" style="color:var(--right)">正确答案</span></div>
+                  <div class="opt w big"><b>B</b><span class="en">he realized</span><span class="tag" style="color:var(--wrong)">上次选的</span></div>
+                  <div class="opt big"><b>C</b><span class="en">had he realized</span></div>
+                  <div class="opt big"><b>D</b><span class="en">he had realized</span></div>
+                </div>
+                <div style="margin-top:auto;padding-top:14px;border-top:1px solid var(--line);display:grid;gap:8px">
+                  <div class="hd"><span class="aux">当时为什么错</span><span class="aux">10 月 12 日录入 · 来源：周测</span></div>
+                  <div class="chips"><span class="chip c">概念不清</span><span class="chip">倒装句</span><span class="chip">Not until</span></div>
+                  <div class="tl" style="grid-auto-flow:column;grid-template-columns:repeat(3,auto);justify-content:start;gap:18px"><span class="aux">10/13 · <span style="color:var(--wrong)">还不会</span></span><span class="aux">10/14 · 有点会</span><span class="aux">今天 · 第 3 次</span></div>
+                </div>
+              </div>
+              <div class="g l" style="display:flex;flex-direction:column;gap:16px;padding:28px">
+                <div class="ans r" style="padding:14px 16px"><small><svg class="i xs" data-i="check"></svg>正确答案</small><p class="en" style="font-size:20px">A. did he realize</p></div>
+                <div style="display:grid;gap:6px">
+                  <b style="display:flex;align-items:center;gap:6px;font-size:14px"><svg class="i s" data-i="bulb" style="color:var(--caramel)"></svg>要点</b>
+                  <p style="margin:0;font-size:14px;color:var(--warm);line-height:1.75"><span class="en">Not until</span> 放在句首时，主句要部分倒装：把助动词提到主语前面。主句时态跟着 <span class="en">came</span> 用一般过去时，所以是 <span class="en">did he realize</span>。</p>
+                </div>
+                <div style="display:grid;gap:6px">
+                  <b style="font-size:14px">同类例句</b>
+                  <p class="en" style="margin:0;font-size:15px;line-height:1.6">Only when the rain stopped <u>did we leave</u> the classroom.</p>
+                  <p class="en" style="margin:0;font-size:15px;line-height:1.6">Not until midnight <u>did she finish</u> her homework.</p>
+                </div>
+                <div class="inp" style="font-size:13px"><b style="font-weight:500">上次提醒自己：</b>看到 Not until / Only when 放句首，先想倒装。</div>
+                <div style="margin-top:auto;display:grid;gap:10px">
+                  <p class="aux" style="margin:0;text-align:center;font-size:12px">这次你做对了吗？</p>
+                  <div class="grade big">
+                    <div class="g"><span class="bad">还不会</span><small>明天再来</small></div>
+                    <div class="g">有点会<small>3 天后</small></div>
+                    <div class="p">掌握了<small>7 天后</small></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div></div></div>
+    </figure>
+
+  </div>
+</section>
+
+<!-- ============ 第 3 排：iPad 竖屏 ============ -->
+<section class="row">
+  <div class="row-h"><span>第 3 排</span><h2>iPad 竖屏</h2><p>竖着拿时屏幕变窄，侧边栏收成只有图标的窄条，内容区更宽。</p></div>
+  <div class="boards">
+    <figure class="board">
+      <figcaption class="cap"><b><span>I5</span>首页 · 竖屏 820×1180</b><small>和横屏同样的内容，从上往下排：今日复习 → 数字 → 录入 → 最近错题 → 每天新增。</small></figcaption>
+      <div class="scale port"><div class="ipad port"><div class="screen">
+        <div class="ip rail">
+          <aside class="side g r" data-on="home"></aside>
+          <div class="main">
+            <div class="hd" style="align-items:flex-end">
+              <div style="display:grid;gap:2px"><span class="date">10 月 20 日 · 周二</span><h3 class="hello" style="font-size:30px">晚上好，<br><em>今天复习 12 题</em></h3></div>
+              <div style="display:flex;gap:10px"><span class="cbtn g"><svg class="i" data-i="search"></svg></span><span class="cbtn g"><svg class="i" data-i="bell"></svg><i class="dot-badge"></i></span></div>
+            </div>
+            <div class="g l" style="display:grid;grid-template-columns:auto 1fr;gap:26px;align-items:center;padding:22px 26px">
+              <div class="ring" style="width:132px;height:132px"><svg width="132" height="132"><circle cx="66" cy="66" r="56" fill="none" stroke="rgba(74,43,27,.1)" stroke-width="8"/><circle cx="66" cy="66" r="56" fill="none" stroke="var(--espresso)" stroke-width="8" stroke-linecap="round" stroke-dasharray="146.6 352"/></svg><div class="ctr"><span class="num" style="font-size:36px">5<span style="font-size:18px;color:var(--muted)"> / 12</span></span><span class="aux">已复习</span></div></div>
+              <div style="display:grid;gap:12px">
+                <div style="display:grid;gap:2px"><b style="font-size:17px">今日复习</b><span class="warm" style="font-size:13px">还剩 7 题，大约 15 分钟。</span></div>
+                <div class="chips"><span class="chip"><svg class="i xs" data-i="math"></svg>数学 3</span><span class="chip"><svg class="i xs" data-i="eng"></svg>英语 2</span><span class="chip"><svg class="i xs" data-i="phys"></svg>物理 1</span><span class="chip"><svg class="i xs" data-i="chem"></svg>化学 1</span></div>
+                <div><span class="btn p"><svg class="i s" data-i="review"></svg>继续复习</span></div>
+              </div>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+              <div class="g pad" style="display:grid;gap:2px;padding:16px"><svg class="i s" data-i="flame" style="color:var(--caramel)"></svg><span class="num" style="font-size:30px;color:var(--caramel)">9</span><span class="aux">连续复习 9 天</span></div>
+              <div class="g pad" style="display:grid;gap:2px;padding:16px"><span class="aux">本周新增</span><span class="num" style="font-size:30px">23</span><div class="prog"><b style="width:62%"></b></div></div>
+              <div class="g pad" style="display:grid;gap:2px;padding:16px"><span class="aux">已掌握</span><span class="num" style="font-size:30px">61%</span><div class="prog"><b style="width:61%"></b></div></div>
+            </div>
+            <div class="g qa wide-qa">
+              <div><span class="ic"><svg class="i" data-i="camera"></svg></span><span><b>拍照录入</b><small>拍下题目，自动识别</small></span></div>
+              <div><span class="ic"><svg class="i" data-i="pen"></svg></span><span><b>手动录入</b><small>直接打字</small></span></div>
+              <div><span class="ic"><svg class="i" data-i="scan"></svg></span><span><b>扫描试卷</b><small>一次录好几道</small></span></div>
+            </div>
+            <div class="sec"><b>最近错题</b><a>查看全部</a></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+              <div class="g item">
+                <div class="item-top"><span class="subj"><svg class="i s" data-i="math"></svg>数学 · 绝对值不等式</span><span class="dots"><i class="f"></i><i></i><i></i></span></div>
+                <p class="item-q clamp">解不等式 <span class="en">|2x − 1| &lt; x + 1</span>，并写出解集。</p>
+                <div class="item-b"><span class="chip c">审题不清</span><span class="when"><svg class="i xs" data-i="clock"></svg>今天</span></div>
+              </div>
+              <div class="g item">
+                <div class="item-top"><span class="subj"><svg class="i s" data-i="eng"></svg>英语 · 倒装句</span><span class="dots"><i class="f"></i><i class="f"></i><i></i></span></div>
+                <p class="item-q clamp en">Not until he came back ____ that he had lost his key.</p>
+                <div class="item-b"><span class="chip c">概念不清</span><span class="when"><svg class="i xs" data-i="clock"></svg>今天</span></div>
+              </div>
+              <div class="g item">
+                <div class="item-top"><span class="subj"><svg class="i s" data-i="phys"></svg>物理 · 斜面受力分析</span><span class="dots"><i class="f"></i><i></i><i></i></span></div>
+                <p class="item-q clamp">质量为 <span class="en">2 kg</span> 的物块静止在倾角 <span class="en">30°</span> 的斜面上，求斜面对物块的静摩擦力大小。</p>
+                <div class="item-b"><div class="chips"><span class="chip c">粗心</span><span class="chip c">计算失误</span></div><span class="when"><svg class="i xs" data-i="clock"></svg>明天</span></div>
+              </div>
+              <div class="g item">
+                <div class="item-top"><span class="subj"><svg class="i s" data-i="chem"></svg>化学 · 氧化还原配平</span><span class="dots"><i class="f"></i><i class="f"></i><i></i></span></div>
+                <p class="item-q clamp">配平：<span class="en">Cu + HNO₃（稀）→ Cu(NO₃)₂ + NO↑ + H₂O</span></p>
+                <div class="item-b"><span class="chip c">概念不清</span><span class="when"><svg class="i xs" data-i="clock"></svg>3 天后</span></div>
+              </div>
+            </div>
+            <div class="g pad" style="display:grid;gap:6px;padding:16px">
+              <div class="hd"><b style="font-size:13.5px">每天新增</b><span class="aux">本周共 <span class="num" style="font-size:13px;color:var(--ink)">23</span> 题</span></div>
+              <svg viewBox="0 0 290 92" width="100%" height="150" role="img" aria-label="本周每天新增错题：周一 2，周二 5，周三 3，周四 4，周五 1，周六 6，周日 2">
+                <g stroke="rgba(74,43,27,.08)" stroke-width="1"><path d="M10 14H280M10 38H280M10 62H280"/></g>
+                <path d="M12 50 L56 20 L100 40 L144 30 L188 60 L232 10 L276 50 L276 70 L12 70Z" fill="url(#ar)"/>
+                <polyline points="12,50 56,20 100,40 144,30 188,60 232,10 276,50" fill="none" stroke="#4A2B1B" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div></div></div>
+    </figure>
+    <div class="note" style="align-self:start"><b>竖屏的其他页面</b><span>错题本：竖屏时只显示列表，点一道题从右边滑出详情。录入和复习：左右两栏改成上下两段（照片在上、表单在下；题目在上、答案和打分在下）。这些按同样的组件排，做出来后截图给你看。</span></div>
+  </div>
+</section>
+
+<!-- ============ 第 4 排：手机 · 主要页面 ============ -->
+<section class="row">
+  <div class="row-h"><span>第 4 排</span><h2>手机 · 主要页面</h2><p>手机竖屏 390×844。iPad 以外偶尔在手机上用时的样子：底部导航是首页 · 错题本 · ＋录入 · 统计 · 我的。</p></div>
   <div class="boards">
 
     <!-- A 首页 -->
@@ -570,11 +936,11 @@ code{font-family:var(--f-num);font-size:12px;color:var(--warm)}
 
 <!-- ============ 第 3 排：录入，需要选 ============ -->
 <section class="row">
-  <div class="row-h"><span>第 3 排</span><h2>录入错题 · 两个方案选一个</h2><p>同一道物理题，两种录法。点底部导航中间的“＋”进来。</p></div>
+  <div class="row-h"><span>第 5 排</span><h2>手机 · 录入错题</h2><p>已选定 E1 一页填完；手机上字段多时往下滑。</p></div>
   <div class="boards">
 
     <figure class="board">
-      <figcaption class="cap"><b><span>E1</span>一页填完</b><small>拍完照，所有内容在一页里填，填完就存。</small></figcaption>
+      <figcaption class="cap"><b><span>E1</span>一页填完（已选定）</b><small>拍完照，所有内容在一页里填，填完就存。</small></figcaption>
       <div class="phone"><div class="screen">
         <div class="body nobar">
           <div class="hd"><span class="cbtn g"><svg class="i" data-i="x"></svg></span><span class="hd-c">录入错题</span><span class="btn t" style="height:38px">存草稿</span></div>
@@ -595,43 +961,12 @@ code{font-family:var(--f-num);font-size:12px;color:var(--warm)}
       </div></div>
     </figure>
 
-    <figure class="board">
-      <figcaption class="cap"><b><span>E2</span>分步填写</b><small>拍题 → 写答案 → 选错因，一步只想一件事。图里是第 3 步。</small></figcaption>
-      <div class="phone"><div class="screen">
-        <div class="body nobar">
-          <div class="hd"><span class="cbtn g"><svg class="i" data-i="back"></svg></span><span class="hd-c">录入错题</span><span class="cbtn" aria-hidden="true"></span></div>
-          <div class="steps"><span class="done"><i><svg class="i xs" data-i="check"></svg></i>拍题</span><em></em><span class="done"><i><svg class="i xs" data-i="check"></svg></i>答案</span><em></em><span class="on"><i>3</i>错因</span></div>
-          <div class="g pad" style="display:flex;gap:10px;align-items:center;padding:10px 12px">
-            <span class="subj"><svg class="i s" data-i="phys"></svg></span>
-            <span class="clamp" style="font-size:12px;color:var(--warm);-webkit-line-clamp:1">质量为 2 kg 的物块静止在倾角 30° 的斜面上…</span>
-          </div>
-          <h3 class="hello" style="font-size:21px">这道题<em>为什么错？</em></h3>
-          <div class="reasons">
-            <div class="reason g"><b><svg class="i s" data-i="maze"></svg>概念不清</b><small>公式、定义没弄懂</small></div>
-            <div class="reason g on"><b><svg class="i s" data-i="hurry"></svg>粗心</b><small>会做，但看错、写错</small></div>
-            <div class="reason g on"><b><svg class="i s" data-i="calc"></svg>计算失误</b><small>思路对，算错了</small></div>
-            <div class="reason g"><b><svg class="i s" data-i="read"></svg>审题不清</b><small>漏看条件、看错问题</small></div>
-            <div class="reason g"><b><svg class="i s" data-i="target"></svg>方法不会</b><small>没思路、不知道从哪下手</small></div>
-            <div class="reason g"><b><svg class="i s" data-i="memo"></svg>记忆错误</b><small>背过但记错了</small></div>
-          </div>
-          <div class="field"><label>提醒自己一句（选填）</label><div class="inp focus">f = mg·sinθ，不是 cos。</div></div>
-        </div>
-        <div class="bottombar"><span class="btn o" style="flex:.55">上一步</span><span class="btn p"><svg class="i s" data-i="check"></svg>完成</span></div>
-      </div></div>
-    </figure>
-
-    <div style="display:grid;gap:14px;align-content:start;max-width:520px">
-      <div class="decide"><b>需要你选：E1 还是 E2？</b><span>我推荐 <b style="font-family:inherit;font-size:13px">E1</b>：错题多的时候录得快，一页能看全。如果你希望每道题都认真想一下错因，选 E2。也可以 E1 为主，在设置里加一个“分步录入”开关。</span></div>
-      <div class="note"><b>E1 一页填完</b><span class="plus">好处：快，少点几下；所有内容一眼看全，改起来方便。</span><span class="minus">代价：字段多，手机上要往下滑；容易跳过错因不写。</span></div>
-      <div class="note"><b>E2 分步填写</b><span class="plus">好处：一步只想一件事；错因用大方块选，会写得更认真；每个错因有一句解释。</span><span class="minus">代价：多点两下；想改前面的内容要退回去。</span></div>
-    </div>
-
   </div>
 </section>
 
-<!-- ============ 第 4 排：统计和各种状态 ============ -->
+<!-- ============ 第 6 排：手机 · 统计和各种状态 ============ -->
 <section class="row">
-  <div class="row-h"><span>第 4 排</span><h2>统计和各种状态</h2><p>有数据时、第一次打开还没有数据时、复习做完时。</p></div>
+  <div class="row-h"><span>第 6 排</span><h2>手机 · 统计和各种状态</h2><p>有数据时、第一次打开还没有数据时、复习做完时。</p></div>
   <div class="boards">
 
     <!-- F 统计 -->
@@ -727,7 +1062,7 @@ code{font-family:var(--f-num);font-size:12px;color:var(--warm)}
   </div>
 </section>
 
-<p class="foot">这是 v0.1 草案。确认后：规范写进 <code>docs/PRD.md</code> 第 0 部分，选定的设计稿编号写进对应功能；被否掉的方案会从画布上删掉，不越堆越多。</p>
+<p class="foot">v0.2：选定 E1，去掉了 E2；加上 iPad 横屏、竖屏。iPad 排版确认后写进 <code>docs/PRD.md</code>，然后开始做第一版。</p>
 
 </div>
 
@@ -744,6 +1079,17 @@ code{font-family:var(--f-num);font-size:12px;color:var(--warm)}
   });
   var sb='<div class="island"></div><div class="sb"><span>9:41</span><svg viewBox="0 0 58 12" aria-hidden="true"><g fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="6" width="3" height="6" rx="1"/><rect x="10" y="3.5" width="3" height="8.5" rx="1"/><rect x="15" y="1" width="3" height="11" rx="1"/></g><path d="M24 4.5a9 9 0 0 1 12 0M26.3 7a5.5 5.5 0 0 1 7.4 0" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="30" cy="10" r="1.3" fill="currentColor"/><rect x="40.5" y="1.5" width="15" height="9" rx="2.5" fill="none" stroke="currentColor" opacity=".45"/><rect x="42" y="3" width="10" height="6" rx="1.3" fill="currentColor"/><rect x="56.5" y="4.5" width="1.3" height="3" rx=".6" fill="currentColor" opacity=".45"/></svg></div>';
   document.querySelectorAll('.screen').forEach(function(s){s.insertAdjacentHTML('afterbegin',sb);});
+  var nav=[['home','首页','home',''],['book','错题本','book','<span class="cnt">186</span>'],['review','复习','review','<span class="bdg">7</span>'],['chart','统计','chart',''],['me','我的','user','']];
+  function ic(n){return '<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#'+n+'"/></svg>';}
+  document.querySelectorAll('aside.side').forEach(function(a){
+    var on=a.dataset.on, r=a.classList.contains('r');
+    a.innerHTML=(r?'<div class="logo" style="margin-bottom:14px">错</div>':'<div class="brand"><span class="logo">错</span><b>错题本</b></div>')+
+      '<span class="add"><span class="pc">'+ic('plus')+'</span>'+(r?'':'录入错题')+'</span>'+
+      nav.map(function(t){return '<span class="nav-i'+(t[0]===on?' on':'')+'">'+ic(t[2])+(r?(t[0]==='review'?t[3]:''):t[1]+t[3])+'</span>';}).join('')+
+      (r?'<div class="side-foot">'+ic('cloud')+'</div>':'<div class="side-foot"><b>'+ic('cloud')+'上次导出 · 3 天前</b><a>导出备份</a></div>');
+  });
+  function fit(){document.querySelectorAll('.scale').forEach(function(w){var d=w.firstElementChild;var k=w.clientWidth/d.offsetWidth;d.style.transform='scale('+k+')';w.style.height=(d.offsetHeight*k)+'px';});}
+  fit();addEventListener('resize',fit);
   var tabs=[['home','首页','home'],['book','错题本','book'],null,['chart','统计','chart'],['me','我的','user']];
   document.querySelectorAll('.tabbar').forEach(function(n){
     var on=n.dataset.tab;
