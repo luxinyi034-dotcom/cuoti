@@ -1,0 +1,756 @@
+<title>错题本设计规范</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500&family=Noto+Sans+SC:wght@400;500;600&family=Noto+Serif+SC:wght@500;600;700&display=swap">
+<style>
+/* 布局：设计稿画布 —— 按“排”分组，每块板有编号；手机设计稿按真实比例缩小显示 */
+:root{
+  --canvas:#E9DED1;
+  --paper:#F8F2EA; --paper-2:#F1E7DB;
+  --ink:#3A2519; --warm:#7A6455; --muted:#A8968A; --line:#E6D8C8;
+  --espresso:#4A2B1B; --espresso-ink:#FBF5EE;
+  --caramel:#B5733A; --caramel-deep:#7A4A22; --caramel-soft:#F1E0CC; --latte:#D8BC9C;
+  --wrong:#B0503A; --wrong-soft:#F5E1D8;
+  --right:#6B7A52; --right-soft:#E6E9D9;
+  --glass:rgba(255,250,244,.58); --glass-strong:rgba(255,251,247,.8); --glass-edge:rgba(255,255,255,.75);
+  --bezel:#2B1A10;
+  --shadow:0 16px 34px -18px rgba(74,43,27,.35),0 2px 6px -2px rgba(74,43,27,.08);
+  --r-s:12px; --r-m:18px; --r-l:26px;
+  --f-title:"Noto Serif SC","Songti SC","STSong",serif;
+  --f-body:"Noto Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+  --f-num:"Fraunces",Georgia,"Times New Roman",serif;
+}
+*{box-sizing:border-box}
+body{background:var(--canvas);color:var(--ink);font-family:var(--f-body);font-size:14px;line-height:1.6;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:40px 80px}
+.wrap{max-width:1500px;margin:0 auto}
+h1,h2,h3{font-family:var(--f-title);text-wrap:balance;margin:0}
+code{font-family:var(--f-num);font-size:12px;color:var(--warm)}
+
+/* 画布头部 */
+.top{display:grid;gap:14px;max-width:760px;margin-bottom:48px}
+.eyebrow{font-size:12px;letter-spacing:.12em;color:var(--caramel);margin:0}
+.top h1{font-size:clamp(30px,5vw,44px);font-weight:600;line-height:1.2}
+.top h1 em{font-style:normal;color:var(--caramel)}
+.lede{margin:0;color:var(--warm);max-width:62ch}
+.todo{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13px}
+.todo b{font-weight:600}
+.flag{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:var(--glass-strong);border:1px solid var(--line)}
+.flag i{width:7px;height:7px;border-radius:50%;background:var(--caramel)}
+
+/* 排 */
+.row{margin-top:56px}
+.row-h{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px;margin-bottom:22px;padding-bottom:12px;border-bottom:1px solid rgba(74,43,27,.15)}
+.row-h span{font-size:12px;letter-spacing:.12em;color:var(--caramel)}
+.row-h h2{font-size:22px;font-weight:600}
+.row-h p{margin:0;color:var(--warm);font-size:13px;flex-basis:100%}
+.boards{display:flex;flex-wrap:wrap;gap:36px 32px;align-items:flex-start}
+.board{margin:0;display:grid;gap:12px;min-width:0;max-width:100%}
+.cap{display:grid;gap:2px;max-width:340px}
+.cap b{font-family:var(--f-title);font-size:16px;font-weight:600}
+.cap b span{display:inline-grid;place-items:center;min-width:26px;height:22px;padding:0 6px;margin-right:8px;border-radius:7px;background:var(--espresso);color:var(--espresso-ink);font-family:var(--f-num);font-size:12px;font-weight:500;vertical-align:2px}
+.cap small{color:var(--warm);font-size:12.5px;line-height:1.55}
+
+/* 规范板 */
+.sheet{background:var(--paper);border-radius:var(--r-l);padding:22px;box-shadow:var(--shadow);border:1px solid rgba(255,255,255,.6);width:min(560px,calc(100vw - 32px));display:grid;gap:18px;min-width:0}
+.sheet.w{width:min(720px,calc(100vw - 32px))}
+.sheet h3{font-size:13px;font-family:var(--f-body);font-weight:600;color:var(--warm);letter-spacing:.06em}
+.sw-group{display:grid;gap:10px}
+.sws{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.sw{display:grid;grid-template-columns:44px 1fr;gap:10px;align-items:center;min-width:0}
+.sw b{width:44px;height:44px;border-radius:var(--r-s);border:1px solid rgba(74,43,27,.1)}
+.sw div{display:grid;line-height:1.35;min-width:0}
+.sw strong{font-size:13px;font-weight:500}
+.sw small{font-size:11px;color:var(--muted)}
+.rules{display:grid;gap:8px;margin:0;padding:14px 16px 14px 34px;background:var(--paper-2);border-radius:var(--r-m);font-size:13px}
+.rules b{font-weight:600}
+.type-row{display:grid;grid-template-columns:120px 1fr;gap:4px 16px;align-items:baseline;padding-bottom:12px;border-bottom:1px solid var(--line)}
+.type-row:last-child{border-bottom:0;padding-bottom:0}
+.type-row small{font-size:11px;color:var(--muted);line-height:1.4}
+.type-row small b{display:block;color:var(--warm);font-weight:500;font-size:12px}
+.t-title{font-family:var(--f-title);font-size:26px;font-weight:600;line-height:1.3}
+.t-title em{font-style:normal;color:var(--caramel)}
+.t-h{font-size:15px;font-weight:600}
+.t-body{font-size:13.5px;line-height:1.65}
+.t-aux{font-size:11.5px;color:var(--muted)}
+.t-num{font-family:var(--f-num);font-weight:300;font-size:34px;line-height:1.1;letter-spacing:-.01em}
+.radii{display:flex;flex-wrap:wrap;gap:14px}
+.radii div{display:grid;gap:6px;justify-items:center;font-size:11px;color:var(--warm);text-align:center}
+.radii i{display:block;width:72px;height:56px;background:var(--paper-2);border:1px solid var(--line)}
+.glass-demo{position:relative;border-radius:var(--r-m);padding:22px;display:grid;grid-template-columns:1fr 1fr;gap:14px;overflow:hidden;
+  background:radial-gradient(60% 80% at 15% 20%,#E7CDAE,transparent 70%),radial-gradient(60% 80% at 90% 90%,#DCC3A6,transparent 70%),radial-gradient(50% 60% at 70% 10%,#fff,transparent 70%),var(--paper-2)}
+.glass-demo::before{content:"";position:absolute;width:90px;height:90px;border-radius:50%;background:var(--caramel);opacity:.55;left:44%;top:30%;filter:blur(2px)}
+.glass-demo>div{position:relative;min-height:100px;padding:14px;font-size:12px;display:grid;align-content:space-between;gap:8px}
+.glass-demo .solid{background:var(--espresso);color:var(--espresso-ink);border-radius:var(--r-m)}
+.spacing{display:flex;flex-wrap:wrap;align-items:flex-end;gap:14px;font-size:11px;color:var(--warm)}
+.spacing div{display:grid;gap:4px;justify-items:center}
+.spacing i{display:block;background:var(--caramel-soft);border:1px solid var(--latte);width:24px}
+.icons{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:8px}
+.icons div{display:grid;justify-items:center;gap:6px;padding:12px 4px;border-radius:var(--r-s);background:var(--paper-2);font-size:11px;color:var(--warm)}
+.icons svg{width:24px;height:24px;color:var(--ink)}
+.comp{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.comp-l{font-size:11px;color:var(--muted);margin:-8px 0 0}
+.on-glass{padding:16px;border-radius:var(--r-m);background:radial-gradient(70% 90% at 10% 0%,#ECD8C1,transparent 70%),radial-gradient(60% 90% at 100% 100%,#E3CBAF,transparent 70%),var(--paper);display:grid;gap:14px}
+
+/* ===== 手机设计稿 ===== */
+.phone{width:340px;max-width:100%;height:736px;border-radius:46px;padding:8px;background:var(--bezel);box-shadow:0 30px 60px -30px rgba(43,26,16,.6),inset 0 0 0 1.5px #5a3f2e}
+.screen{position:relative;height:100%;border-radius:38px;overflow:hidden;color:var(--ink);font-size:13px;line-height:1.55;
+  background:radial-gradient(110% 55% at 90% 6%,rgba(255,255,255,.95),transparent 60%),radial-gradient(70% 40% at 0% 34%,#EBD5BC,transparent 70%),radial-gradient(80% 45% at 100% 78%,#E5CDB1,transparent 70%),linear-gradient(180deg,#F8F2EA,#F0E4D5)}
+.screen::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background:repeating-linear-gradient(118deg,transparent 0 46px,rgba(255,255,255,.22) 46px 80px,transparent 80px 150px);mask-image:linear-gradient(180deg,#000,transparent 55%);-webkit-mask-image:linear-gradient(180deg,#000,transparent 55%)}
+.island{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:96px;height:28px;border-radius:20px;background:#120a05;z-index:5}
+.sb{position:absolute;top:0;left:0;right:0;height:44px;padding:0 26px 0 30px;display:flex;align-items:center;justify-content:space-between;font-family:var(--f-num);font-weight:500;font-size:13px;z-index:4}
+.sb svg{width:58px;height:12px}
+.body{position:absolute;inset:48px 0 0;padding:6px 18px 110px;display:flex;flex-direction:column;gap:14px;overflow:hidden}
+.body:not(.nobar){-webkit-mask-image:linear-gradient(180deg,#000 calc(100% - 100px),transparent calc(100% - 78px));mask-image:linear-gradient(180deg,#000 calc(100% - 100px),transparent calc(100% - 78px))}
+.body>*{flex:none}
+.body.nobar{padding-bottom:92px}
+.g{background:var(--glass);-webkit-backdrop-filter:blur(18px) saturate(1.3);backdrop-filter:blur(18px) saturate(1.3);border:1px solid var(--glass-edge);border-radius:var(--r-m);box-shadow:inset 0 1px 0 rgba(255,255,255,.85),var(--shadow)}
+.g.l{border-radius:var(--r-l)}
+.pad{padding:14px}
+.i{width:20px;height:20px;flex:none}
+.i.s{width:16px;height:16px}
+.i.xs{width:13px;height:13px}
+.hd{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.hd-c{font-size:15px;font-weight:600}
+.cbtn{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;flex:none;position:relative}
+.dot-badge{position:absolute;top:8px;right:9px;width:7px;height:7px;border-radius:50%;background:var(--caramel);border:1.5px solid #fff}
+.date{font-size:11.5px;color:var(--warm)}
+.hello{font-family:var(--f-title);font-size:25px;font-weight:600;line-height:1.3;margin:0}
+.hello em{font-style:normal;color:var(--caramel)}
+.sec{display:flex;align-items:baseline;justify-content:space-between}
+.sec b{font-size:14.5px;font-weight:600}
+.sec a{font-size:11.5px;color:var(--caramel);text-decoration:none}
+.muted{color:var(--muted)}
+.warm{color:var(--warm)}
+.aux{font-size:11px;color:var(--muted)}
+.num{font-family:var(--f-num);font-weight:300;letter-spacing:-.01em}
+.en{font-family:var(--f-num);font-weight:400}
+.btn{height:44px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;gap:8px;font:500 13.5px/1 var(--f-body);padding:0 18px;border:0;white-space:nowrap}
+.btn.sm{height:34px;font-size:12.5px;padding:0 14px}
+.btn.p{background:var(--espresso);color:var(--espresso-ink);box-shadow:0 10px 20px -10px rgba(74,43,27,.7)}
+.btn.o{background:var(--glass-strong);color:var(--ink);border:1px solid var(--line)}
+.btn.t{background:none;color:var(--caramel);padding:0 6px}
+.btn.full{width:100%}
+.chip{display:inline-flex;align-items:center;gap:4px;height:24px;padding:0 10px;border-radius:999px;font-size:11px;background:rgba(255,255,255,.55);border:1px solid var(--line);color:var(--warm);white-space:nowrap}
+.chip.on{background:var(--espresso);border-color:transparent;color:var(--espresso-ink)}
+.chip.c{background:var(--caramel-soft);border-color:transparent;color:var(--caramel-deep)}
+.chip.c.on{background:var(--espresso);color:var(--espresso-ink)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.tiles{display:flex;gap:8px}
+.tile{width:58px;height:64px;border-radius:16px;display:grid;place-content:center;justify-items:center;gap:4px;font-size:11px;color:var(--warm);flex:none}
+.tile.on{background:var(--espresso);color:var(--espresso-ink);border-color:transparent;box-shadow:0 10px 18px -10px rgba(74,43,27,.7)}
+.tile .i{color:inherit}
+.seg{display:flex;padding:3px;border-radius:999px;gap:2px}
+.seg span{flex:1;text-align:center;font-size:11.5px;padding:6px 4px;border-radius:999px;color:var(--warm);white-space:nowrap}
+.seg span.on{background:#FFFCF8;color:var(--ink);font-weight:500;box-shadow:0 2px 8px -3px rgba(74,43,27,.3)}
+.seg .num{font-size:12px}
+.dots{display:inline-flex;gap:3px}
+.dots i{width:6px;height:6px;border-radius:50%;background:var(--line)}
+.dots i.f{background:var(--espresso)}
+.subj{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;color:var(--warm)}
+.subj .i{color:var(--ink)}
+.clamp{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.field{display:grid;gap:5px}
+.field>label{font-size:11.5px;color:var(--warm);font-weight:500}
+.inp{min-height:40px;border-radius:var(--r-s);background:rgba(241,231,219,.75);padding:9px 12px;font-size:12.5px;line-height:1.55}
+.inp.focus{box-shadow:inset 0 0 0 1px var(--caramel);background:#FBF6F0}
+.ans{border-radius:var(--r-s);padding:10px 12px;display:grid;gap:3px}
+.ans.w{background:var(--wrong-soft)}
+.ans.r{background:var(--right-soft)}
+.ans small{display:flex;align-items:center;gap:4px;font-size:11px;font-weight:500}
+.ans.w small{color:var(--wrong)}
+.ans.r small{color:var(--right)}
+.ans p{margin:0;font-size:14px}
+.ring{position:relative;display:grid;place-items:center;flex:none}
+.ring svg{transform:rotate(-90deg)}
+.ring .ctr{position:absolute;display:grid;justify-items:center;line-height:1.1}
+.tabbar{position:absolute;left:12px;right:12px;bottom:14px;height:64px;border-radius:24px;display:grid;grid-template-columns:repeat(5,1fr);align-items:center;background:var(--glass-strong);-webkit-backdrop-filter:blur(20px) saturate(1.3);backdrop-filter:blur(20px) saturate(1.3);border:1px solid var(--glass-edge);box-shadow:inset 0 1px 0 #fff,var(--shadow);z-index:3}
+.tabbar span{display:grid;justify-items:center;gap:2px;font-size:10px;color:var(--muted)}
+.tabbar span.on{color:var(--espresso);font-weight:600}
+.tabbar .plus{width:46px;height:46px;border-radius:50%;background:var(--espresso);color:var(--espresso-ink);display:grid;place-items:center;justify-self:center;box-shadow:0 10px 18px -8px rgba(74,43,27,.75)}
+.bottombar{position:absolute;left:0;right:0;bottom:0;padding:12px 16px 26px;display:flex;gap:10px;z-index:3;background:linear-gradient(180deg,transparent,rgba(240,228,213,.92) 30%)}
+.bottombar .btn{flex:1}
+.list{display:grid;gap:10px}
+.item{display:grid;gap:7px;padding:12px 14px}
+.item-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.item-q{margin:0;font-size:12.5px;line-height:1.6}
+.item-b{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.when{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;color:var(--muted)}
+.qa{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:12px 8px}
+.qa div{display:grid;justify-items:center;gap:6px;font-size:11px;color:var(--warm)}
+.qa .ic{width:40px;height:40px;border-radius:14px;display:grid;place-items:center;background:rgba(255,255,255,.6);border:1px solid var(--glass-edge);color:var(--ink)}
+.bars{display:grid;gap:9px}
+.bar{display:grid;grid-template-columns:58px 1fr 34px;gap:8px;align-items:center;font-size:11.5px}
+.bar i{display:block;height:8px;border-radius:999px;background:rgba(74,43,27,.08);position:relative;overflow:hidden}
+.bar i b{position:absolute;inset:0 auto 0 0;border-radius:999px;background:var(--espresso)}
+.bar span:last-child{text-align:right;font-family:var(--f-num);color:var(--warm)}
+.tl{display:grid;gap:0;font-size:11.5px}
+.tl div{display:grid;grid-template-columns:44px 14px 1fr;align-items:center;gap:8px;min-height:26px}
+.tl em{font-style:normal;font-family:var(--f-num);color:var(--muted)}
+.tl i{width:9px;height:9px;border-radius:50%;border:1.5px solid var(--latte);background:var(--paper);justify-self:center}
+.tl i.f{background:var(--espresso);border-color:var(--espresso)}
+.prog{height:4px;border-radius:999px;background:rgba(74,43,27,.1);overflow:hidden}
+.prog b{display:block;height:100%;background:var(--espresso);border-radius:999px}
+.photo{height:118px;border-radius:var(--r-s);position:relative;overflow:hidden;padding:12px 14px;font-size:11.5px;line-height:1.7;color:#3b3530;
+  background:repeating-linear-gradient(180deg,transparent 0 19px,rgba(90,120,160,.18) 19px 20px),linear-gradient(160deg,#FDFBF6,#EFE8DC);transform:rotate(-1.2deg);box-shadow:0 8px 20px -10px rgba(74,43,27,.4)}
+.photo b{font-weight:500}
+.photo .crop{position:absolute;inset:8px 8px 30px 8px;border:1.5px dashed var(--caramel);border-radius:8px}
+.steps{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted)}
+.steps span{display:inline-flex;align-items:center;gap:5px}
+.steps span i{width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-family:var(--f-num);font-size:10.5px;border:1px solid var(--line);background:rgba(255,255,255,.6)}
+.steps span.done i{background:var(--right-soft);border-color:transparent;color:var(--right)}
+.steps span.on{color:var(--ink);font-weight:500}
+.steps span.on i{background:var(--espresso);color:var(--espresso-ink);border-color:transparent}
+.steps em{flex:1;height:1px;background:var(--line)}
+.reasons{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.reason{padding:11px 12px;display:grid;gap:3px;border-radius:16px}
+.reason b{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600}
+.reason small{font-size:10.5px;color:var(--muted);line-height:1.45}
+.reason.on{background:var(--espresso);color:var(--espresso-ink);border-color:transparent}
+.reason.on small{color:rgba(251,245,238,.7)}
+.opts{display:grid;gap:6px}
+.opt{display:flex;gap:10px;align-items:center;padding:8px 12px;border-radius:var(--r-s);background:rgba(255,255,255,.45);border:1px solid var(--line);font-size:12.5px}
+.opt b{font-family:var(--f-num);font-weight:500;width:14px}
+.opt.r{background:var(--right-soft);border-color:transparent}
+.opt.w{background:var(--wrong-soft);border-color:transparent}
+.opt .tag{margin-left:auto;font-size:10.5px}
+.grade{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.grade div{display:grid;justify-items:center;gap:2px;padding:10px 4px;border-radius:16px;font-size:13px;font-weight:500}
+.grade small{font-size:10px;font-weight:400;color:var(--muted)}
+.grade .p small{color:rgba(251,245,238,.7)}
+.grade .p{background:var(--espresso);color:var(--espresso-ink);box-shadow:0 10px 20px -10px rgba(74,43,27,.7)}
+.grade .bad{color:var(--wrong)}
+.stat3{display:grid;grid-template-columns:repeat(3,1fr);text-align:center;padding:12px 6px}
+.stat3 div{display:grid;gap:0}
+.stat3 div+div{border-left:1px solid var(--line)}
+.stat3 .num{font-size:26px}
+.note{display:grid;gap:6px;max-width:340px;font-size:12px;color:var(--warm);padding:12px 14px;border-radius:var(--r-m);background:rgba(255,251,247,.55);border:1px solid rgba(255,255,255,.7)}
+.note b{color:var(--ink);font-weight:600}
+.note .plus{color:var(--right)}
+.note .minus{color:var(--wrong)}
+.decide{display:grid;gap:8px;max-width:520px;padding:16px 18px;border-radius:var(--r-m);background:var(--espresso);color:var(--espresso-ink);font-size:13px}
+.decide b{font-family:var(--f-title);font-size:16px}
+.foot{margin-top:64px;font-size:12px;color:var(--warm);max-width:62ch}
+@media (max-width:420px){.type-row{grid-template-columns:1fr}.glass-demo{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="home" viewBox="0 0 24 24"><path d="M4 10.5 12 4l8 6.5V19a1.5 1.5 0 0 1-1.5 1.5H15v-5.5H9v5.5H5.5A1.5 1.5 0 0 1 4 19z"/></symbol>
+    <symbol id="book" viewBox="0 0 24 24"><path d="M5 5.5A2 2 0 0 1 7 3.5h11v14H7.5A2.5 2.5 0 0 0 5 20z"/><path d="M5 20a2.5 2.5 0 0 1 2.5-2.5H18V20.5H7.5"/><path d="M9 8h5.5"/></symbol>
+    <symbol id="plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="chart" viewBox="0 0 24 24"><path d="M5 20V12M12 20V5M19 20v-5"/></symbol>
+    <symbol id="user" viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="3.5"/><path d="M5 20c1.2-3.5 4-5.2 7-5.2s5.8 1.7 7 5.2"/></symbol>
+    <symbol id="search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="m20 20-4.6-4.6"/></symbol>
+    <symbol id="filter" viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 17h4M12 17h8"/><circle cx="15" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></symbol>
+    <symbol id="camera" viewBox="0 0 24 24"><path d="M4 8.5A1.5 1.5 0 0 1 5.5 7H8l1.5-2h5L16 7h2.5A1.5 1.5 0 0 1 20 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17.5z"/><circle cx="12" cy="13" r="3.3"/></symbol>
+    <symbol id="pen" viewBox="0 0 24 24"><path d="m14.5 5.5 4 4L9 19H5v-4z"/><path d="m12.5 7.5 4 4"/></symbol>
+    <symbol id="scan" viewBox="0 0 24 24"><path d="M4 9V5h4M16 5h4v4M20 15v4h-4M8 19H4v-4M7.5 12h9"/></symbol>
+    <symbol id="more" viewBox="0 0 24 24"><circle cx="6" cy="12" r="1.1" fill="currentColor"/><circle cx="12" cy="12" r="1.1" fill="currentColor"/><circle cx="18" cy="12" r="1.1" fill="currentColor"/></symbol>
+    <symbol id="bell" viewBox="0 0 24 24"><path d="M6.5 16v-5a5.5 5.5 0 0 1 11 0v5l1.5 2h-14z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></symbol>
+    <symbol id="back" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
+    <symbol id="chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+    <symbol id="check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7"/></symbol>
+    <symbol id="x" viewBox="0 0 24 24"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></symbol>
+    <symbol id="clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 8v4.5l3 2"/></symbol>
+    <symbol id="review" viewBox="0 0 24 24"><path d="M19 12a7 7 0 1 1-2.05-4.95"/><path d="M19 4.5V8h-3.5"/></symbol>
+    <symbol id="math" viewBox="0 0 24 24"><path d="M17 5H7l5.2 7L7 19h10"/></symbol>
+    <symbol id="phys" viewBox="0 0 24 24"><ellipse cx="12" cy="12" rx="9" ry="3.5"/><ellipse cx="12" cy="12" rx="9" ry="3.5" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="9" ry="3.5" transform="rotate(-60 12 12)"/><circle cx="12" cy="12" r="1.1" fill="currentColor"/></symbol>
+    <symbol id="eng" viewBox="0 0 24 24"><path d="m3.5 18 4-11 4 11M5 14h5"/><circle cx="16.5" cy="15" r="2.6"/><path d="M19.1 11.8V18"/></symbol>
+    <symbol id="chem" viewBox="0 0 24 24"><path d="M9.5 4h5M10.5 4v5.2L5.6 17.8A1.5 1.5 0 0 0 6.9 20h10.2a1.5 1.5 0 0 0 1.3-2.2L13.5 9.2V4"/><path d="M8 15h8"/></symbol>
+    <symbol id="chn" viewBox="0 0 24 24"><path d="M7 4.5h11v12.5a3 3 0 0 1-3 3H7"/><path d="M7 4.5a2 2 0 0 0-2 2V8h2M7 4.5v15.5M10.5 9h4.5M10.5 12.5h4.5"/></symbol>
+    <symbol id="tag" viewBox="0 0 24 24"><path d="M4 4.5h7l8.5 8.5-6.5 6.5L4.5 11z"/><circle cx="8.5" cy="8.5" r="1.3"/></symbol>
+    <symbol id="eye" viewBox="0 0 24 24"><path d="M3 12s3.5-6 9-6 9 6 9 6-3.5 6-9 6-9-6-9-6z"/><circle cx="12" cy="12" r="2.5"/></symbol>
+    <symbol id="flame" viewBox="0 0 24 24"><path d="M12 21c-3.5 0-6-2.4-6-5.6 0-3.4 3-5 3-8.4 2.2 1.2 3.4 3 3.6 4.8 1-.8 1.6-2 1.6-3.4 2.4 1.8 3.8 4.4 3.8 7 0 3.2-2.5 5.6-6 5.6z"/></symbol>
+    <symbol id="cloud" viewBox="0 0 24 24"><path d="M7 18a4 4 0 0 1-.6-8A5.5 5.5 0 0 1 17 8.6a3.8 3.8 0 0 1 .5 9.4z"/><path d="M12 16.5v-5M9.8 13.7 12 11.5l2.2 2.2"/></symbol>
+    <symbol id="bulb" viewBox="0 0 24 24"><path d="M9.5 18h5M10.5 21h3"/><path d="M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2V16h5v-.1c0-.8.4-1.5 1-2A6 6 0 0 0 12 3z"/></symbol>
+    <symbol id="target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r=".9" fill="currentColor"/></symbol>
+    <symbol id="calc" viewBox="0 0 24 24"><rect x="5.5" y="3.5" width="13" height="17" rx="2.5"/><path d="M8.5 7.5h7M9 12h.01M12 12h.01M15 12h.01M9 15.5h.01M12 15.5h.01M15 15.5h.01"/></symbol>
+    <symbol id="hurry" viewBox="0 0 24 24"><path d="M13 3 6 13.5h5L10 21l8-11h-5.5z"/></symbol>
+    <symbol id="read" viewBox="0 0 24 24"><path d="M3.5 6.5c3-1.2 5.8-1 8.5 1 2.7-2 5.5-2.2 8.5-1V18c-3-1.2-5.8-1-8.5 1-2.7-2-5.5-2.2-8.5-1z"/><path d="M12 7.5V19"/></symbol>
+    <symbol id="maze" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M9.6 9.6a2.5 2.5 0 1 1 3.3 3.2c-.6.3-.9.8-.9 1.4v.3M12 17h.01"/></symbol>
+    <symbol id="memo" viewBox="0 0 24 24"><path d="M9 18.5c-2.8-.8-4.5-3.2-4.5-6A7.5 7.5 0 0 1 12 5a7.5 7.5 0 0 1 7.5 7.5c0 2.8-1.7 5.2-4.5 6"/><path d="M12 9v4M10 21h4"/></symbol>
+    <symbol id="sparkle" viewBox="0 0 24 24"><path d="M12 4c.6 3.8 2.2 5.4 6 6-3.8.6-5.4 2.2-6 6-.6-3.8-2.2-5.4-6-6 3.8-.6 5.4-2.2 6-6z"/><path d="M18.5 15.5c.2 1.3.8 1.8 2 2-1.2.2-1.8.7-2 2-.2-1.3-.8-1.8-2-2 1.2-.2 1.8-.7 2-2z"/></symbol>
+  </defs>
+</svg>
+
+<div class="wrap">
+
+<header class="top">
+  <p class="eyebrow">cuoti · 设计稿画布 · v0.1 草案</p>
+  <h1>错题本<em>设计规范</em></h1>
+  <p class="lede">配色来自参考图一：浓缩咖啡深棕、焦糖、奶油纸色。风格来自参考图二：磨砂玻璃卡片、细线图标、大圆角、柔和的光影。第 1 排是规范本身，后面 3 排是按规范画出来的页面设计稿。题目、数字都是示例内容。</p>
+  <div class="todo">
+    <span class="flag"><i></i><b>需要你选：</b>录入用 E1 还是 E2</span>
+    <span class="flag"><i></i><b>需要你说：</b>主要在手机还是 iPad 上用</span>
+  </div>
+</header>
+
+<!-- ============ 第 1 排：规范 ============ -->
+<section class="row">
+  <div class="row-h"><span>第 1 排</span><h2>规范</h2><p>以后所有新页面都只用这里的颜色、字体和组件。</p></div>
+  <div class="boards">
+
+    <figure class="board">
+      <figcaption class="cap"><b><span>S1</span>色板</b><small>一个咖啡色系，加两种只表示对错的状态色。</small></figcaption>
+      <div class="sheet w">
+        <div class="sw-group"><h3>底色与文字</h3>
+          <div class="sws">
+            <div class="sw"><b style="background:var(--paper)"></b><div><strong>奶油纸</strong><code>#F8F2EA</code><small>页面底色</small></div></div>
+            <div class="sw"><b style="background:var(--paper-2)"></b><div><strong>燕麦</strong><code>#F1E7DB</code><small>输入框、第二层</small></div></div>
+            <div class="sw"><b style="background:var(--line)"></b><div><strong>细线</strong><code>#E6D8C8</code><small>描边、分隔</small></div></div>
+            <div class="sw"><b style="background:var(--ink)"></b><div><strong>深咖啡</strong><code>#3A2519</code><small>主要文字</small></div></div>
+            <div class="sw"><b style="background:var(--warm)"></b><div><strong>可可</strong><code>#7A6455</code><small>次要文字</small></div></div>
+            <div class="sw"><b style="background:var(--muted)"></b><div><strong>奶咖</strong><code>#A8968A</code><small>辅助、占位</small></div></div>
+          </div>
+        </div>
+        <div class="sw-group"><h3>主色与强调</h3>
+          <div class="sws">
+            <div class="sw"><b style="background:var(--espresso)"></b><div><strong>浓缩咖啡 · 主色</strong><code>#4A2B1B</code><small>主按钮、选中、进度</small></div></div>
+            <div class="sw"><b style="background:var(--caramel)"></b><div><strong>焦糖 · 强调</strong><code>#B5733A</code><small>问候语、大数字、链接</small></div></div>
+            <div class="sw"><b style="background:var(--caramel-soft)"></b><div><strong>焦糖奶泡</strong><code>#F1E0CC</code><small>错因标签、图表面积</small></div></div>
+            <div class="sw"><b style="background:var(--latte)"></b><div><strong>拿铁</strong><code>#D8BC9C</code><small>次要数据、光斑</small></div></div>
+          </div>
+        </div>
+        <div class="sw-group"><h3>状态色（只表示对错）</h3>
+          <div class="sws">
+            <div class="sw"><b style="background:var(--wrong)"></b><div><strong>答错</strong><code>#B0503A</code><small>我的错误答案</small></div></div>
+            <div class="sw"><b style="background:var(--wrong-soft)"></b><div><strong>答错 · 浅</strong><code>#F5E1D8</code><small>错误答案底色</small></div></div>
+            <div class="sw"><b style="background:var(--right)"></b><div><strong>答对 · 掌握</strong><code>#6B7A52</code><small>正确答案、已掌握</small></div></div>
+            <div class="sw"><b style="background:var(--right-soft)"></b><div><strong>答对 · 浅</strong><code>#E6E9D9</code><small>正确答案底色</small></div></div>
+          </div>
+        </div>
+        <ol class="rules">
+          <li><b>红色只表示“答错”。</b>不用它做装饰，也不用它表示“重要”。</li>
+          <li><b>学科不分颜色。</b>数学、物理、英语都用同一色系，靠图标和名字区分。</li>
+          <li><b>一屏只有一个深棕色实心主按钮。</b>其他按钮用玻璃描边或文字按钮。</li>
+        </ol>
+      </div>
+    </figure>
+
+    <figure class="board">
+      <figcaption class="cap"><b><span>S2</span>字体</b><small>宋体做标题，黑体做正文，Fraunces 做数字、英文和公式。</small></figcaption>
+      <div class="sheet">
+        <div class="type-row"><small><b>大标题</b>思源宋体 600 · 26/34</small><div class="t-title">晚上好，<br><em>今天复习 12 题</em></div></div>
+        <div class="type-row"><small><b>小标题</b>思源黑体 600 · 15/22</small><div class="t-h">最近错题</div></div>
+        <div class="type-row"><small><b>正文 · 题干</b>思源黑体 400 · 13.5/22</small><div class="t-body">解不等式 <span class="en">|2x − 1| &lt; x + 1</span>，并写出解集。</div></div>
+        <div class="type-row"><small><b>辅助</b>思源黑体 400 · 11.5/16</small><div class="t-aux">下次复习 · 明天　已复习 3 次</div></div>
+        <div class="type-row"><small><b>数字</b>Fraunces 300</small><div class="t-num">61%　<span style="font-size:22px">5 / 12</span></div></div>
+        <div class="type-row"><small><b>英文 · 公式</b>Fraunces 400</small><div class="t-body en" style="font-size:14px">Not until he came back <u>&nbsp;did he realize&nbsp;</u> that he had lost his key.</div></div>
+      </div>
+    </figure>
+
+    <figure class="board">
+      <figcaption class="cap"><b><span>S3</span>形状与质感</b><small>大圆角 + 磨砂玻璃；实色只留给主按钮。</small></figcaption>
+      <div class="sheet">
+        <h3>圆角三档 + 胶囊</h3>
+        <div class="radii">
+          <div><i style="border-radius:12px"></i>12<br>标签 · 输入框</div>
+          <div><i style="border-radius:18px"></i>18<br>卡片</div>
+          <div><i style="border-radius:26px"></i>26<br>大卡片 · 弹层</div>
+          <div><i style="border-radius:999px;height:36px;margin-block:10px"></i>胶囊<br>按钮 · 标签</div>
+        </div>
+        <h3>磨砂玻璃卡片 vs 实色</h3>
+        <div class="glass-demo">
+          <div class="g"><b>磨砂玻璃（默认）</b><span class="warm">58% 奶油白 · 模糊 18px · 1px 亮边 · 顶部内高光 · 很淡的暖棕投影</span></div>
+          <div class="solid"><b>实色（只给主按钮）</b><span style="opacity:.75">浓缩咖啡底 · 奶油字 · 一点下投影</span></div>
+        </div>
+        <h3>间距</h3>
+        <div class="spacing">
+          <div><i style="height:4px"></i>4</div><div><i style="height:8px"></i>8</div><div><i style="height:12px"></i>12</div><div><i style="height:16px"></i>16</div><div><i style="height:24px"></i>24</div><div><i style="height:32px"></i>32</div>
+          <span style="flex-basis:100%">页面左右边距 18 · 卡片内边距 14 · 卡片之间 12</span>
+        </div>
+      </div>
+    </figure>
+
+    <figure class="board">
+      <figcaption class="cap"><b><span>S4</span>图标</b><small>24 格、1.6 线宽、圆头；只用线性图标。选中时换深棕底，不换颜色。</small></figcaption>
+      <div class="sheet">
+        <h3>学科</h3>
+        <div class="icons">
+          <div><svg data-i="math"></svg>数学</div><div><svg data-i="phys"></svg>物理</div><div><svg data-i="eng"></svg>英语</div><div><svg data-i="chem"></svg>化学</div><div><svg data-i="chn"></svg>语文</div>
+        </div>
+        <h3>错因</h3>
+        <div class="icons">
+          <div><svg data-i="maze"></svg>概念不清</div><div><svg data-i="read"></svg>审题不清</div><div><svg data-i="calc"></svg>计算失误</div><div><svg data-i="hurry"></svg>粗心</div><div><svg data-i="target"></svg>方法不会</div><div><svg data-i="memo"></svg>记忆错误</div>
+        </div>
+        <h3>动作与导航</h3>
+        <div class="icons">
+          <div><svg data-i="home"></svg>首页</div><div><svg data-i="book"></svg>错题本</div><div><svg data-i="chart"></svg>统计</div><div><svg data-i="user"></svg>我的</div><div><svg data-i="camera"></svg>拍照</div><div><svg data-i="pen"></svg>手写</div><div><svg data-i="scan"></svg>扫描</div><div><svg data-i="review"></svg>复习</div><div><svg data-i="bulb"></svg>解析</div><div><svg data-i="search"></svg>搜索</div><div><svg data-i="filter"></svg>筛选</div><div><svg data-i="cloud"></svg>备份</div>
+        </div>
+      </div>
+    </figure>
+
+    <figure class="board">
+      <figcaption class="cap"><b><span>S5</span>组件</b><small>放在玻璃背景上看的样子，页面里直接复用。</small></figcaption>
+      <div class="sheet w">
+        <div class="on-glass">
+          <div class="comp"><span class="btn p"><svg class="i s" data-i="review"></svg>开始复习</span><span class="btn o">编辑</span><span class="btn t">查看全部</span><span class="cbtn g"><svg class="i" data-i="back"></svg></span><span class="cbtn g"><svg class="i" data-i="bell"></svg><i class="dot-badge"></i></span></div>
+          <p class="comp-l">主按钮（一屏一个）· 次按钮 · 文字按钮 · 圆形图标按钮</p>
+          <div class="comp"><div class="tile g on"><svg class="i" data-i="book"></svg>全部</div><div class="tile g"><svg class="i" data-i="math"></svg>数学</div><div class="tile g"><svg class="i" data-i="phys"></svg>物理</div><div class="tile g"><svg class="i" data-i="eng"></svg>英语</div></div>
+          <p class="comp-l">学科方块：图标在上、名字在下，选中是深棕底（参考图一的分类块）</p>
+          <div class="comp"><span class="chip c on">概念不清</span><span class="chip c">粗心</span><span class="chip c">计算失误</span><span class="chip">二次函数</span><span class="chip"><svg class="i xs" data-i="plus"></svg>知识点</span></div>
+          <p class="comp-l">错因标签（焦糖奶泡底，可多选）· 知识点标签（玻璃底）</p>
+          <div class="comp" style="gap:16px">
+            <div class="seg g" style="width:260px"><span class="on">全部 <span class="num">186</span></span><span>未掌握 <span class="num">74</span></span><span>已掌握 <span class="num">112</span></span></div>
+            <span class="subj">还不会 <span class="dots"><i class="f"></i><i></i><i></i></span></span>
+            <span class="subj">有点会 <span class="dots"><i class="f"></i><i class="f"></i><i></i></span></span>
+            <span class="subj">已掌握 <span class="dots"><i class="f"></i><i class="f"></i><i class="f"></i></span></span>
+          </div>
+          <p class="comp-l">分段按钮 · 掌握度三个点</p>
+          <div class="comp" style="align-items:stretch">
+            <div class="ans w" style="flex:1;min-width:130px"><small><svg class="i xs" data-i="x"></svg>我的答案</small><p class="en">x &lt; 2</p></div>
+            <div class="ans r" style="flex:1;min-width:130px"><small><svg class="i xs" data-i="check"></svg>正确答案</small><p class="en">0 &lt; x &lt; 2</p></div>
+            <div class="ring" style="width:72px;height:72px"><svg width="72" height="72"><circle cx="36" cy="36" r="30" fill="none" stroke="var(--line)" stroke-width="6"/><circle cx="36" cy="36" r="30" fill="none" stroke="var(--espresso)" stroke-width="6" stroke-linecap="round" stroke-dasharray="115 189"/></svg><div class="ctr"><span class="num" style="font-size:18px">61%</span></div></div>
+          </div>
+          <p class="comp-l">答案对比块（只有这里用红和绿）· 进度环</p>
+          <div class="field" style="max-width:320px"><label>我的答案</label><div class="inp focus">17.3 N</div></div>
+          <p class="comp-l">输入框（聚焦时焦糖细边）</p>
+        </div>
+      </div>
+    </figure>
+
+  </div>
+</section>
+
+<!-- ============ 第 2 排：主要页面 ============ -->
+<section class="row">
+  <div class="row-h"><span>第 2 排</span><h2>主要页面</h2><p>手机竖屏 390×844，按比例缩小。底部导航：首页 · 错题本 · ＋录入 · 统计 · 我的。</p></div>
+  <div class="boards">
+
+    <!-- A 首页 -->
+    <figure class="board">
+      <figcaption class="cap"><b><span>A</span>首页 · 今天要做什么</b><small>打开就看到今天要复习几题；问候语第二行是今天的任务，用焦糖色。</small></figcaption>
+      <div class="phone"><div class="screen">
+        <div class="body">
+          <div class="hd"><span class="date">10 月 20 日 · 周二</span><span class="cbtn g"><svg class="i" data-i="bell"></svg><i class="dot-badge"></i></span></div>
+          <h3 class="hello">晚上好，<br><em>今天复习 12 题</em></h3>
+          <div style="display:grid;grid-template-columns:1.35fr 1fr;gap:10px">
+            <div class="g l pad" style="display:grid;gap:12px">
+              <div class="hd" style="align-items:flex-start">
+                <div><b style="font-size:13px">今日复习</b><div class="aux">还剩 7 题</div></div>
+              </div>
+              <div class="ring" style="width:84px;height:84px;justify-self:center"><svg width="84" height="84"><circle cx="42" cy="42" r="35" fill="none" stroke="rgba(74,43,27,.1)" stroke-width="6"/><circle cx="42" cy="42" r="35" fill="none" stroke="var(--espresso)" stroke-width="6" stroke-linecap="round" stroke-dasharray="91.6 220"/></svg><div class="ctr"><span class="num" style="font-size:24px">5<span style="font-size:14px;color:var(--muted)"> / 12</span></span></div></div>
+              <span class="btn p sm full"><svg class="i s" data-i="review"></svg>继续复习</span>
+            </div>
+            <div style="display:grid;gap:10px">
+              <div class="g pad" style="display:grid;gap:2px"><svg class="i s" data-i="flame" style="color:var(--caramel)"></svg><span class="num" style="font-size:26px;color:var(--caramel)">9</span><span class="aux">连续复习 9 天</span></div>
+              <div class="g pad" style="display:grid;gap:2px"><span class="aux">本周新增</span><span class="num" style="font-size:26px">23</span><div class="prog"><b style="width:62%"></b></div></div>
+            </div>
+          </div>
+          <div class="g qa">
+            <div><span class="ic"><svg class="i" data-i="camera"></svg></span>拍照录入</div>
+            <div><span class="ic"><svg class="i" data-i="pen"></svg></span>手动录入</div>
+            <div><span class="ic"><svg class="i" data-i="scan"></svg></span>扫描试卷</div>
+            <div><span class="ic"><svg class="i" data-i="more"></svg></span>更多</div>
+          </div>
+          <div class="sec"><b>最近错题</b><a>查看全部</a></div>
+          <div class="list">
+            <div class="g item">
+              <div class="item-top"><span class="subj"><svg class="i s" data-i="math"></svg>数学 · 绝对值不等式</span><span class="dots"><i class="f"></i><i></i><i></i></span></div>
+              <p class="item-q clamp">解不等式 <span class="en">|2x − 1| &lt; x + 1</span>，并写出解集。</p>
+              <div class="item-b"><span class="chip c">审题不清</span><span class="when"><svg class="i xs" data-i="clock"></svg>今天要复习</span></div>
+            </div>
+            <div class="g item">
+              <div class="item-top"><span class="subj"><svg class="i s" data-i="eng"></svg>英语 · 倒装句</span><span class="dots"><i class="f"></i><i class="f"></i><i></i></span></div>
+              <p class="item-q clamp en">Not until he came back ____ that he had lost his key.</p>
+            </div>
+          </div>
+        </div>
+        <nav class="tabbar" data-tab="home"></nav>
+      </div></div>
+    </figure>
+
+    <!-- B 错题本 -->
+    <figure class="board">
+      <figcaption class="cap"><b><span>B</span>错题本 · 按学科找</b><small>学科方块学参考图一的分类；题干在列表里最多两行，点开看全文。</small></figcaption>
+      <div class="phone"><div class="screen">
+        <div class="body">
+          <div class="hd"><h3 class="hello" style="font-size:24px">错题本</h3><span class="cbtn g"><svg class="i" data-i="filter"></svg></span></div>
+          <div class="g" style="display:flex;align-items:center;gap:8px;height:42px;padding:0 14px;border-radius:999px"><svg class="i s" data-i="search" style="color:var(--muted)"></svg><span class="muted" style="font-size:12.5px">搜题目、知识点、错因…</span></div>
+          <div class="tiles">
+            <div class="tile g on"><svg class="i" data-i="book"></svg>全部</div>
+            <div class="tile g"><svg class="i" data-i="math"></svg>数学</div>
+            <div class="tile g"><svg class="i" data-i="phys"></svg>物理</div>
+            <div class="tile g"><svg class="i" data-i="eng"></svg>英语</div>
+            <div class="tile g"><svg class="i" data-i="chem"></svg>化学</div>
+          </div>
+          <div class="seg g"><span class="on">全部 <span class="num">186</span></span><span>未掌握 <span class="num">74</span></span><span>已掌握 <span class="num">112</span></span></div>
+          <div class="list">
+            <div class="g item">
+              <div class="item-top"><span class="subj"><svg class="i s" data-i="phys"></svg>物理 · 斜面受力分析</span><span class="dots"><i class="f"></i><i></i><i></i></span></div>
+              <p class="item-q clamp">质量为 <span class="en">2 kg</span> 的物块静止在倾角 <span class="en">30°</span> 的斜面上，求斜面对物块的静摩擦力大小（<span class="en">g</span> 取 <span class="en">10 m/s²</span>）。</p>
+              <div class="item-b"><div class="chips"><span class="chip c">粗心</span><span class="chip c">计算失误</span></div><span class="when"><svg class="i xs" data-i="clock"></svg>明天</span></div>
+            </div>
+            <div class="g item">
+              <div class="item-top"><span class="subj"><svg class="i s" data-i="chem"></svg>化学 · 氧化还原配平</span><span class="dots"><i class="f"></i><i class="f"></i><i></i></span></div>
+              <p class="item-q clamp">配平：<span class="en">Cu + HNO₃（稀）→ Cu(NO₃)₂ + NO↑ + H₂O</span></p>
+              <div class="item-b"><span class="chip c">概念不清</span><span class="when"><svg class="i xs" data-i="clock"></svg>3 天后</span></div>
+            </div>
+            <div class="g item">
+              <div class="item-top"><span class="subj"><svg class="i s" data-i="chn"></svg>语文 · 古诗默写</span><span class="dots"><i class="f"></i><i class="f"></i><i class="f"></i></span></div>
+              <p class="item-q clamp">“________，天涯若比邻。”（王勃《送杜少府之任蜀州》）</p>
+              <div class="item-b"><span class="chip c">记忆错误</span><span class="when" style="color:var(--right)"><svg class="i xs" data-i="check"></svg>已掌握</span></div>
+            </div>
+          </div>
+        </div>
+        <nav class="tabbar" data-tab="book"></nav>
+      </div></div>
+    </figure>
+
+    <!-- C 详情 -->
+    <figure class="board">
+      <figcaption class="cap"><b><span>C</span>错题详情</b><small>我的答案和正确答案并排对比，这里是全 App 唯一用红绿的地方。</small></figcaption>
+      <div class="phone"><div class="screen">
+        <div class="body nobar">
+          <div class="hd"><span class="cbtn g"><svg class="i" data-i="back"></svg></span><span class="hd-c">错题详情</span><span class="cbtn g"><svg class="i" data-i="more"></svg></span></div>
+          <div class="g l pad" style="display:grid;gap:10px">
+            <div class="hd"><span class="subj"><svg class="i s" data-i="math"></svg>数学 · 绝对值不等式</span><span class="aux">10 月 14 日录入</span></div>
+            <p style="margin:0;font-size:14px;line-height:1.7">解不等式 <span class="en">|2x − 1| &lt; x + 1</span>，并写出解集。</p>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+              <div class="ans w"><small><svg class="i xs" data-i="x"></svg>我的答案</small><p class="en">x &lt; 2</p></div>
+              <div class="ans r"><small><svg class="i xs" data-i="check"></svg>正确答案</small><p class="en">0 &lt; x &lt; 2</p></div>
+            </div>
+          </div>
+          <div class="g pad" style="display:grid;gap:6px">
+            <b style="display:flex;align-items:center;gap:6px;font-size:13px"><svg class="i s" data-i="bulb" style="color:var(--caramel)"></svg>解析</b>
+            <p style="margin:0;font-size:12.5px;color:var(--warm)">原式等价于 <span class="en">−(x + 1) &lt; 2x − 1 &lt; x + 1</span>。右边解出 <span class="en">x &lt; 2</span>，左边解出 <span class="en">x &gt; 0</span>，两边取交集。我只解了右边。</p>
+          </div>
+          <div class="g pad" style="display:grid;gap:8px">
+            <b style="font-size:13px">为什么错</b>
+            <div class="chips"><span class="chip c on">审题不清</span><span class="chip c">方法不会</span><span class="chip">绝对值</span><span class="chip">不等式组</span></div>
+          </div>
+          <div class="g pad" style="display:grid;gap:4px">
+            <div class="hd"><b style="font-size:13px">复习记录</b><span class="dots"><i class="f"></i><i></i><i></i></span></div>
+            <div class="tl">
+              <div><em>10/14</em><i class="f"></i><span>录入</span></div>
+              <div><em>10/15</em><i class="f"></i><span>复习 · <span style="color:var(--wrong)">还不会</span></span></div>
+              <div><em>10/17</em><i class="f"></i><span>复习 · 有点会</span></div>
+              <div><em>10/21</em><i></i><span class="muted">下次复习 · 明天</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="bottombar"><span class="btn o" style="flex:.6">编辑</span><span class="btn p"><svg class="i s" data-i="review"></svg>复习这一题</span></div>
+      </div></div>
+    </figure>
+
+    <!-- D 复习 -->
+    <figure class="board">
+      <figcaption class="cap"><b><span>D</span>复习 · 看完答案自己打分</b><small>先遮住答案自己做；看答案后选三个之一，决定下次什么时候再出现。</small></figcaption>
+      <div class="phone"><div class="screen">
+        <div class="body nobar" style="padding-bottom:150px">
+          <div class="hd"><span class="cbtn g"><svg class="i" data-i="x"></svg></span><div style="flex:1;display:grid;gap:4px"><div class="prog"><b style="width:42%"></b></div></div><span class="num" style="font-size:15px">5 <span class="muted">/ 12</span></span></div>
+          <div class="g l pad" style="display:grid;gap:12px;padding:18px 16px">
+            <div class="hd"><span class="subj"><svg class="i s" data-i="eng"></svg>英语 · 倒装句</span><span class="aux">第 3 次复习</span></div>
+            <p class="en" style="margin:0;font-size:16px;line-height:1.6">Not until he came back ____ that he had lost his key.</p>
+            <div class="opts">
+              <div class="opt r"><b>A</b><span class="en">did he realize</span><span class="tag" style="color:var(--right)">正确答案</span></div>
+              <div class="opt w"><b>B</b><span class="en">he realized</span><span class="tag" style="color:var(--wrong)">上次选的</span></div>
+              <div class="opt"><b>C</b><span class="en">had he realized</span></div>
+              <div class="opt"><b>D</b><span class="en">he had realized</span></div>
+            </div>
+            <div style="border-top:1px solid var(--line);padding-top:10px;font-size:12px;color:var(--warm)"><b style="color:var(--ink)">要点：</b><span class="en">Not until</span> 放句首，主句要部分倒装；时态跟着 <span class="en">came</span> 用一般过去时，所以是 <span class="en">did he realize</span>。</div>
+          </div>
+          <p class="aux" style="text-align:center;margin:0">这次你做对了吗？</p>
+        </div>
+        <div class="bottombar" style="display:block;padding-bottom:28px">
+          <div class="grade">
+            <div class="g"><span class="bad">还不会</span><small>明天再来</small></div>
+            <div class="g">有点会<small>3 天后</small></div>
+            <div class="p">掌握了<small>7 天后</small></div>
+          </div>
+        </div>
+      </div></div>
+    </figure>
+
+  </div>
+</section>
+
+<!-- ============ 第 3 排：录入，需要选 ============ -->
+<section class="row">
+  <div class="row-h"><span>第 3 排</span><h2>录入错题 · 两个方案选一个</h2><p>同一道物理题，两种录法。点底部导航中间的“＋”进来。</p></div>
+  <div class="boards">
+
+    <figure class="board">
+      <figcaption class="cap"><b><span>E1</span>一页填完</b><small>拍完照，所有内容在一页里填，填完就存。</small></figcaption>
+      <div class="phone"><div class="screen">
+        <div class="body nobar">
+          <div class="hd"><span class="cbtn g"><svg class="i" data-i="x"></svg></span><span class="hd-c">录入错题</span><span class="btn t" style="height:38px">存草稿</span></div>
+          <div class="photo"><b>7.</b> 质量为 2 kg 的物块静止在倾角 30° 的斜面上，求斜面对物块的静摩擦力大小（g 取 10 m/s²）。<br><span style="color:#9c3b2a">解：f = mg·cos30° = 17.3 N</span><div class="crop"></div></div>
+          <div class="hd"><span class="aux">已识别文字 · 可以改</span><span class="btn t" style="height:auto;font-size:11.5px"><svg class="i xs" data-i="camera"></svg>重拍</span></div>
+          <div class="chips"><span class="chip"><svg class="i xs" data-i="math"></svg>数学</span><span class="chip on"><svg class="i xs" data-i="phys"></svg>物理</span><span class="chip"><svg class="i xs" data-i="eng"></svg>英语</span><span class="chip"><svg class="i xs" data-i="chem"></svg>化学</span><span class="chip"><svg class="i xs" data-i="chn"></svg>语文</span></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <div class="field"><label>我的答案</label><div class="inp">17.3 N</div></div>
+            <div class="field"><label>正确答案</label><div class="inp focus">10 N</div></div>
+          </div>
+          <div class="field"><label>为什么错（可多选）</label>
+            <div class="chips"><span class="chip c">概念不清</span><span class="chip c on">粗心</span><span class="chip c on">计算失误</span><span class="chip c">审题不清</span><span class="chip c">方法不会</span><span class="chip c">记忆错误</span></div>
+          </div>
+          <div class="field"><label>提醒自己一句</label><div class="inp">静摩擦力和重力沿斜面的分力平衡：f = mg·sinθ，不是 cos。</div></div>
+          <div class="field"><label>知识点</label><div class="chips"><span class="chip">斜面受力分析</span><span class="chip">静摩擦力</span><span class="chip"><svg class="i xs" data-i="plus"></svg>添加</span></div></div>
+        </div>
+        <div class="bottombar"><span class="btn p"><svg class="i s" data-i="check"></svg>保存，明天复习</span></div>
+      </div></div>
+    </figure>
+
+    <figure class="board">
+      <figcaption class="cap"><b><span>E2</span>分步填写</b><small>拍题 → 写答案 → 选错因，一步只想一件事。图里是第 3 步。</small></figcaption>
+      <div class="phone"><div class="screen">
+        <div class="body nobar">
+          <div class="hd"><span class="cbtn g"><svg class="i" data-i="back"></svg></span><span class="hd-c">录入错题</span><span class="cbtn" aria-hidden="true"></span></div>
+          <div class="steps"><span class="done"><i><svg class="i xs" data-i="check"></svg></i>拍题</span><em></em><span class="done"><i><svg class="i xs" data-i="check"></svg></i>答案</span><em></em><span class="on"><i>3</i>错因</span></div>
+          <div class="g pad" style="display:flex;gap:10px;align-items:center;padding:10px 12px">
+            <span class="subj"><svg class="i s" data-i="phys"></svg></span>
+            <span class="clamp" style="font-size:12px;color:var(--warm);-webkit-line-clamp:1">质量为 2 kg 的物块静止在倾角 30° 的斜面上…</span>
+          </div>
+          <h3 class="hello" style="font-size:21px">这道题<em>为什么错？</em></h3>
+          <div class="reasons">
+            <div class="reason g"><b><svg class="i s" data-i="maze"></svg>概念不清</b><small>公式、定义没弄懂</small></div>
+            <div class="reason g on"><b><svg class="i s" data-i="hurry"></svg>粗心</b><small>会做，但看错、写错</small></div>
+            <div class="reason g on"><b><svg class="i s" data-i="calc"></svg>计算失误</b><small>思路对，算错了</small></div>
+            <div class="reason g"><b><svg class="i s" data-i="read"></svg>审题不清</b><small>漏看条件、看错问题</small></div>
+            <div class="reason g"><b><svg class="i s" data-i="target"></svg>方法不会</b><small>没思路、不知道从哪下手</small></div>
+            <div class="reason g"><b><svg class="i s" data-i="memo"></svg>记忆错误</b><small>背过但记错了</small></div>
+          </div>
+          <div class="field"><label>提醒自己一句（选填）</label><div class="inp focus">f = mg·sinθ，不是 cos。</div></div>
+        </div>
+        <div class="bottombar"><span class="btn o" style="flex:.55">上一步</span><span class="btn p"><svg class="i s" data-i="check"></svg>完成</span></div>
+      </div></div>
+    </figure>
+
+    <div style="display:grid;gap:14px;align-content:start;max-width:520px">
+      <div class="decide"><b>需要你选：E1 还是 E2？</b><span>我推荐 <b style="font-family:inherit;font-size:13px">E1</b>：错题多的时候录得快，一页能看全。如果你希望每道题都认真想一下错因，选 E2。也可以 E1 为主，在设置里加一个“分步录入”开关。</span></div>
+      <div class="note"><b>E1 一页填完</b><span class="plus">好处：快，少点几下；所有内容一眼看全，改起来方便。</span><span class="minus">代价：字段多，手机上要往下滑；容易跳过错因不写。</span></div>
+      <div class="note"><b>E2 分步填写</b><span class="plus">好处：一步只想一件事；错因用大方块选，会写得更认真；每个错因有一句解释。</span><span class="minus">代价：多点两下；想改前面的内容要退回去。</span></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============ 第 4 排：统计和各种状态 ============ -->
+<section class="row">
+  <div class="row-h"><span>第 4 排</span><h2>统计和各种状态</h2><p>有数据时、第一次打开还没有数据时、复习做完时。</p></div>
+  <div class="boards">
+
+    <!-- F 统计 -->
+    <figure class="board">
+      <figcaption class="cap"><b><span>F</span>统计 · 我常错在哪</b><small>环形进度和细折线学参考图二；图表只用咖啡色系的深浅。</small></figcaption>
+      <div class="phone"><div class="screen">
+        <div class="body">
+          <div class="hd"><h3 class="hello" style="font-size:24px">统计</h3></div>
+          <div class="seg g"><span class="on">本周</span><span>本月</span><span>全部</span></div>
+          <div class="g l pad" style="display:flex;align-items:center;gap:16px">
+            <div class="ring" style="width:104px;height:104px"><svg width="104" height="104"><circle cx="52" cy="52" r="44" fill="none" stroke="rgba(74,43,27,.1)" stroke-width="7"/><circle cx="52" cy="52" r="44" fill="none" stroke="var(--espresso)" stroke-width="7" stroke-linecap="round" stroke-dasharray="168.6 276.5"/></svg><div class="ctr"><span class="num" style="font-size:28px">61%</span><span class="aux">已掌握</span></div></div>
+            <div style="display:grid;gap:6px;font-size:12px">
+              <span><span class="num" style="font-size:20px">112</span> <span class="muted">/ 186 题</span></span>
+              <span class="warm">比上周多掌握 <b class="num" style="color:var(--caramel);font-weight:400">14</b> 题</span>
+              <span class="warm">还有 <b class="num" style="font-weight:400">74</b> 题没掌握</span>
+            </div>
+          </div>
+          <div class="g pad" style="display:grid;gap:6px">
+            <div class="hd"><b style="font-size:13px">每天新增</b><span class="aux">本周共 <span class="num" style="font-size:13px;color:var(--ink)">23</span> 题</span></div>
+            <svg viewBox="0 0 290 92" width="100%" height="92" role="img" aria-label="本周每天新增错题：周一 2，周二 5，周三 3，周四 4，周五 1，周六 6，周日 2">
+              <defs><linearGradient id="ar" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#D8BC9C" stop-opacity=".55"/><stop offset="1" stop-color="#D8BC9C" stop-opacity="0"/></linearGradient></defs>
+              <g stroke="rgba(74,43,27,.08)" stroke-width="1"><path d="M10 14H280M10 38H280M10 62H280"/></g>
+              <path d="M12 50 L56 20 L100 40 L144 30 L188 60 L232 10 L276 50 L276 70 L12 70Z" fill="url(#ar)"/>
+              <polyline points="12,50 56,20 100,40 144,30 188,60 232,10 276,50" fill="none" stroke="#4A2B1B" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/>
+              <circle cx="232" cy="10" r="3.5" fill="#4A2B1B"/><text x="232" y="28" text-anchor="middle" font-family="Fraunces,Georgia,serif" font-size="10" fill="#7A6455">6</text>
+              <g font-size="9.5" fill="#A8968A" text-anchor="middle" font-family="Noto Sans SC,sans-serif"><text x="12" y="86">一</text><text x="56" y="86">二</text><text x="100" y="86">三</text><text x="144" y="86">四</text><text x="188" y="86">五</text><text x="232" y="86">六</text><text x="276" y="86">日</text></g>
+            </svg>
+          </div>
+          <div class="g pad" style="display:grid;gap:10px">
+            <b style="font-size:13px">错因分布</b>
+            <div class="bars">
+              <div class="bar"><span>概念不清</span><i><b style="width:34%"></b></i><span>34%</span></div>
+              <div class="bar"><span>粗心</span><i><b style="width:22%;opacity:.8"></b></i><span>22%</span></div>
+              <div class="bar"><span>计算失误</span><i><b style="width:18%;opacity:.65"></b></i><span>18%</span></div>
+              <div class="bar"><span>审题不清</span><i><b style="width:12%;opacity:.5"></b></i><span>12%</span></div>
+              <div class="bar"><span>方法不会</span><i><b style="width:9%;opacity:.4"></b></i><span>9%</span></div>
+              <div class="bar"><span>记忆错误</span><i><b style="width:5%;opacity:.3"></b></i><span>5%</span></div>
+            </div>
+          </div>
+        </div>
+        <nav class="tabbar" data-tab="chart"></nav>
+      </div></div>
+    </figure>
+
+    <!-- G 空状态 -->
+    <figure class="board">
+      <figcaption class="cap"><b><span>G</span>第一次打开 · 还没有错题</b><small>不放假数据；告诉你第一步做什么，以及之后会发生什么。</small></figcaption>
+      <div class="phone"><div class="screen">
+        <div class="body">
+          <div class="hd"><span class="date">10 月 20 日 · 周二</span><span class="cbtn g"><svg class="i" data-i="bell"></svg></span></div>
+          <h3 class="hello">你好，<br><em>从第一道错题开始</em></h3>
+          <div class="g l" style="display:grid;justify-items:center;text-align:center;gap:12px;padding:28px 20px 22px;margin-top:6px">
+            <span style="width:68px;height:68px;border-radius:22px;display:grid;place-items:center;background:var(--caramel-soft);color:var(--caramel-deep)"><svg class="i" style="width:30px;height:30px" data-i="camera"></svg></span>
+            <b style="font-family:var(--f-title);font-size:17px">拍下一道做错的题</b>
+            <p style="margin:0;font-size:12.5px;color:var(--warm);max-width:22em">几秒就能记下来。写上为什么错，明天会提醒你复习它。</p>
+            <span class="btn p full" style="margin-top:4px"><svg class="i s" data-i="camera"></svg>拍照录入第一题</span>
+            <span class="btn t">没有照片？手动输入</span>
+          </div>
+          <div class="g pad" style="display:grid;gap:10px">
+            <b style="font-size:13px">错题本怎么用</b>
+            <div class="tl" style="font-size:12px">
+              <div style="grid-template-columns:22px 1fr"><span class="num" style="font-size:15px;color:var(--caramel)">1</span><span>拍题，写下你的答案和正确答案</span></div>
+              <div style="grid-template-columns:22px 1fr"><span class="num" style="font-size:15px;color:var(--caramel)">2</span><span>选一下为什么错</span></div>
+              <div style="grid-template-columns:22px 1fr"><span class="num" style="font-size:15px;color:var(--caramel)">3</span><span>按提醒复习：1 天、3 天、7 天后再见</span></div>
+            </div>
+          </div>
+        </div>
+        <nav class="tabbar" data-tab="home"></nav>
+      </div></div>
+    </figure>
+
+    <!-- H 完成 -->
+    <figure class="board">
+      <figcaption class="cap"><b><span>H</span>今天的复习做完了</b><small>做完给一个总结，还不会的题告诉你什么时候再见。</small></figcaption>
+      <div class="phone"><div class="screen">
+        <div class="body nobar" style="justify-content:center;gap:18px">
+          <div class="ring" style="width:150px;height:150px;justify-self:center;align-self:center"><svg width="150" height="150"><circle cx="75" cy="75" r="64" fill="none" stroke="var(--espresso)" stroke-width="7"/></svg><div class="ctr"><svg class="i" data-i="sparkle" style="width:26px;height:26px;color:var(--caramel)"></svg><span class="num" style="font-size:34px">12</span><span class="aux">题全部复习完</span></div></div>
+          <h3 class="hello" style="text-align:center;font-size:23px">今天的复习<br><em>做完了</em></h3>
+          <div class="g stat3">
+            <div><span class="num" style="color:var(--right)">5</span><span class="aux">掌握了</span></div>
+            <div><span class="num">4</span><span class="aux">有点会</span></div>
+            <div><span class="num" style="color:var(--wrong)">3</span><span class="aux">还不会</span></div>
+          </div>
+          <div class="g pad" style="font-size:12.5px;color:var(--warm);display:flex;gap:10px;align-items:flex-start">
+            <svg class="i s" data-i="clock" style="margin-top:3px;color:var(--ink)"></svg>
+            <span>还不会的 3 题明天再出现；掌握了的 5 题 7 天后再看一次，确认真的记住了。</span>
+          </div>
+        </div>
+        <div class="bottombar"><span class="btn o">再练一遍还不会的</span><span class="btn p" style="flex:.8">回到首页</span></div>
+      </div></div>
+    </figure>
+
+  </div>
+</section>
+
+<p class="foot">这是 v0.1 草案。确认后：规范写进 <code>docs/PRD.md</code> 第 0 部分，选定的设计稿编号写进对应功能；被否掉的方案会从画布上删掉，不越堆越多。</p>
+
+</div>
+
+<script>
+(function(){
+  var NS='http://www.w3.org/2000/svg';
+  document.querySelectorAll('svg[data-i]').forEach(function(s){
+    s.setAttribute('viewBox','0 0 24 24');
+    s.setAttribute('fill','none');s.setAttribute('stroke','currentColor');
+    s.setAttribute('stroke-width','1.6');s.setAttribute('stroke-linecap','round');s.setAttribute('stroke-linejoin','round');
+    if(!s.classList.contains('i')&&!s.getAttribute('class')) s.setAttribute('class','i');
+    s.setAttribute('aria-hidden','true');
+    var u=document.createElementNS(NS,'use');u.setAttribute('href','#'+s.dataset.i);s.appendChild(u);
+  });
+  var sb='<div class="island"></div><div class="sb"><span>9:41</span><svg viewBox="0 0 58 12" aria-hidden="true"><g fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="6" width="3" height="6" rx="1"/><rect x="10" y="3.5" width="3" height="8.5" rx="1"/><rect x="15" y="1" width="3" height="11" rx="1"/></g><path d="M24 4.5a9 9 0 0 1 12 0M26.3 7a5.5 5.5 0 0 1 7.4 0" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="30" cy="10" r="1.3" fill="currentColor"/><rect x="40.5" y="1.5" width="15" height="9" rx="2.5" fill="none" stroke="currentColor" opacity=".45"/><rect x="42" y="3" width="10" height="6" rx="1.3" fill="currentColor"/><rect x="56.5" y="4.5" width="1.3" height="3" rx=".6" fill="currentColor" opacity=".45"/></svg></div>';
+  document.querySelectorAll('.screen').forEach(function(s){s.insertAdjacentHTML('afterbegin',sb);});
+  var tabs=[['home','首页','home'],['book','错题本','book'],null,['chart','统计','chart'],['me','我的','user']];
+  document.querySelectorAll('.tabbar').forEach(function(n){
+    var on=n.dataset.tab;
+    n.innerHTML=tabs.map(function(t){
+      if(!t) return '<span class="plus" aria-label="录入错题"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><use href="#plus"/></svg></span>';
+      return '<span'+(t[0]===on?' class="on"':'')+'><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><use href="#'+t[2]+'"/></svg>'+t[1]+'</span>';
+    }).join('');
+  });
+})();
+</script>
