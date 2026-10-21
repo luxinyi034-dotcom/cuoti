@@ -298,23 +298,38 @@ async function test(name, fn){
     await ctx.close();
   });
 
-  await test('AI 识别：填密钥、测试连接；密钥不进导出的备份', async () => {
+  const CORS = { 'access-control-allow-origin': '*' };
+  const GEM_MODELS = { models: [
+    { name: 'models/gemini-2.5-flash', supportedGenerationMethods: ['generateContent'] },
+    { name: 'models/gemini-3-flash-preview', supportedGenerationMethods: ['generateContent'] },
+    { name: 'models/gemini-3-flash', supportedGenerationMethods: ['generateContent', 'countTokens'] },
+    { name: 'models/gemini-3-flash-lite', supportedGenerationMethods: ['generateContent'] },
+    { name: 'models/gemini-3-pro', supportedGenerationMethods: ['generateContent'] },
+    { name: 'models/text-embedding-004', supportedGenerationMethods: ['embedContent'] }
+  ] };
+  const gemReply = text => ({ candidates: [{ content: { parts: [{ text }] }, finishReason: 'STOP' }] });
+  const setAI = (page, v) => page.evaluate(v => new Promise(res => { const r = indexedDB.open('cuoti-data'); r.onsuccess = () => { const t = r.result.transaction('kv', 'readwrite'); t.objectStore('kv').put(v, 'ai'); t.oncomplete = res; }; }), v);
+
+  await test('AI 识别（Gemini）：填密钥会自动选最新的 Flash 模型；密钥不进导出的备份', async () => {
     const { ctx, page } = await newPhone(T0);
     const calls = [];
-    await page.route('https://open.bigmodel.cn/**', async r => {
-      calls.push({ headers: r.request().headers(), body: JSON.parse(r.request().postData()) });
-      await r.fulfill({ status: 200, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: JSON.stringify({ choices: [{ message: { content: '好' } }] }) });
+    await page.route('https://generativelanguage.googleapis.com/**', async r => {
+      const req = r.request(); calls.push({ url: req.url(), method: req.method(), headers: req.headers(), body: req.postData() && JSON.parse(req.postData()) });
+      if (req.method() === 'GET') return r.fulfill({ status: 200, contentType: 'application/json', headers: CORS, body: JSON.stringify(GEM_MODELS) });
+      return r.fulfill({ status: 200, contentType: 'application/json', headers: CORS, body: JSON.stringify(gemReply('好')) });
     });
     await page.goto(base); await ready(page);
     await page.getByRole('button', { name: '我的' }).click();
     await page.getByRole('button', { name: /AI 识别/ }).click();
-    await page.fill('#f-aikey', 'test-key.ABC123');
+    assert.ok(await page.locator('.seg button.on', { hasText: 'Google Gemini' }).count(), '默认用 Gemini');
+    await page.fill('#f-aikey', 'AIza-test-key');
     await page.getByRole('button', { name: '保存' }).click();
     await page.getByText('已连上，可以用').waitFor();
-    assert.strictEqual(calls.at(-1).headers.authorization, 'Bearer test-key.ABC123');
-    assert.strictEqual(calls.at(-1).body.model, 'glm-4.6v-flash');
+    await page.getByText('现在用的模型：gemini-3-flash。').waitFor();
+    const post = calls.find(c => c.method === 'POST');
+    assert.ok(post.url.endsWith('/models/gemini-3-flash:generateContent'), post.url);
+    assert.strictEqual(post.headers['x-goog-api-key'], 'AIza-test-key');
     await shot(page, 'R4-AI设置');
-    // 录一道题后导出：备份文件里不能有密钥
     await page.getByRole('button', { name: '返回' }).click();
     await page.locator('.tabbar .plus').click();
     await page.fill('#f-q', '一道题');
@@ -323,32 +338,30 @@ async function test(name, fn){
     const dl = page.waitForEvent('download');
     await page.getByRole('button', { name: '导出备份' }).click();
     const p = path.join(SHOTS, 'backup-ai.json'); await (await dl).saveAs(p);
-    assert.ok(!fs.readFileSync(p, 'utf8').includes('test-key.ABC123'), '备份里不能有密钥');
+    assert.ok(!fs.readFileSync(p, 'utf8').includes('AIza-test-key'), '备份里不能有密钥');
     assert.deepStrictEqual(page.errors, []);
     await ctx.close();
   });
 
-  await test('AI 识别：拍照 → 框选 → 自动填好；只填空格子，不改手写的内容', async () => {
+  await test('AI 识别（Gemini）：拍照 → 框选 → 自动填好；只填空格子，不改手写的内容', async () => {
     const { ctx, page } = await newPhone(T0);
     let reply = { question: '质量为 2 kg 的物块静止在倾角 30° 的斜面上，求斜面对物块的静摩擦力大小（g 取 10 m/s²）。', my_answer: 'f = mg·cos30° = 17.3 N', correct_answer: 'mg·sin30° = 10 N', subject: 'phys' };
     const calls = [];
-    await page.route('https://open.bigmodel.cn/**', async r => {
-      const body = JSON.parse(r.request().postData()); calls.push(body);
+    await page.route('https://generativelanguage.googleapis.com/**', async r => {
+      calls.push(JSON.parse(r.request().postData()));
       await new Promise(res => setTimeout(res, 300));
-      await r.fulfill({ status: 200, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: JSON.stringify({ choices: [{ message: { content: '```json\n' + JSON.stringify(reply) + '\n```' } }] }) });
+      await r.fulfill({ status: 200, contentType: 'application/json', headers: CORS, body: JSON.stringify(gemReply(JSON.stringify(reply))) });
     });
     await page.goto(base); await ready(page);
-    await page.evaluate(() => new Promise(res => { const r = indexedDB.open('cuoti-data'); r.onsuccess = () => { const t = r.result.transaction('kv', 'readwrite'); t.objectStore('kv').put({ key: 'k', model: 'glm-4.6v-flash', auto: false, count: {} }, 'ai'); t.oncomplete = res; }; }));
+    await setAI(page, { provider: 'gemini', keys: { gemini: 'k' }, models: { gemini: 'gemini-3-flash' }, auto: false, count: {} });
     await page.reload(); await ready(page);
     await page.getByRole('button', { name: '没有照片？手动输入' }).click();
     await page.setInputFiles('#photoInput', { name: 'q.png', mimeType: 'image/png', buffer: fs.readFileSync(path.join(SITE, 'icons', 'icon-512.png')) });
     await page.getByText('框出要识别的部分').waitFor();
     await page.waitForSelector('#cropImg[src^="blob:"]');
-    // 拖右下角把框缩小
     const h = await page.locator('.crop-h.br').boundingBox();
     await page.mouse.move(h.x + 15, h.y + 15); await page.mouse.down(); await page.mouse.move(h.x - 80, h.y - 120, { steps: 5 }); await page.mouse.up();
-    const box = await page.evaluate(() => { const b = document.getElementById('cropBox'); return parseFloat(b.style.width); });
-    assert.ok(box < 90, '框要变小');
+    assert.ok(await page.evaluate(() => parseFloat(document.getElementById('cropBox').style.width)) < 90, '框要变小');
     await shot(page, 'R1-框选');
     await page.getByRole('button', { name: '识别', exact: true }).click();
     await page.getByText('AI 正在识别').waitFor();
@@ -359,13 +372,13 @@ async function test(name, fn){
     assert.strictEqual(await page.inputValue('#f-right'), reply.correct_answer);
     assert.ok(await page.locator('.chip.on', { hasText: '物理' }).count());
     assert.strictEqual(await page.locator('.ai-tag').count(), 3);
-    const img = calls[0].messages[0].content[0].image_url.url;
-    assert.ok(img.startsWith('data:image/jpeg;base64,'), '照片以 base64 发出');
+    const part = calls[0].contents[0].parts[0].inline_data;
+    assert.strictEqual(part.mime_type, 'image/jpeg');
+    assert.ok(part.data.length > 100 && !part.data.startsWith('data:'), '照片以 base64 发出');
+    assert.strictEqual(calls[0].generationConfig.responseMimeType, 'application/json');
     await shot(page, 'R3-识别好了');
-    // 改了的格子，AI 标记消失
     await page.fill('#f-right', '10 N');
     assert.strictEqual(await page.locator('.ai-tag').count(), 2);
-    // 清空题目、改写我的答案，再识别：只填空着的题目
     await page.fill('#f-q', '');
     await page.fill('#f-my', '我自己写的');
     reply = Object.assign({}, reply, { question: '第二次识别的题目', my_answer: 'AI 的答案' });
@@ -385,30 +398,53 @@ async function test(name, fn){
     await ctx.close();
   });
 
-  await test('AI 识别失败：说清原因，照片和已填内容都在，能重新识别', async () => {
+  await test('AI 识别失败（Gemini）：说清原因，照片和已填内容都在，能重新识别', async () => {
     const { ctx, page } = await newPhone(T0);
     let mode = 'net';
-    await page.route('https://open.bigmodel.cn/**', async r => {
+    const err = (status, body) => ({ status, contentType: 'application/json', headers: CORS, body: JSON.stringify({ error: body }) });
+    await page.route('https://generativelanguage.googleapis.com/**', async r => {
       if (mode === 'net') return r.abort('failed');
-      if (mode === '401') return r.fulfill({ status: 401, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: JSON.stringify({ error: { code: '1001', message: '令牌已过期或验证不正确' } }) });
-      if (mode === '429') return r.fulfill({ status: 429, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: JSON.stringify({ error: { code: '1302', message: '并发数过高' } }) });
-      if (mode === 'empty') return r.fulfill({ status: 200, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: JSON.stringify({ choices: [{ message: { content: '看不清' } }] }) });
+      if (mode === 'key') return r.fulfill(err(400, { code: 400, message: 'API key not valid. Please pass a valid API key.', status: 'INVALID_ARGUMENT', details: [{ '@type': 'type.googleapis.com/google.rpc.ErrorInfo', reason: 'API_KEY_INVALID' }] }));
+      if (mode === 'quota') return r.fulfill(err(429, { code: 429, message: 'Resource has been exhausted', status: 'RESOURCE_EXHAUSTED' }));
+      if (mode === 'region') return r.fulfill(err(400, { code: 400, message: 'User location is not supported for the API use.', status: 'FAILED_PRECONDITION' }));
+      if (mode === 'empty') return r.fulfill({ status: 200, contentType: 'application/json', headers: CORS, body: JSON.stringify(gemReply('看不清')) });
+      if (mode === 'gone') return r.fulfill(err(404, { code: 404, message: 'models/gemini-old is not found', status: 'NOT_FOUND' }));
     });
     await page.goto(base); await ready(page);
-    await page.evaluate(() => new Promise(res => { const r = indexedDB.open('cuoti-data'); r.onsuccess = () => { const t = r.result.transaction('kv', 'readwrite'); t.objectStore('kv').put({ key: 'k', model: 'glm-4.6v-flash', auto: true, count: {} }, 'ai'); t.oncomplete = res; }; }));
+    await setAI(page, { provider: 'gemini', keys: { gemini: 'k' }, models: { gemini: 'gemini-3-flash' }, auto: true, count: {} });
     await page.reload(); await ready(page);
     await page.getByRole('button', { name: '没有照片？手动输入' }).click();
     await page.fill('#f-note', '先写的提醒');
     await page.setInputFiles('#photoInput', { name: 'q.png', mimeType: 'image/png', buffer: fs.readFileSync(path.join(SITE, 'icons', 'icon-192.png')) });
-    await page.getByText('连不上智谱').waitFor();               // 自动识别：跳过框选
+    await page.getByText('连不上 Google Gemini').waitFor();   // 自动识别：跳过框选
     await shot(page, 'R5-没识别出来');
     assert.strictEqual(await page.inputValue('#f-note'), '先写的提醒');
     assert.ok(await page.locator('.photo-box img').count());
-    for (const [m, text] of [['401', '密钥不对或过期了'], ['429', '免费版现在太忙'], ['empty', '照片里没认出题目']]) {
+    for (const [m, text] of [['key', '密钥不对或过期了'], ['quota', '免费额度暂时用完了'], ['region', '你所在的地区用不了 Gemini'], ['empty', '照片里没认出题目']]) {
       mode = m;
       await page.getByRole('button', { name: '重新识别' }).click();
       await page.getByText(text).waitFor();
     }
+    assert.deepStrictEqual(page.errors, []);
+    await ctx.close();
+  });
+
+  await test('AI 识别（智谱，国内用）：旧格式的设置照样能用', async () => {
+    const { ctx, page } = await newPhone(T0);
+    const calls = [];
+    await page.route('https://open.bigmodel.cn/**', async r => {
+      calls.push({ headers: r.request().headers(), body: JSON.parse(r.request().postData()) });
+      await r.fulfill({ status: 200, contentType: 'application/json', headers: CORS, body: JSON.stringify({ choices: [{ message: { content: '{"subject":"math","question":"解不等式 |2x − 1| < x + 1","my_answer":"x < 2","correct_answer":""}' } }] }) });
+    });
+    await page.goto(base); await ready(page);
+    await setAI(page, { key: 'zp-key', model: 'glm-4.6v-flash', auto: true, count: {} });
+    await page.reload(); await ready(page);
+    await page.getByRole('button', { name: '没有照片？手动输入' }).click();
+    await page.setInputFiles('#photoInput', { name: 'q.png', mimeType: 'image/png', buffer: fs.readFileSync(path.join(SITE, 'icons', 'icon-192.png')) });
+    await page.getByText('AI 填好了 2 项').waitFor();
+    assert.strictEqual(await page.inputValue('#f-q'), '解不等式 |2x − 1| < x + 1');
+    assert.strictEqual(calls[0].headers.authorization, 'Bearer zp-key');
+    assert.strictEqual(calls[0].body.model, 'glm-4.6v-flash');
     assert.deepStrictEqual(page.errors, []);
     await ctx.close();
   });
