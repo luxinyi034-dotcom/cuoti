@@ -248,8 +248,12 @@ textarea.inp{min-height:48px;overflow:hidden}
 'use strict';
 
 /* ================= 基本设置 ================= */
-var APP_VERSION = 'v2';
+var APP_VERSION = 'v3';
 var CHANGELOG = [
+  { v: 'v3', date: '2026-10-21', items: [
+    'AI 识别可以用 Claude 了（国外用，最稳）：在“我的 → AI 识别”里选 Claude，填一次密钥',
+    'Google 新发的 AQ. 开头的密钥调不通 Gemini 时，会直接说明原因，不再只说“密钥不对”'
+  ]},
   { v: 'v2', date: '2026-10-20', items: [
     '拍照后可以用 AI 自动识别：题目、我的答案、正确答案（照片上有批改时）和学科一次填好',
     '识别前先框出要认的部分；AI 只填空着的格子，不改你已经填的内容',
@@ -848,7 +852,7 @@ function vMe(){
     '<div class="g pad" style="display:grid;gap:6px;font-size:13.5px"><b style="font-size:15px">添加到主屏幕</b>' +
       '<span class="warm">iPhone：用 Safari 打开，点底部的分享按钮 →“添加到主屏幕”。安卓：浏览器菜单 →“添加到主屏幕”或“安装应用”。以后从主屏幕图标打开，更新会自动出现。</span>' +
       '<span class="aux">注意：主屏幕上的错题本和浏览器里打开的网页，数据是分开存的。选一个固定用。</span></div>' +
-    '<button class="g pad" data-act="openAI" style="display:flex;align-items:center;gap:12px;text-align:left;width:100%">' + ic('sparkle', '" style="color:var(--caramel)') + '<span style="flex:1;display:grid"><b style="font-size:15px">AI 识别</b><span class="aux">' + (aiKey() ? '已设置 · ' + provName() + (AI.auto ? ' · 拍完自动识别' : '') : '拍照后自动识别题目，需要填一次密钥（Google Gemini 或智谱）') + '</span></span>' + ic('chev', 's" style="color:var(--muted)') + '</button>' +
+    '<button class="g pad" data-act="openAI" style="display:flex;align-items:center;gap:12px;text-align:left;width:100%">' + ic('sparkle', '" style="color:var(--caramel)') + '<span style="flex:1;display:grid"><b style="font-size:15px">AI 识别</b><span class="aux">' + (aiKey() ? '已设置 · ' + provName() + (AI.auto ? ' · 拍完自动识别' : '') : '拍照后自动识别题目，需要填一次密钥（Claude、Gemini 或智谱）') + '</span></span>' + ic('chev', 's" style="color:var(--muted)') + '</button>' +
     '<div class="g pad" style="display:grid;gap:6px"><div class="hd"><b style="font-size:15px">版本</b><span class="num" style="font-size:16px">' + APP_VERSION + '</span></div>' +
       CHANGELOG.map(function(c, i){ return '<div style="display:grid;gap:3px;font-size:13.5px"><span class="aux">' + c.v + ' · ' + c.date + (i === 0 ? ' · 当前版本' : '') + '</span>' + c.items.map(function(x){ return '<span class="warm">· ' + esc(x) + '</span>'; }).join('') + '</div>'; }).join('') +
       (CHANGELOG.length > 1 ? '<span class="aux" style="margin-top:6px">以前的版本：' + CHANGELOG.slice(1).map(function(c){ return '<a href="' + c.v + '/" style="color:var(--caramel)">' + c.v + '</a>'; }).join('、') + '（打开是旧版本预览，用数据副本）</span>' : '') +
@@ -933,7 +937,7 @@ var ACT = {
   aiRetry: function(){ runAI(draft && draft.aiBox); },
   aiCancel: function(){ if (aiCtrl) aiCtrl.abort(); },
   openAI: function(){ aiTest = null; go('ai'); },
-  aiModel: async function(el){ AI.models.zhipu = el.dataset.m; await saveAI(); render(); },
+  aiModel: async function(el){ AI.models[AI.provider] = el.dataset.m; await saveAI(); render(); },
   aiProvider: async function(el){ AI.provider = el.dataset.p; aiTest = null; await saveAI(); render(); },
   aiAuto: async function(){ AI.auto = !AI.auto; await saveAI(); render(); },
   aiTest: async function(){
@@ -1053,13 +1057,15 @@ document.getElementById('photoInput').addEventListener('change', async function(
   } catch (er) { toast('这张照片没能读取，换一张试试', true); }
 });
 
-/* ================= AI 识别（网页直接调用：国外用 Google Gemini，国内用智谱） ================= */
+/* ================= AI 识别（网页直接调用：国外用 Claude 或 Google Gemini，国内用智谱） ================= */
 // 设置只存在这台手机的 kv/'ai' 里：密钥不进错题数据 S，不进自动备份，也不进导出的备份文件。
-var PROVIDERS = { gemini: { name: 'Google Gemini', where: '国外用' }, zhipu: { name: '智谱', where: '国内用' } };
+var PROVIDERS = { claude: { name: 'Claude', label: 'Claude · 国外' }, gemini: { name: 'Google Gemini', label: 'Gemini · 国外' }, zhipu: { name: '智谱', label: '智谱 · 国内' } };
+var CLAUDE_MODELS = [['claude-haiku-5-5', '省钱（约 0.006 元 / 张）'], ['claude-opus-5-5', '最准（约 0.2 元 / 张）']];
 var GEMINI_BASE = 'https://generativelanguage.googleapis.com/v1beta/';
 var ZHIPU_URL = 'https://open.bigmodel.cn/api/paas/v4/chat/completions';
 var ZHIPU_MODELS = [['glm-4.6v-flash', '免费版'], ['glm-4.6v', '收费版（更准）']];
-var AI = { provider: 'gemini', keys: { gemini: '', zhipu: '' }, models: { gemini: '', zhipu: 'glm-4.6v-flash' }, auto: false, count: {} };
+var AI_DEFAULT_MODELS = { claude: 'claude-haiku-5-5', gemini: '', zhipu: 'glm-4.6v-flash' };
+var AI = { provider: 'claude', keys: { claude: '', gemini: '', zhipu: '' }, models: Object.assign({}, AI_DEFAULT_MODELS), auto: false, count: {} };
 var AI_PROMPT = [
   '这是一张学生错题的照片（可能只是其中一部分）。请只做“认字和整理”，不要自己解题。',
   '只输出一个 JSON 对象，不要输出别的文字：',
@@ -1077,8 +1083,9 @@ async function loadAI(){
     var v = await iget('kv', 'ai');
     if (!v) return;
     if (typeof v.key === 'string') v = v.key ? { provider: 'zhipu', keys: { zhipu: v.key }, models: { zhipu: v.model }, auto: v.auto, count: v.count } : { auto: v.auto, count: v.count };  // v2 开发时的旧格式
-    AI = { provider: PROVIDERS[v.provider] ? v.provider : 'gemini', keys: Object.assign({ gemini: '', zhipu: '' }, v.keys), models: Object.assign({ gemini: '', zhipu: 'glm-4.6v-flash' }, v.models), auto: !!v.auto, count: v.count || {} };
-    if (!AI.models.zhipu) AI.models.zhipu = 'glm-4.6v-flash';
+    AI = { provider: PROVIDERS[v.provider] ? v.provider : 'claude', keys: Object.assign({ claude: '', gemini: '', zhipu: '' }, v.keys), models: Object.assign({}, AI_DEFAULT_MODELS, v.models), auto: !!v.auto, count: v.count || {} };
+    if (!AI.models.zhipu) AI.models.zhipu = AI_DEFAULT_MODELS.zhipu;
+    if (!AI.models.claude) AI.models.claude = AI_DEFAULT_MODELS.claude;
   } catch (e) {}
 }
 async function saveAI(){ try { await iput('kv', 'ai', JSON.parse(JSON.stringify(AI))); } catch (e) { toast('设置没存上：' + (e && e.message || e), true); } }
@@ -1106,6 +1113,34 @@ async function readJson(r){
   var txt = await r.text(), j = null;
   try { j = JSON.parse(txt); } catch (e) {}
   return { txt: txt, j: j };
+}
+
+/* Claude（Anthropic 官方 SDK，打包在 vendor/ 里，见 scripts/build-anthropic-sdk.sh） */
+var AI_SCHEMA = { type: 'object', additionalProperties: false, required: ['subject', 'question', 'my_answer', 'correct_answer'], properties: {
+  subject: { type: 'string', enum: ['math', 'phys', 'chem', 'eng', 'chn', 'other'] },
+  question: { type: 'string' }, my_answer: { type: 'string' }, correct_answer: { type: 'string' } } };
+var claudeLib = null;
+async function loadClaude(){
+  if (!claudeLib) claudeLib = await import(new URL((MODE === 'archive' ? '../' : '') + 'vendor/anthropic-sdk.mjs', location.href).href);
+  return claudeLib;
+}
+async function callClaude(img, text, signal){
+  var lib;
+  try { lib = await loadClaude(); } catch (e) { throw Object.assign(new Error('Claude 的程序没加载上'), { status: 0 }); }
+  var client = new lib.default({ apiKey: aiKey(), dangerouslyAllowBrowser: true, maxRetries: 1, timeout: 90000 });
+  var content = img ? [{ type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: img.split(',')[1] } }, { type: 'text', text: text }] : [{ type: 'text', text: text }];
+  var params = { model: AI.models.claude, max_tokens: 4000, messages: [{ role: 'user', content: content }], output_config: { effort: 'low' } };
+  if (img) params.output_config.format = { type: 'json_schema', schema: AI_SCHEMA };
+  var res;
+  try { res = await client.messages.create(params, { signal: signal }); }
+  catch (e) {
+    if (e instanceof lib.APIUserAbortError) throw e;
+    if (e instanceof lib.APIConnectionError) throw Object.assign(new Error(e.message), { status: 0 });
+    var body = e && e.error && e.error.error || {};
+    throw Object.assign(new Error(body.message || (e && e.message) || '出错了'), { status: e && e.status, code: body.type || '' });
+  }
+  if (res.stop_reason === 'refusal') throw Object.assign(new Error('refusal'), { kind: 'blocked' });
+  return res.content.filter(function(b){ return b.type === 'text'; }).map(function(b){ return b.text; }).join('');
 }
 
 /* Google Gemini */
@@ -1172,7 +1207,7 @@ async function callZhipu(img, text, signal){
     return callZhipuOnce([{ type: 'image_url', image_url: { url: img.split(',')[1] } }, { type: 'text', text: text }], signal);
   }
 }
-function callAI(img, text, signal){ return AI.provider === 'zhipu' ? callZhipu(img, text, signal) : callGemini(img, text, signal); }
+function callAI(img, text, signal){ return AI.provider === 'zhipu' ? callZhipu(img, text, signal) : AI.provider === 'gemini' ? callGemini(img, text, signal) : callClaude(img, text, signal); }
 
 function parseAI(text){
   var s = text.replace(/```(?:json)?/g, ''), a = s.indexOf('{'), b = s.lastIndexOf('}');
@@ -1187,10 +1222,18 @@ function aiError(e){
   if (e && e.kind === 'photo') return ['照片找不到了', '重新拍一张试试。'];
   if (e && e.kind === 'blocked') return ['这张照片没能识别', '换一张照片，或者只框题目那一块再试。'];
   if (e && e.kind === 'nomodel') return ['没找到能用的 Gemini 模型', '过一会儿再试；如果一直这样，把这句话截图发给开发者。'];
-  var P = provName(), other = AI.provider === 'zhipu' ? '如果你现在在国外，智谱连不上，可以在“我的 → AI 识别”换成 Google Gemini。' : '如果你现在在国内，Gemini 连不上，可以在“我的 → AI 识别”换成智谱。';
+  var P = provName(), other = AI.provider === 'zhipu' ? '如果你现在在国外，智谱连不上，可以在“我的 → AI 识别”换成 Claude。' : '如果你现在在国内，' + P + ' 连不上，可以在“我的 → AI 识别”换成智谱。';
   if (e instanceof TypeError || (e && e.status === 0)) return ['连不上 ' + P + '，这次没识别', '可能是没网。' + other + '照片已经存好了，也可以先手动填。'];
   var s = e && e.status, code = e && e.code || '', msg = e && e.message || '';
-  if (AI.provider === 'gemini') {
+  if (AI.provider === 'claude') {
+    if (s === 401 || code === 'authentication_error') return ['密钥不对或过期了', '到“我的 → AI 识别”换一个密钥（以 sk-ant- 开头）。'];
+    if (/credit balance/i.test(msg)) return ['Claude 账户余额不够了', '到 console.anthropic.com 的“Billing”里充值。'];
+    if (s === 403 || code === 'permission_error') return ['这个密钥没有权限', '到 console.anthropic.com 检查这个密钥是否被停用，或者新建一个。'];
+    if (s === 404 || code === 'not_found_error') return ['这个模型现在用不了', '在“我的 → AI 识别”换另一个模型试试。'];
+    if (s === 429 || code === 'rate_limit_error') return ['点得太快了', '等一分钟再点“重新识别”。'];
+    if (s === 529 || code === 'overloaded_error' || s >= 500) return ['Claude 现在太忙', '等一会儿再点“重新识别”。'];
+  } else if (AI.provider === 'gemini') {
+    if ((e && e.reason) === 'ACCESS_TOKEN_TYPE_UNSUPPORTED') return ['Google 不认这种新格式的密钥', 'AQ. 开头的密钥现在调不通 Gemini，这是 Google 那边的问题。可以在“我的 → AI 识别”换成 Claude。'];
     if ((e && e.reason) === 'API_KEY_INVALID' || s === 401 || code === 'UNAUTHENTICATED' || (s === 400 && /api key/i.test(msg)) || (s === 403 && code === 'PERMISSION_DENIED')) return ['密钥不对或过期了', '到“我的 → AI 识别”换一个密钥。'];
     if (s === 429 || code === 'RESOURCE_EXHAUSTED') return ['免费额度暂时用完了', '可能是点得太快，等一分钟再试；如果是今天的额度用完了，明天会自动恢复。'];
     if (code === 'FAILED_PRECONDITION' || /location/i.test(msg)) return ['你所在的地区用不了 Gemini', other];
@@ -1277,23 +1320,28 @@ document.addEventListener('pointercancel', function(){ cropDrag = null; });
 /* R4 AI 识别设置 */
 var aiTest = null;
 function vAI(){
-  var n = AI.count[monthKey()] || 0, g = AI.provider === 'gemini', key = AI.keys[AI.provider] || '';
+  var n = AI.count[monthKey()] || 0, g = AI.provider === 'gemini', c = AI.provider === 'claude', key = AI.keys[AI.provider] || '';
   var st = aiTest === 'busy' ? '<span class="aux">测试中…</span>' : aiTest === 'ok' ? '<span class="ok-line">' + ic('check', 'xs') + '已连上，可以用</span>' : aiTest ? '<span class="aux" style="color:var(--wrong)">' + esc(aiTest) + '</span>' : '';
   return '<div class="hd"><button class="cbtn g" data-act="back" aria-label="返回">' + ic('back') + '</button><span class="hd-c">AI 识别</span><span style="width:40px"></span></div>' +
-    '<div class="field"><span class="flabel">用哪家</span><div class="seg g">' + Object.keys(PROVIDERS).map(function(k){ return '<button data-act="aiProvider" data-p="' + k + '"' + (AI.provider === k ? ' class="on"' : '') + '>' + PROVIDERS[k].name + ' · ' + PROVIDERS[k].where + '</button>'; }).join('') + '</div></div>' +
+    '<div class="field"><span class="flabel">用哪家</span><div class="seg g">' + Object.keys(PROVIDERS).map(function(k){ return '<button data-act="aiProvider" data-p="' + k + '"' + (AI.provider === k ? ' class="on"' : '') + '>' + PROVIDERS[k].label + '</button>'; }).join('') + '</div></div>' +
     '<div class="g l pad" style="display:grid;gap:12px">' +
       '<div class="field"><label for="f-aikey">' + provName() + ' API 密钥</label><input id="f-aikey" class="inp" type="password" autocomplete="off" spellcheck="false" placeholder="粘贴密钥" value="' + esc(key) + '"></div>' +
       '<div class="hd">' + (st || '<span class="aux">' + (key ? '已保存' : '还没填') + '</span>') + '<button class="btn o sm" data-act="aiTest">' + (key ? '保存并测试' : '保存') + '</button></div>' +
     '</div>' +
-    (g ? '<div class="g pad" style="display:grid;gap:8px;font-size:13px"><b style="font-size:14px">怎么拿到密钥</b>' +
+    (c ? '<div class="g pad" style="display:grid;gap:8px;font-size:13px"><b style="font-size:14px">怎么拿到密钥</b>' +
+          '<span class="warm">1. 打开 console.anthropic.com，注册登录。<br>2. 点“Billing”，绑卡充值 5 美元。<br>3. 点“API Keys”→“Create Key”，复制以 sk-ant- 开头的密钥，粘贴到上面，点“保存”。</span>' +
+          '<div class="seg g">' + CLAUDE_MODELS.map(function(m){ return '<button data-act="aiModel" data-m="' + m[0] + '"' + (AI.models.claude === m[0] ? ' class="on"' : '') + '>' + m[1] + '</button>'; }).join('') + '</div>' +
+          '<span class="aux">按每张约 1600 像素估算，实际以 Anthropic 账单为准。5 美元用“省钱”大约能识别几千张。本月已识别 ' + n + ' 张。</span></div>'
+     : g ? '<div class="g pad" style="display:grid;gap:8px;font-size:13px"><b style="font-size:14px">怎么拿到密钥</b>' +
           '<span class="warm">1. 打开 aistudio.google.com，用 Google 账号登录。<br>2. 点“Get API key”→“Create API key”。<br>3. 复制密钥，粘贴到上面，点“保存”。</span>' +
-          '<span class="aux">不用绑卡，免费额度够每天录题用。现在用的模型：' + (AI.models.gemini ? esc(AI.models.gemini) : '保存后自动选最新的 Flash') + '。本月已识别 ' + n + ' 张。</span></div>'
+          '<span class="aux">注意：Google 现在给很多新账号发 AQ. 开头的密钥，这种密钥暂时调不通 Gemini。不用绑卡，免费额度够每天录题用。现在用的模型：' + (AI.models.gemini ? esc(AI.models.gemini) : '保存后自动选最新的 Flash') + '。本月已识别 ' + n + ' 张。</span></div>'
        : '<div class="g pad" style="display:grid;gap:8px;font-size:13px"><b style="font-size:14px">怎么拿到密钥</b>' +
           '<span class="warm">1. 打开 open.bigmodel.cn（智谱开放平台），用手机号注册登录。<br>2. 右上角头像 →“API Keys”→“添加新的 API Key”。<br>3. 复制密钥，粘贴到上面，点“保存”。</span>' +
           '<div class="seg g">' + ZHIPU_MODELS.map(function(m){ return '<button data-act="aiModel" data-m="' + m[0] + '"' + (AI.models.zhipu === m[0] ? ' class="on"' : '') + '>' + m[1] + '</button>'; }).join('') + '</div>' +
           '<span class="aux">免费版 GLM-4.6V-Flash 不花钱，用的人多时可能要等。收费版 GLM-4.6V 按智谱的价格从账户扣钱。智谱只能在国内用。本月已识别 ' + n + ' 张。</span></div>') +
     '<div class="g pad" style="display:grid;gap:6px;font-size:13px"><b style="font-size:14px">照片会去哪里</b><span class="warm">点“识别”时，框里的那部分照片会发给 ' + provName() + ' 认字。不点“识别”的照片不会离开手机。</span>' +
-      (g ? '<span class="aux">按 Google 的条款，免费额度下发过去的内容可能会被用来改进他们的产品。框的时候尽量别框进姓名、学号这些个人信息。</span>' : '') + '</div>' +
+      (g ? '<span class="aux">按 Google 的条款，免费额度下发过去的内容可能会被用来改进他们的产品。框的时候尽量别框进姓名、学号这些个人信息。</span>' : '') +
+      (c ? '<span class="aux">Claude 是 Anthropic 公司的 AI。按 Anthropic 的条款，通过 API 发过去的内容默认不会被拿去训练模型。</span>' : '') + '</div>' +
     '<button class="g pad" data-act="aiAuto" role="switch" aria-checked="' + AI.auto + '" style="display:flex;justify-content:space-between;align-items:center;font-size:14px;text-align:left"><span style="display:grid"><span>拍完照自动识别</span><span class="aux">打开后跳过框选，直接识别整张照片</span></span><span class="switch' + (AI.auto ? ' on' : '') + '"><i></i></span></button>' +
     (key ? '<div style="text-align:center"><button class="danger-text" data-act="aiDelKey" data-confirm="再点一次，删除密钥">删除这台手机上的 ' + provName() + ' 密钥</button></div>' : '');
 }

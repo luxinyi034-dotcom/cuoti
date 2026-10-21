@@ -1,6 +1,6 @@
 # 错题本 PRD
 
-**状态**：第 0、1 部分已确认（录入用 E1；iPad 排版 I1–I5 已确认；要支持 Apple Pencil）。使用者现在用手机，先做手机版：第 2 部分 v1、第 3 部分 v2（拍照识别）已实现，待发布。iPad 版和 Apple Pencil 见 `docs/待办.md`。
+**状态**：第 0、1 部分已确认（录入用 E1；iPad 排版 I1–I5 已确认；要支持 Apple Pencil）。使用者现在用手机，先做手机版：第 2 部分 v1、第 3 部分 v2（拍照识别）已发布；第 4 部分 v3（Claude）见下。iPad 版和 Apple Pencil 见 `docs/待办.md`。
 
 设计稿画布：`docs/design/设计稿.html`
 设计规范全文：`docs/设计规范.md`
@@ -128,6 +128,17 @@
 
 以上由 `tests/app.test.cjs` 自动检查（共 20 项），Gemini 和智谱的回复是模拟的；**真实调用要在使用者手机上用真密钥确认**。
 
+## 第 4 部分 · 识别改用 Claude（v3）
+
+- 起因：使用者在国外，Google 只给 TA 的账号发 `AQ.` 开头的新格式密钥，调 Gemini（generativelanguage 和 Vertex 两个入口）都返回 401 `ACCESS_TOKEN_TYPE_UNSUPPORTED`。开发环境里用这把密钥实测过；论坛上大量同样报告，Google 没修。使用者选了 Claude（要充 5 美元）。
+- 默认用 Claude，Gemini / 智谱保留为选项。设置里三选一：“Claude · 国外 / Gemini · 国外 / 智谱 · 国内”，各存各的密钥。
+- 调用：Anthropic 官方 JS SDK（`@anthropic-ai/sdk@0.131.0`，打包成 `site/vendor/anthropic-sdk.mjs`，脚本 `scripts/build-anthropic-sdk.sh`），`dangerouslyAllowBrowser: true` 从网页直连 `api.anthropic.com`（实测允许跨域）。
+- 模型：默认 `claude-haiku-5-5`（省钱，约 0.006 元 / 张），可换 `claude-opus-5-5`（最准，约 0.2 元 / 张）；`output_config.effort: low`，识别照片时用 `output_config.format` 的 JSON schema 保证返回格式；不传 temperature。
+- 出错说明：密钥不对 / 余额不够 / 没权限 / 模型用不了 / 太快 / 太忙 / 连不上；Gemini 的 AQ. 密钥单独说明原因并建议换 Claude。
+- 升级：v2 的数据和 AI 设置（已存的 Gemini 密钥、开关、张数）原样保留，只是多了 Claude。
+
+验收：`tests/app.test.cjs` 22 项全过（含 v2 → v3 升级测试、Claude 识别和出错的模拟测试）；另用假密钥真实请求过一次 Claude，返回 401 并正确显示“密钥不对或过期了”。**用真密钥识别照片要在使用者手机上确认。**
+
 ## 待确认的问题
 
-1. 发布方式：用 GitHub Pages，主地址 https://luxinyi034-dotcom.github.io/cuoti/ ，需要使用者在仓库设置里打开 Pages，并同意合并到 main。
+（无）发布方式已定：GitHub Pages，主地址 https://luxinyi034-dotcom.github.io/cuoti/ ，合并到 main 自动发布。

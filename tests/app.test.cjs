@@ -9,7 +9,7 @@ const assert = require('assert');
 const SITE = path.join(__dirname, '..', 'site');
 const SHOTS = path.join(__dirname, 'shots');
 fs.mkdirSync(SHOTS, { recursive: true });
-const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.json': 'application/json', '.png': 'image/png', '.webmanifest': 'application/manifest+json' };
+const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.mjs': 'text/javascript', '.json': 'application/json', '.png': 'image/png', '.webmanifest': 'application/manifest+json' };
 
 function serve(){
   return new Promise(res => {
@@ -224,9 +224,9 @@ async function test(name, fn){
   assert.deepStrictEqual(page.errors, []);
   await ctx.close();
 
-  await test('升级测试：用上一版 v1 录的题和照片，打开 v2 后全部还在，并自动备份“升级到 v2 之前”', async () => {
+  await test('升级测试：用上一版 v2 录的题、照片和 AI 设置，打开 v3 后全部还在，并自动备份“升级到 v3 之前”', async () => {
     // 把 site/v1/ 存档还原成当时的正式版，放在主地址上运行
-    const v1 = fs.readFileSync(path.join(SITE, 'v1', 'index.html'), 'utf8').replace(/<script>window\.CUOTI_MODE='archive';[^<]*<\/script>\n/, '');
+    const v1 = fs.readFileSync(path.join(SITE, 'v2', 'index.html'), 'utf8').replace(/<script>window\.CUOTI_MODE='archive';[^<]*<\/script>\n/, '');
     assert.ok(!v1.includes("CUOTI_MODE='archive'"));
     const { ctx, page } = await newPhone(T0 - 3 * DAY);
     await page.route(base, r => r.fulfill({ contentType: 'text/html; charset=utf-8', body: v1 }));
@@ -235,27 +235,31 @@ async function test(name, fn){
     await page.getByRole('button', { name: '没有照片？手动输入' }).click();
     await page.setInputFiles('#photoInput', { name: 'q.png', mimeType: 'image/png', buffer: fs.readFileSync(path.join(SITE, 'icons', 'icon-192.png')) });
     await page.waitForSelector('.photo-box img[src^="blob:"]');
-    await page.fill('#f-q', 'v1 时录的题');
+    await page.fill('#f-q', 'v2 时录的题');
+    await page.evaluate(() => new Promise(res => { const r = indexedDB.open('cuoti-data'); r.onsuccess = () => { const t = r.result.transaction('kv', 'readwrite'); t.objectStore('kv').put({ provider: 'gemini', keys: { gemini: 'old-gemini-key', zhipu: '' }, models: { gemini: 'gemini-3-flash', zhipu: 'glm-4.6v-flash' }, auto: true, count: { '2026-10': 3 } }, 'ai'); t.oncomplete = res; }; }));
     await page.fill('#f-my', '3');
     await page.fill('#f-right', '5');
     await page.getByRole('button', { name: '保存，明天复习' }).click();
     await page.getByText('今天没有要复习的题').waitFor();
     const before = await S(page);
-    assert.strictEqual(before.meta.lastVersion, 'v1');
+    assert.strictEqual(before.meta.lastVersion, 'v2');
     // 换成 v2（主地址上的新版本）
     await page.unroute(base);
     await page.clock.setFixedTime(T0);
     await page.reload(); await ready(page);
     const s = await S(page);
-    assert.strictEqual(s.meta.lastVersion, 'v2');
+    assert.strictEqual(s.meta.lastVersion, 'v3');
     assert.deepStrictEqual(s.items, before.items, '错题一条都不能变');
+    const ai = await page.evaluate(() => new Promise(res => { const r = indexedDB.open('cuoti-data'); r.onsuccess = () => { const q = r.result.transaction('kv').objectStore('kv').get('ai'); q.onsuccess = () => res(q.result); }; }));
+    assert.strictEqual(ai.keys.gemini, 'old-gemini-key', 'AI 设置要保留');
+    assert.strictEqual(ai.provider, 'gemini');
     await page.getByRole('button', { name: '错题本' }).click();
     await page.locator('#bookList .item').first().click();
     await page.waitForSelector('.photo-box img[src^="blob:"]');
     const snaps = await page.evaluate(() => new Promise(res => { const r = indexedDB.open('cuoti-data'); r.onsuccess = () => { const q = r.result.transaction('snaps').objectStore('snaps').getAll(); q.onsuccess = () => res(q.result); }; }));
-    const up = snaps.find(x => x.reason === '升级到 v2 之前');
+    const up = snaps.find(x => x.reason === '升级到 v3 之前');
     assert.ok(up, '要有升级前备份，现在有：' + snaps.map(x => x.reason + '@' + new Date(x.t).toISOString()).join('，'));
-    assert.strictEqual(JSON.parse(up.data).items[0].q, 'v1 时录的题');
+    assert.strictEqual(JSON.parse(up.data).items[0].q, 'v2 时录的题');
     assert.deepStrictEqual(page.errors, []);
     await ctx.close();
   });
@@ -321,7 +325,8 @@ async function test(name, fn){
     await page.goto(base); await ready(page);
     await page.getByRole('button', { name: '我的' }).click();
     await page.getByRole('button', { name: /AI 识别/ }).click();
-    assert.ok(await page.locator('.seg button.on', { hasText: 'Google Gemini' }).count(), '默认用 Gemini');
+    assert.ok(await page.locator('.seg button.on', { hasText: 'Claude' }).count(), '默认用 Claude');
+    await page.getByRole('button', { name: 'Gemini · 国外' }).click();
     await page.fill('#f-aikey', 'AIza-test-key');
     await page.getByRole('button', { name: '保存' }).click();
     await page.getByText('已连上，可以用').waitFor();
@@ -408,6 +413,7 @@ async function test(name, fn){
       if (mode === 'quota') return r.fulfill(err(429, { code: 429, message: 'Resource has been exhausted', status: 'RESOURCE_EXHAUSTED' }));
       if (mode === 'region') return r.fulfill(err(400, { code: 400, message: 'User location is not supported for the API use.', status: 'FAILED_PRECONDITION' }));
       if (mode === 'empty') return r.fulfill({ status: 200, contentType: 'application/json', headers: CORS, body: JSON.stringify(gemReply('看不清')) });
+      if (mode === 'aq') return r.fulfill(err(401, { code: 401, message: 'API key not valid. Please pass a valid API key.', status: 'UNAUTHENTICATED', details: [{ '@type': 'type.googleapis.com/google.rpc.ErrorInfo', reason: 'ACCESS_TOKEN_TYPE_UNSUPPORTED' }] }));
       if (mode === 'gone') return r.fulfill(err(404, { code: 404, message: 'models/gemini-old is not found', status: 'NOT_FOUND' }));
     });
     await page.goto(base); await ready(page);
@@ -420,11 +426,81 @@ async function test(name, fn){
     await shot(page, 'R5-没识别出来');
     assert.strictEqual(await page.inputValue('#f-note'), '先写的提醒');
     assert.ok(await page.locator('.photo-box img').count());
-    for (const [m, text] of [['key', '密钥不对或过期了'], ['quota', '免费额度暂时用完了'], ['region', '你所在的地区用不了 Gemini'], ['empty', '照片里没认出题目']]) {
+    for (const [m, text] of [['key', '密钥不对或过期了'], ['quota', '免费额度暂时用完了'], ['region', '你所在的地区用不了 Gemini'], ['aq', 'Google 不认这种新格式的密钥'], ['empty', '照片里没认出题目']]) {
       mode = m;
       await page.getByRole('button', { name: '重新识别' }).click();
       await page.getByText(text).waitFor();
     }
+    assert.deepStrictEqual(page.errors, []);
+    await ctx.close();
+  });
+
+  const claudeMsg = text => ({ id: 'msg_1', type: 'message', role: 'assistant', model: 'claude-haiku-5-5', content: [{ type: 'text', text }], stop_reason: 'end_turn', stop_sequence: null, usage: { input_tokens: 10, output_tokens: 10 } });
+  const claudeErr = (status, type, message) => ({ status, contentType: 'application/json', headers: CORS, body: JSON.stringify({ type: 'error', error: { type, message } }) });
+
+  await test('AI 识别（Claude）：默认用 Claude；保存测试、拍照识别都走官方 SDK', async () => {
+    const { ctx, page } = await newPhone(T0);
+    const calls = [];
+    const reply = { subject: 'math', question: '解不等式 |2x − 1| < x + 1，并写出解集。', my_answer: 'x < 2', correct_answer: '0 < x < 2' };
+    await page.route('https://api.anthropic.com/**', async r => {
+      const req = r.request();
+      if (req.method() === 'OPTIONS') return r.fulfill({ status: 200, headers: CORS });
+      const body = JSON.parse(req.postData()); calls.push({ headers: req.headers(), body });
+      const isImg = body.messages[0].content.some(b => b.type === 'image');
+      await r.fulfill({ status: 200, contentType: 'application/json', headers: CORS, body: JSON.stringify(claudeMsg(isImg ? JSON.stringify(reply) : '好')) });
+    });
+    await page.goto(base); await ready(page);
+    await page.getByRole('button', { name: '我的' }).click();
+    await page.getByRole('button', { name: /AI 识别/ }).click();
+    await page.fill('#f-aikey', 'sk-ant-test-123');
+    await page.getByRole('button', { name: '保存' }).click();
+    await page.getByText('已连上，可以用').waitFor();
+    assert.strictEqual(calls[0].headers['x-api-key'], 'sk-ant-test-123');
+    assert.strictEqual(calls[0].headers['anthropic-dangerous-direct-browser-access'], 'true');
+    assert.strictEqual(calls[0].body.model, 'claude-haiku-5-5');
+    assert.strictEqual(calls[0].body.output_config.effort, 'low');
+    await shot(page, 'R4-Claude设置');
+    await page.getByRole('button', { name: '返回' }).click();
+    await page.locator('.tabbar .plus').click();
+    await page.setInputFiles('#photoInput', { name: 'q.png', mimeType: 'image/png', buffer: fs.readFileSync(path.join(SITE, 'icons', 'icon-512.png')) });
+    await page.getByText('框出要识别的部分').waitFor();
+    await page.getByRole('button', { name: '识别', exact: true }).click();
+    await page.getByText('AI 填好了 3 项').waitFor();
+    assert.strictEqual(await page.inputValue('#f-q'), reply.question);
+    assert.strictEqual(await page.inputValue('#f-right'), reply.correct_answer);
+    assert.ok(await page.locator('.chip.on', { hasText: '数学' }).count());
+    const img = calls[1].body.messages[0].content[0];
+    assert.strictEqual(img.type, 'image');
+    assert.strictEqual(img.source.media_type, 'image/jpeg');
+    assert.ok(img.source.data.length > 100 && !img.source.data.startsWith('data:'));
+    assert.strictEqual(calls[1].body.output_config.format.type, 'json_schema');
+    assert.ok(!('temperature' in calls[1].body), '这个模型不能传 temperature');
+    assert.deepStrictEqual(page.errors, []);
+    await ctx.close();
+  });
+
+  await test('AI 识别失败（Claude）：密钥错、余额不够、太忙、没网都说清楚', async () => {
+    const { ctx, page } = await newPhone(T0);
+    let mode = 'key';
+    await page.route('https://api.anthropic.com/**', async r => {
+      if (r.request().method() === 'OPTIONS') return r.fulfill({ status: 200, headers: CORS });
+      if (mode === 'key') return r.fulfill(claudeErr(401, 'authentication_error', 'invalid x-api-key'));
+      if (mode === 'credit') return r.fulfill(claudeErr(400, 'invalid_request_error', 'Your credit balance is too low to access the Anthropic API.'));
+      if (mode === 'busy') return r.fulfill(claudeErr(529, 'overloaded_error', 'Overloaded'));
+      if (mode === 'net') return r.abort('failed');
+    });
+    await page.goto(base); await ready(page);
+    await setAI(page, { provider: 'claude', keys: { claude: 'sk-ant-x' }, models: { claude: 'claude-opus-5-5' }, auto: true, count: {} });
+    await page.reload(); await ready(page);
+    await page.getByRole('button', { name: '没有照片？手动输入' }).click();
+    await page.setInputFiles('#photoInput', { name: 'q.png', mimeType: 'image/png', buffer: fs.readFileSync(path.join(SITE, 'icons', 'icon-192.png')) });
+    await page.getByText('密钥不对或过期了').waitFor();
+    for (const [m, text] of [['credit', 'Claude 账户余额不够了'], ['busy', 'Claude 现在太忙'], ['net', '连不上 Claude']]) {
+      mode = m;
+      await page.getByRole('button', { name: '重新识别' }).click();
+      await page.getByText(text).waitFor({ timeout: 20000 });
+    }
+    assert.ok(await page.locator('.photo-box img').count(), '照片还在');
     assert.deepStrictEqual(page.errors, []);
     await ctx.close();
   });
