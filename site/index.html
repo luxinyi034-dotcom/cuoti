@@ -196,6 +196,69 @@ textarea.inp{min-height:48px;overflow:hidden}
 #toast.warn{background:var(--wrong)}
 #viewer{position:fixed;inset:0;z-index:60;background:rgba(30,18,10,.92);display:grid;place-items:center;padding:calc(var(--sat) + 20px) 12px calc(var(--sab) + 20px)}
 #viewer img{max-height:100%;object-fit:contain;border-radius:8px}
+/* ===== iPad / 电脑（设计稿 I1–I5）===== */
+#side{display:none}
+body[data-lay="wide"],body[data-lay="mid"]{--side-w:248px}
+body[data-lay="mid"]{--side-w:96px}
+body[data-lay="wide"]:not(.focus) #app,body[data-lay="mid"]:not(.focus) #app{max-width:none;display:grid;grid-template-columns:var(--side-w) minmax(0,1fr)}
+body[data-lay="wide"]:not(.focus) #side,body[data-lay="mid"]:not(.focus) #side{display:block;position:sticky;top:0;height:100vh;padding:calc(var(--sat) + 14px) 0 18px 16px}
+body[data-lay="wide"] #app,body[data-lay="mid"] #app{max-width:none}
+body[data-lay="wide"] #view{padding:calc(var(--sat) + 22px) 32px 120px;max-width:1280px;width:100%;margin:0 auto}
+body[data-lay="mid"] #view{padding:calc(var(--sat) + 22px) 28px 120px;max-width:900px;width:100%;margin:0 auto}
+body.focus[data-lay="wide"] #view,body.focus[data-lay="mid"] #view{max-width:1180px}
+.side-in{height:100%;display:flex;flex-direction:column;gap:4px;padding:18px 14px;border-radius:24px;overflow:auto}
+body[data-lay="mid"] .side-in{align-items:center;padding:18px 10px}
+.brand{display:flex;align-items:center;gap:10px;padding:2px 8px 16px}
+.logo{width:38px;height:38px;border-radius:12px;background:var(--espresso);color:var(--espresso-ink);display:grid;place-items:center;font-family:var(--f-title);font-weight:600;font-size:19px;flex:none}
+.brand b{font-family:var(--f-title);font-size:21px;font-weight:600}
+.side-in .add{display:flex;align-items:center;gap:10px;height:50px;padding:0 10px;border-radius:16px;background:rgba(255,255,255,.75);border:1px solid var(--line);font-weight:500;font-size:15px;margin-bottom:12px;width:100%}
+.side-in .add .pc{width:32px;height:32px;border-radius:50%;background:var(--caramel);color:#FFF8F0;display:grid;place-items:center;flex:none}
+body[data-lay="mid"] .side-in .add{width:56px;height:56px;padding:0;justify-content:center}
+.nav-i{display:flex;align-items:center;gap:12px;height:46px;padding:0 12px;border-radius:14px;color:var(--warm);font-size:15px;width:100%;position:relative}
+.nav-i.on{background:#FFFCF8;color:var(--ink);font-weight:600;box-shadow:0 4px 12px -6px rgba(74,43,27,.35)}
+.nav-i.on .i{color:var(--espresso)}
+body[data-lay="mid"] .nav-i{width:56px;height:56px;padding:0;justify-content:center}
+.nav-i .cnt{margin-left:auto;font-family:var(--f-num);font-size:13px;color:var(--muted)}
+.nav-i .bdg{margin-left:auto;min-width:22px;height:20px;border-radius:10px;background:var(--caramel-soft);color:var(--caramel-deep);font-size:11.5px;display:grid;place-items:center;padding:0 6px;font-weight:500}
+body[data-lay="mid"] .nav-i .bdg{position:absolute;top:5px;right:3px;margin:0;min-width:18px;height:17px;font-size:10px;padding:0 4px}
+.side-foot{margin-top:auto;padding:12px;border-radius:16px;font-size:12.5px;display:grid;gap:4px;background:rgba(255,255,255,.45);border:1px solid var(--glass-edge);width:100%}
+.side-foot b{display:flex;align-items:center;gap:6px;font-weight:500}
+body[data-lay="mid"] .side-foot{width:56px;padding:12px 0;display:grid;place-items:center}
+.cols{display:flex;flex-direction:column;gap:14px}
+.col{display:flex;flex-direction:column;gap:14px;min-width:0}
+.col>*{flex:none}
+.narrow{max-width:640px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+.narrow>*{flex:none}
+body[data-lay="wide"] .cols{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:start}
+body[data-lay="wide"] .home-grid{grid-template-columns:1.45fr 1fr}
+.home-grid{display:grid;gap:18px;align-items:start}
+.hero{display:grid;grid-template-columns:auto 1fr;gap:24px;align-items:center;padding:22px 24px}
+.stats2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+body[data-lay="mid"] .stats2{grid-template-columns:repeat(3,1fr)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cards2{display:grid;gap:14px;align-items:start}
+body[data-lay="wide"] .cards2,body[data-lay="mid"] .cards2{grid-template-columns:1fr 1fr}
+.cards2 .span2{grid-column:1/-1}
+.wide-qa{grid-template-columns:repeat(3,1fr);padding:14px 16px;gap:10px}
+.wide-qa button{display:flex;align-items:center;gap:12px;text-align:left;justify-items:start}
+.wide-qa .t{display:grid;line-height:1.35}
+.wide-qa .t b{font-size:14px;color:var(--ink);font-weight:500}
+.wide-qa .t small{font-size:12px;color:var(--muted)}
+body[data-lay="mid"] #bookList{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.split{display:grid;grid-template-columns:minmax(330px,400px) minmax(0,1fr);gap:22px;align-items:start}
+.split-l{display:flex;flex-direction:column;gap:14px;min-width:0}
+.split-l>*{flex:none}
+.split-r{position:sticky;top:calc(var(--sat) + 16px);max-height:calc(100vh - var(--sat) - 32px);overflow:auto;display:flex;flex-direction:column;gap:14px;padding:2px 4px 24px;border-radius:var(--r-l)}
+.split-r>*{flex:none}
+.split .tiles{margin:0;padding:2px 0 10px}
+.item.sel{background:rgba(255,252,248,.95);box-shadow:inset 0 0 0 1.5px var(--espresso),var(--shadow)}
+.panel-act{display:flex;gap:10px;align-items:center;justify-content:space-between}
+body[data-lay="wide"] .bottombar{left:auto;right:max(32px,calc(50% - 600px));bottom:22px;width:min(540px,44vw);padding:0;background:none}
+body[data-lay="wide"] .bottombar.center,body[data-lay="mid"] .bottombar.center{left:50%;right:auto;transform:translateX(-50%);width:min(560px,90vw);padding:0;bottom:22px;background:none}
+body[data-lay="wide"] .photo-box img{max-height:46vh}
+body[data-lay="wide"] .crop-stage img{max-height:64vh}
+.kbd-hint{font-size:12px;color:var(--muted)}
+@media (hover:hover){button:hover{filter:brightness(.985)}.g.item:hover{box-shadow:inset 0 1px 0 rgba(255,255,255,.85),0 18px 36px -18px rgba(74,43,27,.45)}.nav-i:not(.on):hover{background:rgba(255,255,255,.5)}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -238,7 +301,7 @@ textarea.inp{min-height:48px;overflow:hidden}
     <symbol id="trash" viewBox="0 0 24 24"><path d="M5 7h14M10 7V5h4v2M7 7l1 13h8l1-13"/></symbol>
   </defs>
 </svg>
-<div id="app"><main id="view" aria-live="polite"></main></div>
+<div id="app"><aside id="side" aria-label="主导航"></aside><main id="view" aria-live="polite"></main></div>
 <div id="bar"></div>
 <div id="toast" role="status"></div>
 <input type="file" id="photoInput" accept="image/*" hidden>
@@ -248,8 +311,13 @@ textarea.inp{min-height:48px;overflow:hidden}
 'use strict';
 
 /* ================= 基本设置 ================= */
-var APP_VERSION = 'v3';
+var APP_VERSION = 'v4';
 var CHANGELOG = [
+  { v: 'v4', date: '2026-10-23', items: [
+    'iPad 和电脑版：屏幕宽时换成左侧边栏；错题本左边列表、右边详情；录入和复习左右两栏',
+    'iPad 竖着拿时侧边栏收成只有图标的窄条',
+    '电脑上可以用键盘 ↑ ↓ 在错题本里切换题目'
+  ]},
   { v: 'v3', date: '2026-10-21', items: [
     'AI 识别可以用 Claude 了（国外用，最稳）：在“我的 → AI 识别”里选 Claude，填一次密钥',
     'Google 新发的 AQ. 开头的密钥调不通 Gemini 时，会直接说明原因，不再只说“密钥不对”'
@@ -513,8 +581,20 @@ function firstLine(it){
 
 /* ================= 页面 ================= */
 var route = { name: 'home' };
-var view = document.getElementById('view'), bar = document.getElementById('bar');
-var ui = { bookSubject: 'all', bookSeg: 'all', search: '', statsRange: 'week' };
+var view = document.getElementById('view'), bar = document.getElementById('bar'), side = document.getElementById('side');
+var ui = { bookSubject: 'all', bookSeg: 'all', search: '', statsRange: 'week', bookSel: null };
+// 排版：手机（窄于 700）/ iPad 竖屏（700–899，图标窄栏）/ iPad 横屏和电脑（900 以上，侧边栏）
+var LAYOUT = 'phone', booted = false;
+function layoutOf(){ var w = window.innerWidth || document.documentElement.clientWidth; return w >= 900 ? 'wide' : w >= 700 ? 'mid' : 'phone'; }
+function applyLayout(){
+  var l = layoutOf();
+  if (l === LAYOUT && document.body.dataset.lay) return;
+  LAYOUT = l; document.body.dataset.lay = l;
+  if (booted) render();
+}
+applyLayout();
+window.addEventListener('resize', applyLayout);
+var FOCUS_ROUTES = { add: 1, crop: 1, review: 1, done: 1 };
 
 function go(name, params, replace){
   route = Object.assign({ name: name }, params || {});
@@ -526,13 +606,14 @@ window.addEventListener('popstate', function(e){
 });
 
 function render(){
-  var r = route.name, html = '', tab = null;
-  if (r === 'home') { html = vHome(); tab = 'home'; }
+  var r = route.name, html = '', tab = null, big = LAYOUT !== 'phone';
+  if (r === 'item' && LAYOUT === 'wide') { ui.bookSel = route.id; r = 'book'; }
+  if (r === 'home') { html = big ? vHomeBig() : vHome(); tab = 'home'; }
   else if (r === 'book') { html = vBook(); tab = 'book'; }
-  else if (r === 'item') html = vItem();
+  else if (r === 'item') { html = vItem(); tab = 'book'; }
   else if (r === 'add') html = vAdd();
   else if (r === 'crop') html = vCrop();
-  else if (r === 'ai') html = vAI();
+  else if (r === 'ai') { html = vAI(); tab = 'me'; }
   else if (r === 'review') html = vReview();
   else if (r === 'done') html = vDone();
   else if (r === 'stats') { html = vStats(); tab = 'stats'; }
@@ -542,11 +623,29 @@ function render(){
   if (MODE === 'archive') top = '<div class="banner">这是旧版本 ' + esc(window.CUOTI_ARCHIVE || '') + ' 的预览，用的是你数据的一份副本，在这里改动不会影响真正的记录。<a href="../" style="color:inherit">回到最新版</a></div>';
   notices.forEach(function(n){ top += '<div class="banner">' + esc(n) + '</div>'; });
   var act = document.activeElement, keep = act && act.id && view.contains(act) ? { id: act.id, s: act.selectionStart, e: act.selectionEnd } : null;
+  var focus = !!FOCUS_ROUTES[r] || LAYOUT === 'phone';
+  document.body.classList.toggle('focus', focus);
+  side.innerHTML = focus ? '' : sideHtml(tab);
   view.innerHTML = top + html;
-  bar.innerHTML = tab ? tabbar(tab) : barFor(r);
+  bar.innerHTML = big ? (FOCUS_ROUTES[r] || r === 'item' ? barFor(r) : '') : (tab && r !== 'item' && r !== 'ai' ? tabbar(tab) : barFor(r));
   hydratePhotos(view);
   view.querySelectorAll('textarea.inp').forEach(autoGrow);
   if (keep) { var el = document.getElementById(keep.id); if (el) { try { el.focus({ preventScroll: true }); if (keep.s != null) el.setSelectionRange(keep.s, keep.e); } catch (e) {} } }
+}
+function sideHtml(on){
+  var mid = LAYOUT === 'mid', due = dueItems().length;
+  var last = S.meta.lastExport ? diffDays(dayKey(S.meta.lastExport), today()) : -1;
+  var nav = [['home','首页','home',''],['book','错题本','book','<span class="cnt">' + S.items.length + '</span>'],['review','复习','review', due ? '<span class="bdg">' + due + '</span>' : ''],['stats','统计','chart',''],['me','我的','user','']];
+  return '<div class="side-in g">' +
+    (mid ? '<div class="logo" style="margin-bottom:14px" aria-hidden="true">错</div>' : '<div class="brand"><span class="logo" aria-hidden="true">错</span><b>错题本</b></div>') +
+    '<button class="add" data-act="add" aria-label="录入错题"><span class="pc">' + ic('plus') + '</span>' + (mid ? '' : '录入错题') + '</button>' +
+    nav.map(function(n){
+      return '<button class="nav-i' + (n[0] === on ? ' on" aria-current="page' : '') + '" data-act="' + (n[0] === 'review' ? 'startReview' : 'tab') + '" data-to="' + n[0] + '"' + (mid ? ' aria-label="' + n[1] + (n[0] === 'review' && due ? '，' + due + ' 题' : '') + '" title="' + n[1] + '"' : '') + '>' +
+        ic(n[2]) + (mid ? (n[0] === 'review' ? n[3] : '') : n[1] + n[3]) + '</button>';
+    }).join('') +
+    (mid ? '<button class="side-foot" data-act="export" aria-label="导出备份" title="导出备份">' + ic('cloud') + '</button>'
+         : '<div class="side-foot"><b>' + ic('cloud', 's') + (last < 0 ? '还没导出过备份' : '上次导出 · ' + (last === 0 ? '今天' : last + ' 天前')) + '</b><button class="btn t" style="height:auto;padding:0;justify-content:flex-start;font-size:12.5px" data-act="export">导出备份</button></div>') +
+  '</div>';
 }
 function tabbar(on){
   var t = [['home','首页','home'],['book','错题本','book'],null,['stats','统计','chart'],['me','我的','user']];
@@ -591,6 +690,69 @@ function vHome(){
     '<div class="list">' + S.items.slice().sort(function(a, b){ return b.created - a.created; }).slice(0, 3).map(itemCard).join('') + '</div>';
   return h;
 }
+function weekDays(){
+  var t = today(), days = [], max = 1;
+  for (var i = 6; i >= 0; i--) { var k = addDays(t, -i), c = S.items.filter(function(it){ return dayKey(it.created) === k; }).length; days.push([k, c]); max = Math.max(max, c); }
+  return { days: days, max: max, total: days.reduce(function(a, d){ return a + d[1]; }, 0) };
+}
+function weekChart(height){
+  var w = weekDays(), days = w.days, max = w.max;
+  var W = 290, x0 = 14, x1 = 276, y0 = 12, y1 = 66;
+  var pts = days.map(function(d, i){ return [x0 + (x1 - x0) * i / 6, y1 - (y1 - y0) * d[1] / max]; });
+  var line = pts.map(function(p){ return p[0].toFixed(1) + ',' + p[1].toFixed(1); }).join(' ');
+  var area = 'M' + pts.map(function(p){ return p[0].toFixed(1) + ' ' + p[1].toFixed(1); }).join(' L') + ' L' + x1 + ' ' + y1 + ' L' + x0 + ' ' + y1 + 'Z';
+  var labels = days.map(function(d, i){ return '<text x="' + pts[i][0].toFixed(1) + '" y="86">' + (i === 6 ? '今天' : WEEK[parseKey(d[0]).getDay()].slice(1)) + '</text>'; }).join('');
+  return '<div class="g pad" style="display:grid;gap:6px"><div class="hd"><b style="font-size:14px">每天新增</b><span class="aux">最近 7 天共 <span class="num" style="font-size:14px;color:var(--ink)">' + w.total + '</span> 题</span></div>' +
+    '<svg viewBox="0 0 ' + W + ' 92" width="100%"' + (height ? ' height="' + height + '"' : '') + ' role="img" aria-label="最近 7 天每天新增错题：' + days.map(function(d){ return mdOf(d[0]) + ' ' + d[1] + ' 题'; }).join('，') + '">' +
+      '<g stroke="rgba(74,43,27,.08)" stroke-width="1"><path d="M10 12H280M10 39H280M10 66H280"/></g>' +
+      '<path d="' + area + '" fill="url(#ar)"/>' +
+      '<polyline points="' + line + '" fill="none" stroke="#4A2B1B" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/>' +
+      pts.map(function(p, i){ return days[i][1] ? '<circle cx="' + p[0].toFixed(1) + '" cy="' + p[1].toFixed(1) + '" r="2.6" fill="#4A2B1B"/>' : ''; }).join('') +
+      '<g font-size="9.5" fill="#A8968A" text-anchor="middle">' + labels + '</g>' +
+      '<text x="' + pts[6][0].toFixed(1) + '" y="' + Math.max(9, pts[6][1] - 7).toFixed(1) + '" text-anchor="middle" font-family="Fraunces,Georgia,serif" font-size="10" fill="#7A6455">' + days[6][1] + '</text>' +
+    '</svg></div>';
+}
+function causeBars(items, limit){
+  var counts = {}, total = 0;
+  items.forEach(function(it){ it.causes.forEach(function(c){ counts[c] = (counts[c] || 0) + 1; total++; }); });
+  var bars = CAUSES.map(function(c){ return [c[1], counts[c[0]] || 0]; }).filter(function(x){ return x[1]; }).sort(function(a, b){ return b[1] - a[1]; });
+  if (limit) bars = bars.slice(0, limit);
+  return bars.length ? '<div class="bars">' + bars.map(function(b, i){ var p = Math.round(b[1] / total * 100); return '<div class="bar"><span>' + b[0] + '</span><i><b style="width:' + p + '%;opacity:' + Math.max(.3, 1 - i * .14) + '"></b></i><span>' + p + '%</span></div>'; }).join('') + '</div>' : '';
+}
+function vHomeBig(){
+  if (!S.items.length) return '<div class="narrow">' + vEmpty() + '</div>';
+  var due = dueItems(), done = reviewedTodayCount(), total = due.length + done;
+  var line2 = due.length ? '今天复习 ' + due.length + ' 题' : (done ? '今天的复习做完了' : '今天没有要复习的题');
+  var t = today(), wk = 0;
+  S.items.forEach(function(it){ if (diffDays(dayKey(it.created), t) < 7) wk++; });
+  var mastered = S.items.filter(function(it){ return it.level === 2; }).length, pct = Math.round(mastered / S.items.length * 100);
+  var bySubj = {}; due.forEach(function(it){ bySubj[it.subject] = (bySubj[it.subject] || 0) + 1; });
+  var hero = '<div class="g l hero">' +
+    ring(132, 8, total ? done / total : 0, '<span class="num" style="font-size:36px">' + done + '<span style="font-size:18px;color:var(--muted)"> / ' + total + '</span></span><span class="aux">已复习</span>') +
+    '<div style="display:grid;gap:12px;min-width:0">' +
+      '<div style="display:grid;gap:2px"><b style="font-size:18px">今日复习</b><span class="warm" style="font-size:14px">' + (due.length ? '还剩 ' + due.length + ' 题，大约 ' + Math.max(1, Math.round(due.length * 2)) + ' 分钟。' : (done ? '今天的都做完了，明天再来。' : '今天没有要复习的题。')) + '</span></div>' +
+      (due.length ? '<div class="chips">' + SUBJECTS.filter(function(s){ return bySubj[s[0]]; }).map(function(s){ return '<span class="chip">' + ic(s[2], 'xs') + s[1] + ' ' + bySubj[s[0]] + '</span>'; }).join('') + '</div>' : '') +
+      '<div>' + (due.length ? '<button class="btn p" data-act="startReview">' + ic('review', 's') + (done ? '继续复习' : '开始复习') + '</button>'
+                            : '<button class="btn o" data-act="add">' + ic('plus', 's') + '录一道新错题</button>') + '</div>' +
+    '</div></div>';
+  var stats = '<div class="stats2">' +
+    '<div class="g pad" style="display:grid;gap:2px">' + ic('flame', 's" style="color:var(--caramel)') + '<span class="num" style="font-size:30px;color:var(--caramel)">' + streakDays() + '</span><span class="aux">连续复习天数</span></div>' +
+    (LAYOUT === 'mid' ? '<div class="g pad" style="display:grid;gap:2px"><span class="aux">7 天内新增</span><span class="num" style="font-size:30px">' + wk + '</span></div>' : '') +
+    '<div class="g pad" style="display:grid;gap:4px"><span class="aux">已掌握</span><span class="num" style="font-size:30px">' + pct + '%</span><div class="prog"><b style="width:' + pct + '%"></b></div></div>' +
+  '</div>';
+  var qa = '<div class="g qa wide-qa">' +
+    '<button data-act="addPhoto"><span class="ic">' + ic('camera') + '</span><span class="t"><b>拍照录入</b><small>' + (aiKey() ? '拍完 AI 自动识别' : '拍下题目和答案') + '</small></span></button>' +
+    '<button data-act="add"><span class="ic">' + ic('pen') + '</span><span class="t"><b>手动录入</b><small>没有照片时直接打字</small></span></button>' +
+    '<button data-act="export"><span class="ic">' + ic('download') + '</span><span class="t"><b>导出备份</b><small>存到网盘或电脑</small></span></button>' +
+  '</div>';
+  var recent = '<div class="sec"><b>最近错题</b><button data-act="tab" data-to="book">查看全部</button></div>' +
+    '<div class="grid2">' + S.items.slice().sort(function(a, b){ return b.created - a.created; }).slice(0, 4).map(itemCard).join('') + '</div>';
+  var bars = causeBars(S.items, 4);
+  var causes = '<div class="g pad" style="display:grid;gap:10px"><div class="hd"><b style="font-size:14px">最常错在哪</b><button class="btn t" style="height:auto;font-size:12.5px" data-act="tab" data-to="stats">看统计</button></div>' + (bars || '<span class="aux">录题时选了错因，这里会显示最常错的原因</span>') + '</div>';
+  var head = '<div class="hd" style="align-items:flex-end"><div style="display:grid;gap:2px"><span class="date">' + dateLine() + '</span><h1 class="hello" style="font-size:30px">' + greet() + '，' + (LAYOUT === 'mid' ? '<br>' : '') + '<em>' + line2 + '</em></h1></div></div>' + exportReminder();
+  if (LAYOUT === 'mid') return head + hero + stats + qa + recent + weekChart(150) + causes;
+  return head + '<div class="home-grid"><div class="col">' + hero + qa + recent + '</div><div class="col">' + stats + weekChart(120) + causes + '</div></div>';
+}
 function vEmpty(){
   return '<div class="hd"><span class="date">' + dateLine() + '</span></div>' +
     '<h1 class="hello">你好，<br><em>从第一道错题开始</em></h1>' +
@@ -607,7 +769,7 @@ function vEmpty(){
         '<div style="display:flex;gap:12px"><span class="num" style="font-size:17px;color:var(--caramel);width:12px">2</span><span>选一下为什么错</span></div>' +
         '<div style="display:flex;gap:12px"><span class="num" style="font-size:17px;color:var(--caramel);width:12px">3</span><span>按提醒复习：做错的明天再见，会了的隔几天再看</span></div>' +
       '</div></div>' +
-    '<div class="g pad" style="display:grid;gap:6px;font-size:13px" ><b style="font-size:14px">数据存在哪里</b><span class="warm">错题只存在这台手机上，不会上传。每天会自动备份一份；记得隔几天到“我的”里导出备份文件，存到网盘或电脑。</span></div>';
+    '<div class="g pad" style="display:grid;gap:6px;font-size:13px" ><b style="font-size:14px">数据存在哪里</b><span class="warm">错题只存在这台设备上，不会上传。每天会自动备份一份；记得隔几天到“我的”里导出备份文件，存到网盘或电脑。</span></div>';
 }
 function exportReminder(){
   if (S.items.length < 3 || MODE !== 'main') return '';
@@ -616,13 +778,13 @@ function exportReminder(){
   if (days < 7 || (S.meta.exportSnooze && S.meta.exportSnooze > today())) return '';
   return '<div class="g pad" style="display:grid;gap:10px">' +
     '<div style="display:flex;gap:10px;align-items:flex-start">' + ic('cloud', 's" style="margin-top:3px;color:var(--caramel)') +
-    '<span style="font-size:13.5px">' + (S.meta.lastExport ? '已经 ' + days + ' 天没导出备份了。' : '还没导出过备份。') + '错题只存在这台手机上，导出一份存到网盘更安心。</span></div>' +
+    '<span style="font-size:13.5px">' + (S.meta.lastExport ? '已经 ' + days + ' 天没导出备份了。' : '还没导出过备份。') + '错题只存在这台设备上，导出一份存到网盘更安心。</span></div>' +
     '<div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn t" data-act="snoozeExport">过几天再说</button><button class="btn o sm" data-act="export">导出备份</button></div></div>';
 }
 function itemCard(it){
   var dl = dueLabel(it), s = SUBJ[it.subject] || SUBJ.other;
   var causes = it.causes.slice(0, 2).map(function(c){ return '<span class="chip c sm">' + esc(CAUSE[c] ? CAUSE[c][1] : c) + '</span>'; }).join('');
-  return '<button class="g item" data-act="open" data-id="' + it.id + '">' +
+  return '<button class="g item' + (LAYOUT === 'wide' && route.name !== 'home' && ui.bookSel === it.id ? ' sel" aria-current="true' : '') + '" data-act="open" data-id="' + it.id + '">' +
     '<div class="item-top"><span class="subj">' + ic(s[2], 's') + esc(s[1]) + (it.tags[0] ? ' · ' + esc(it.tags[0]) : '') + '</span>' + dotsHtml(it.level) + '</div>' +
     '<div class="item-row"><div><p class="item-q clamp">' + firstLine(it) + '</p></div>' +
       (it.photo ? '<span class="photo-wrap"><img class="thumb" data-photo="' + it.photo + '" alt=""></span>' : '') + '</div>' +
@@ -632,15 +794,19 @@ function itemCard(it){
 
 /* ---------- B 错题本 ---------- */
 function bookSubjItems(){ return S.items.filter(function(it){ return ui.bookSubject === 'all' || it.subject === ui.bookSubject; }); }
-function bookListHtml(){
-  var all = S.items, q = ui.search.trim().toLowerCase();
-  var list = bookSubjItems().filter(function(it){
+function bookList(){
+  var q = ui.search.trim().toLowerCase();
+  return bookSubjItems().filter(function(it){
     if (ui.bookSeg === 'todo' && it.level === 2) return false;
     if (ui.bookSeg === 'ok' && it.level !== 2) return false;
     if (!q) return true;
     var hay = [it.q, it.my, it.right, it.note, it.explain, it.source, it.tags.join(' '), it.causes.map(function(c){ return CAUSE[c] ? CAUSE[c][1] : ''; }).join(' ')].join(' ').toLowerCase();
     return hay.indexOf(q) >= 0;
   }).sort(function(a, b){ return b.created - a.created; });
+}
+function bookListHtml(){
+  var all = S.items, list = bookList();
+  if (LAYOUT === 'wide' && list.length && !list.some(function(it){ return it.id === ui.bookSel; })) ui.bookSel = list[0].id;
   return list.length ? list.map(itemCard).join('') :
       '<div class="g pad warm" style="text-align:center;font-size:14px">' + (all.length ? '没有符合条件的错题' : '还没有错题，点下面的“＋”录第一道') + '</div>';
 }
@@ -654,12 +820,22 @@ function vBook(){
       return '<button class="tile g' + (ui.bookSubject === s[0] ? ' on' : '') + '" data-act="bookSubj" data-s="' + s[0] + '">' + ic(s[2]) + s[1] + '</button>';
     }).join('');
   var segs = [['all','全部',cnt.all],['todo','未掌握',cnt.todo],['ok','已掌握',cnt.ok]];
-  return '<div class="hd"><h1 class="title">错题本</h1><span class="aux">共 ' + all.length + ' 题</span></div>' +
+  var left = '<div class="hd"><h1 class="title">错题本</h1><span class="aux">共 ' + all.length + ' 题</span></div>' +
     '<label class="g" style="display:flex;align-items:center;gap:8px;height:46px;padding:0 16px;border-radius:999px">' + ic('search', 's" style="color:var(--muted)') +
       '<input id="searchBox" class="inp" style="background:none;padding:0;box-shadow:none" type="search" placeholder="搜题目、知识点、错因…" value="' + esc(ui.search) + '" data-f="search" autocomplete="off"></label>' +
     '<div class="tiles">' + tiles + '</div>' +
     '<div class="seg g">' + segs.map(function(s){ return '<button data-act="bookSeg" data-s="' + s[0] + '"' + (ui.bookSeg === s[0] ? ' class="on"' : '') + '>' + s[1] + ' <span class="num">' + s[2] + '</span></button>'; }).join('') + '</div>' +
     '<div class="list" id="bookList">' + bookListHtml() + '</div>';
+  if (LAYOUT !== 'wide') return left;
+  return '<div class="split"><div class="split-l">' + left + (all.length ? '<span class="kbd-hint">键盘 ↑ ↓ 可以切换题目</span>' : '') + '</div><div class="split-r" id="bookPanel">' + bookPanel() + '</div></div>';
+}
+function bookPanel(){
+  var it = byId(ui.bookSel);
+  if (!it) return '<div class="g l pad warm" style="text-align:center;font-size:14px;padding:40px 20px">' + (S.items.length ? '左边选一道题，详情会显示在这里' : '还没有错题。点左上角“录入错题”录第一道。') + '</div>';
+  return '<div class="g pad panel-act"><span class="aux">' + dateCN(dayKey(it.created)) + '录入 · 已复习 ' + it.reviews.filter(function(r){ return !r.p; }).length + ' 次</span>' +
+      '<span style="display:flex;gap:8px"><button class="btn o sm" data-act="edit" data-id="' + it.id + '">' + ic('pen', 's') + '编辑</button><button class="btn p sm" data-act="reviewOne" data-id="' + it.id + '">' + ic('review', 's') + '复习这一题</button></span></div>' +
+    itemBody(it) +
+    '<div style="text-align:center;padding:6px 0 4px"><button class="danger-text" data-act="delete" data-id="' + it.id + '">删除这道题</button></div>';
 }
 
 /* ---------- C 错题详情 ---------- */
@@ -671,7 +847,15 @@ function vItem(){
     it.reviews.map(function(r){ return '<div><em>' + mdOf(dayKey(r.t)) + '</em><i class="f"></i><span>' + (r.p ? '练习' : '复习') + ' · ' + (r.g === 0 ? '<span style="color:var(--wrong)">还不会</span>' : r.g === 1 ? '有点会' : '<span style="color:var(--right)">掌握了</span>') + '</span></div>'; }).join('') +
     '<div><em>' + mdOf(it.due) + '</em><i></i><span class="muted">下次复习 · ' + (it.due <= today() ? '今天' : gapLabel(diffDays(today(), it.due))) + '</span></div>';
   return '<div class="hd"><button class="cbtn g" data-act="back" aria-label="返回">' + ic('back') + '</button><span class="hd-c">错题详情</span><button class="cbtn g" data-act="edit" data-id="' + it.id + '" aria-label="编辑">' + ic('pen') + '</button></div>' +
-    '<div class="g l pad" style="display:grid;gap:12px">' +
+    itemBody(it) +
+    '<div style="text-align:center;padding:6px 0 4px"><button class="danger-text" data-act="delete" data-id="' + it.id + '">删除这道题</button></div>';
+}
+function itemBody(it){
+  var s = SUBJ[it.subject] || SUBJ.other;
+  var tl = '<div><em>' + mdOf(dayKey(it.created)) + '</em><i class="f"></i><span>录入</span></div>' +
+    it.reviews.map(function(r){ return '<div><em>' + mdOf(dayKey(r.t)) + '</em><i class="f"></i><span>' + (r.p ? '练习' : '复习') + ' · ' + (r.g === 0 ? '<span style="color:var(--wrong)">还不会</span>' : r.g === 1 ? '有点会' : '<span style="color:var(--right)">掌握了</span>') + '</span></div>'; }).join('') +
+    '<div><em>' + mdOf(it.due) + '</em><i></i><span class="muted">下次复习 · ' + (it.due <= today() ? '今天' : gapLabel(diffDays(today(), it.due))) + '</span></div>';
+  return '<div class="g l pad" style="display:grid;gap:12px">' +
       '<div class="hd"><span class="subj">' + ic(s[2], 's') + esc(s[1]) + (it.tags.length ? ' · ' + esc(it.tags.join('、')) : '') + '</span><span class="aux" style="flex:none">' + dateCN(dayKey(it.created)) + '录入</span></div>' +
       (it.photo ? '<span class="photo-wrap"><button class="photo-box" data-act="viewPhoto" data-photo="' + it.photo + '" style="width:100%"><img data-photo="' + it.photo + '" alt="题目照片"></button></span>' : '') +
       (it.q ? '<p class="text" style="font-size:16px;line-height:1.7">' + esc(it.q) + '</p>' : '') +
@@ -686,8 +870,7 @@ function vItem(){
       (it.note ? '<div class="inp" style="font-size:14px"><b style="font-weight:500">提醒自己：</b>' + esc(it.note) + '</div>' : '') +
       (it.source ? '<span class="aux">来源：' + esc(it.source) + '</span>' : '') +
     '</div>' +
-    '<div class="g pad" style="display:grid;gap:4px"><div class="hd"><b style="font-size:14px">复习记录</b>' + dotsHtml(it.level) + '</div><div class="tl">' + tl + '</div></div>' +
-    '<div style="text-align:center;padding:6px 0 4px"><button class="danger-text" data-act="delete" data-id="' + it.id + '">删除这道题</button></div>';
+    '<div class="g pad" style="display:grid;gap:4px"><div class="hd"><b style="font-size:14px">复习记录</b>' + dotsHtml(it.level) + '</div><div class="tl">' + tl + '</div></div>';
 }
 
 /* ---------- E1 录入 / 编辑 ---------- */
@@ -704,12 +887,14 @@ function vAdd(){
   return '<div class="hd"><button class="cbtn g" data-act="closeAdd" aria-label="关闭">' + ic('x') + '</button><span class="hd-c">' + (editing ? '编辑错题' : '录入错题') + '</span>' +
       (editing ? '<span style="width:40px"></span>' : '<button class="btn t" data-act="keepDraft">存草稿</button>') + '</div>' +
     (route.resumed ? '<div class="banner">接着上次没填完的继续。</div>' : '') +
+    '<div class="cols"><div class="col">' +
     (d.photo ? '<div class="photo-wrap" style="display:grid;gap:8px"><button class="photo-box" data-act="viewPhoto" data-photo="' + d.photo + '"><img data-photo="' + d.photo + '" alt="题目照片"></button>' +
         '<div class="hd"><span class="aux">照片会和题目一起保存</span><span><button class="btn t" data-act="pickPhoto">' + ic('camera', 'xs') + '重拍</button><button class="btn t" style="color:var(--warm)" data-act="dPhotoDel">删掉照片</button></span></div></div>'
              : '<button class="photo-pick" data-act="pickPhoto"><span class="ic">' + ic('camera', '" style="width:26px;height:26px') + '</span><b style="font-weight:500">拍照或从相册选</b><span class="aux">' + (aiKey() ? '拍完可以让 AI 自动识别题目' : '有照片的话，下面的题目可以不打字') + '</span></button>') +
     aiCard(d) +
     '<div class="field"><span class="flabel">学科</span><div class="chips">' + subj + '</div></div>' +
     '<div class="field">' + aiLabel(d, 'q', '题目', 'f-q') + '<textarea id="f-q" class="inp" rows="2" data-f="q" placeholder="把题目打出来（有照片可以不填）">' + esc(d.q) + '</textarea></div>' +
+    '</div><div class="col">' +
     '<div class="two">' +
       '<div class="field">' + aiLabel(d, 'my', '我的答案', 'f-my') + '<textarea id="f-my" class="inp" rows="1" data-f="my" placeholder="当时写的">' + esc(d.my) + '</textarea></div>' +
       '<div class="field">' + aiLabel(d, 'right', '正确答案', 'f-right') + '<textarea id="f-right" class="inp" rows="1" data-f="right" placeholder="对的答案">' + esc(d.right) + '</textarea></div>' +
@@ -720,10 +905,11 @@ function vAdd(){
     '<div class="field"><label for="f-tag">知识点</label>' + (tags ? '<div class="chips">' + tags + '</div>' : '') +
       '<div style="display:flex;gap:8px"><input id="f-tag" class="inp" data-f="tagInput" placeholder="比如：二次函数" value="' + esc(d.tagInput) + '" enterkeyhint="done"><button class="btn o sm" style="height:48px" data-act="dTagAdd">添加</button></div></div>' +
     '<div class="field"><label for="f-source">来源（选填）</label><input id="f-source" class="inp" data-f="source" placeholder="比如：10 月期中考试 第 7 题" value="' + esc(d.source) + '"></div>' +
-    (editing ? '' : '<div class="field"><span class="flabel">第一次复习</span><div class="seg g">' + FIRST_REVIEW.map(function(f){ return '<button data-act="dFirst" data-n="' + f[0] + '"' + (d.first === f[0] ? ' class="on"' : '') + '>' + f[1] + '</button>'; }).join('') + '</div></div>');
+    (editing ? '' : '<div class="field"><span class="flabel">第一次复习</span><div class="seg g">' + FIRST_REVIEW.map(function(f){ return '<button data-act="dFirst" data-n="' + f[0] + '"' + (d.first === f[0] ? ' class="on"' : '') + '>' + f[1] + '</button>'; }).join('') + '</div></div>') +
+    '</div></div>';
 }
 function barFor(r){
-  if (r === 'crop') return '<div class="bottombar"><button class="btn o" style="flex:.75" data-act="cropSkip">不识别，直接填</button><button class="btn p" data-act="cropGo">' + ic('sparkle', 's') + '识别</button></div>';
+  if (r === 'crop') return '<div class="bottombar center"><button class="btn o" style="flex:.75" data-act="cropSkip">不识别，直接填</button><button class="btn p" data-act="cropGo">' + ic('sparkle', 's') + '识别</button></div>';
   if (r === 'add') {
     var d = draft, label = d.id ? '保存修改' : '保存，' + (FIRST_REVIEW.filter(function(f){ return f[0] === d.first; })[0] || FIRST_REVIEW[0])[1] + '复习';
     return '<div class="bottombar"><button class="btn p" data-act="saveDraft">' + ic('check', 's') + label + '</button></div>';
@@ -743,7 +929,7 @@ function barFor(r){
   }
   if (r === 'done') {
     var bad = route.tally ? route.tally.badIds : [];
-    return '<div class="bottombar">' + (bad.length ? '<button class="btn o" data-act="practiceBad">再练一遍还不会的</button>' : '') + '<button class="btn p"' + (bad.length ? ' style="flex:.8"' : '') + ' data-act="tab" data-to="home">回到首页</button></div>';
+    return '<div class="bottombar center">' + (bad.length ? '<button class="btn o" data-act="practiceBad">再练一遍还不会的</button>' : '') + '<button class="btn p"' + (bad.length ? ' style="flex:.8"' : '') + ' data-act="tab" data-to="home">回到首页</button></div>';
   }
   return '';
 }
@@ -757,10 +943,11 @@ function vReview(){
   var times = it.reviews.filter(function(r){ return !r.p; }).length + 1;
   return '<div class="hd" style="gap:12px"><button class="cbtn g" data-act="tab" data-to="home" aria-label="结束复习">' + ic('x') + '</button><div style="flex:1"><div class="prog"><b style="width:' + Math.round(route.idx / n * 100) + '%"></b></div></div><span class="num" style="font-size:16px">' + (route.idx + 1) + ' <span class="muted">/ ' + n + '</span></span></div>' +
     (route.practice ? '<div class="banner">再练一遍：这次不改变复习安排。</div>' : '') +
-    '<div class="g l pad" style="display:grid;gap:12px;padding:18px 16px">' +
+    '<div class="cols"><div class="col"><div class="g l pad" style="display:grid;gap:12px;padding:18px 16px">' +
       '<div class="hd"><span class="subj">' + ic(s[2], 's') + esc(s[1]) + (it.tags[0] ? ' · ' + esc(it.tags[0]) : '') + '</span><span class="aux">' + (route.practice ? '再练一遍' : '第 ' + times + ' 次复习') + '</span></div>' +
       (it.photo ? '<span class="photo-wrap"><button class="photo-box" data-act="viewPhoto" data-photo="' + it.photo + '" style="width:100%"><img data-photo="' + it.photo + '" alt="题目照片"></button></span>' : '') +
       (it.q ? '<p class="text" style="font-size:17px;line-height:1.65">' + esc(it.q) + '</p>' : '') +
+    '</div></div><div class="col"><div class="g l pad" style="display:grid;gap:12px;padding:18px 16px">' +
       (route.shown ?
         '<div class="two">' +
           '<div class="ans w"><small>' + ic('x', 'xs') + '上次的答案</small>' + (it.my ? '<p>' + esc(it.my) + '</p>' : '<p class="empty">没填</p>') + '</div>' +
@@ -770,16 +957,16 @@ function vReview(){
         (it.note ? '<div class="inp" style="font-size:14px"><b style="font-weight:500">提醒自己：</b>' + esc(it.note) + '</div>' : '')
       : '<div class="aux" style="text-align:center;padding:8px 0">先自己做一遍，再看答案</div>') +
     '</div>' +
-    (route.shown ? '<p class="aux" style="text-align:center">这次你做对了吗？</p>' : '');
+    (route.shown ? '<p class="aux" style="text-align:center">这次你做对了吗？</p>' : '') + '</div></div>';
 }
 function vDone(){
   var t = route.tally || { g: [0, 0, 0], badIds: [] }, n = t.g[0] + t.g[1] + t.g[2];
-  return '<div style="display:grid;gap:18px;justify-items:center;padding-top:6vh">' +
+  return '<div class="narrow"><div style="display:grid;gap:18px;justify-items:center;padding-top:6vh">' +
     ring(150, 7, 1, ic('sparkle', '" style="width:26px;height:26px;color:var(--caramel)') + '<span class="num" style="font-size:36px">' + n + '</span><span class="aux">' + (route.practice ? '题练完了' : '题全部复习完') + '</span>') +
     '<h1 class="hello" style="text-align:center;font-size:25px">' + (route.practice ? '这一遍' : '今天的复习') + '<br><em>做完了</em></h1></div>' +
     '<div class="g stat3"><div><span class="num" style="color:var(--right)">' + t.g[2] + '</span><span class="aux">掌握了</span></div><div><span class="num">' + t.g[1] + '</span><span class="aux">有点会</span></div><div><span class="num" style="color:var(--wrong)">' + t.g[0] + '</span><span class="aux">还不会</span></div></div>' +
     (route.practice ? '' : '<div class="g pad warm" style="font-size:14px;display:flex;gap:10px;align-items:flex-start">' + ic('clock', 's" style="margin-top:3px;color:var(--ink)') +
-      '<span>' + (t.g[0] ? '还不会的 ' + t.g[0] + ' 题明天再出现。' : '') + (t.g[1] ? '有点会的 ' + t.g[1] + ' 题 3 天后再看。' : '') + (t.g[2] ? '掌握了的 ' + t.g[2] + ' 题隔一段时间再看一次，确认真的记住了。' : '') + '</span></div>');
+      '<span>' + (t.g[0] ? '还不会的 ' + t.g[0] + ' 题明天再出现。' : '') + (t.g[1] ? '有点会的 ' + t.g[1] + ' 题 3 天后再看。' : '') + (t.g[2] ? '掌握了的 ' + t.g[2] + ' 题隔一段时间再看一次，确认真的记住了。' : '') + '</span></div>') + '</div>';
 }
 
 /* ---------- F 统计 ---------- */
@@ -788,42 +975,23 @@ function vStats(){
   var t = today(), range = ui.statsRange, from = range === 'week' ? addDays(t, -6) : range === 'month' ? addDays(t, -29) : '0000';
   var inRange = S.items.filter(function(it){ return dayKey(it.created) >= from; });
   var mastered = S.items.filter(function(it){ return it.level === 2; }).length, total = S.items.length;
-  var days = [], max = 1;
-  for (var i = 6; i >= 0; i--) { var k = addDays(t, -i), c = S.items.filter(function(it){ return dayKey(it.created) === k; }).length; days.push([k, c]); max = Math.max(max, c); }
-  var W = 290, x0 = 14, x1 = 276, y0 = 12, y1 = 66;
-  var pts = days.map(function(d, i){ return [x0 + (x1 - x0) * i / 6, y1 - (y1 - y0) * d[1] / max]; });
-  var line = pts.map(function(p){ return p[0].toFixed(1) + ',' + p[1].toFixed(1); }).join(' ');
-  var area = 'M' + pts.map(function(p){ return p[0].toFixed(1) + ' ' + p[1].toFixed(1); }).join(' L') + ' L' + x1 + ' ' + y1 + ' L' + x0 + ' ' + y1 + 'Z';
-  var weekTotal = days.reduce(function(a, d){ return a + d[1]; }, 0);
-  var labels = days.map(function(d, i){ return '<text x="' + pts[i][0].toFixed(1) + '" y="86">' + (i === 6 ? '今天' : WEEK[parseKey(d[0]).getDay()].slice(1)) + '</text>'; }).join('');
-  var counts = {}, causeTotal = 0;
-  inRange.forEach(function(it){ it.causes.forEach(function(c){ counts[c] = (counts[c] || 0) + 1; causeTotal++; }); });
-  var bars = CAUSES.map(function(c){ return [c[1], counts[c[0]] || 0]; }).filter(function(x){ return x[1]; }).sort(function(a, b){ return b[1] - a[1]; });
+  var bars = causeBars(inRange);
   var subj = {}; inRange.forEach(function(it){ subj[it.subject] = (subj[it.subject] || 0) + 1; });
   var subjRows = SUBJECTS.filter(function(s){ return subj[s[0]]; }).map(function(s){ return [s, subj[s[0]]]; }).sort(function(a, b){ return b[1] - a[1]; });
   var rangeName = range === 'week' ? '最近 7 天' : range === 'month' ? '最近 30 天' : '全部';
   return '<h1 class="title">统计</h1>' +
     '<div class="seg g">' + [['week','本周'],['month','本月'],['all','全部']].map(function(s){ return '<button data-act="statsRange" data-s="' + s[0] + '"' + (range === s[0] ? ' class="on"' : '') + '>' + s[1] + '</button>'; }).join('') + '</div>' +
-    '<div class="g l pad" style="display:flex;align-items:center;gap:18px">' +
+    '<div class="cards2"><div class="g l pad" style="display:flex;align-items:center;gap:18px">' +
       ring(108, 7, mastered / total, '<span class="num" style="font-size:28px">' + Math.round(mastered / total * 100) + '%</span><span class="aux">已掌握</span>') +
       '<div style="display:grid;gap:6px;font-size:13.5px"><span><span class="num" style="font-size:22px">' + mastered + '</span> <span class="muted">/ ' + total + ' 题</span></span>' +
       '<span class="warm">还有 <b class="num" style="font-weight:400">' + (total - mastered) + '</b> 题没掌握</span>' +
       '<span class="warm">' + rangeName + '新增 <b class="num" style="color:var(--caramel);font-weight:400">' + inRange.length + '</b> 题</span></div>' +
     '</div>' +
-    '<div class="g pad" style="display:grid;gap:6px"><div class="hd"><b style="font-size:14px">每天新增</b><span class="aux">最近 7 天共 <span class="num" style="font-size:14px;color:var(--ink)">' + weekTotal + '</span> 题</span></div>' +
-      '<svg viewBox="0 0 ' + W + ' 92" width="100%" role="img" aria-label="最近 7 天每天新增错题：' + days.map(function(d){ return mdOf(d[0]) + ' ' + d[1] + ' 题'; }).join('，') + '">' +
-        '<g stroke="rgba(74,43,27,.08)" stroke-width="1"><path d="M10 12H280M10 39H280M10 66H280"/></g>' +
-        '<path d="' + area + '" fill="url(#ar)"/>' +
-        '<polyline points="' + line + '" fill="none" stroke="#4A2B1B" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/>' +
-        pts.map(function(p, i){ return days[i][1] ? '<circle cx="' + p[0].toFixed(1) + '" cy="' + p[1].toFixed(1) + '" r="2.6" fill="#4A2B1B"/>' : ''; }).join('') +
-        '<g font-size="9.5" fill="#A8968A" text-anchor="middle">' + labels + '</g>' +
-        '<text x="' + pts[6][0].toFixed(1) + '" y="' + Math.max(9, pts[6][1] - 7).toFixed(1) + '" text-anchor="middle" font-family="Fraunces,Georgia,serif" font-size="10" fill="#7A6455">' + days[6][1] + '</text>' +
-      '</svg></div>' +
+    weekChart() +
     '<div class="g pad" style="display:grid;gap:10px"><b style="font-size:14px">错因分布 <span class="aux" style="font-weight:400">· ' + rangeName + '</span></b>' +
-      (bars.length ? '<div class="bars">' + bars.map(function(b, i){ var p = Math.round(b[1] / causeTotal * 100); return '<div class="bar"><span>' + b[0] + '</span><i><b style="width:' + p + '%;opacity:' + Math.max(.3, 1 - i * .14) + '"></b></i><span>' + p + '%</span></div>'; }).join('') + '</div>'
-                   : '<span class="aux">这段时间录的题还没选错因</span>') + '</div>' +
+      (bars || '<span class="aux">这段时间录的题还没选错因</span>') + '</div>' +
     '<div class="g pad" style="display:grid;gap:4px"><b style="font-size:14px">学科 <span class="aux" style="font-weight:400">· ' + rangeName + '</span></b>' +
-      (subjRows.length ? subjRows.map(function(r){ return '<div class="row-btn" style="padding:10px 2px">' + ic(r[0][2], 's') + '<span class="grow">' + r[0][1] + '</span><span class="num" style="font-size:16px">' + r[1] + '</span></div>'; }).join('') : '<span class="aux">这段时间没有新增</span>') + '</div>';
+      (subjRows.length ? subjRows.map(function(r){ return '<div class="row-btn" style="padding:10px 2px">' + ic(r[0][2], 's') + '<span class="grow">' + r[0][1] + '</span><span class="num" style="font-size:16px">' + r[1] + '</span></div>'; }).join('') : '<span class="aux">这段时间没有新增</span>') + '</div></div>';
 }
 
 /* ---------- 我的：数据和版本 ---------- */
@@ -837,26 +1005,26 @@ function vMe(){
       '<button class="btn o sm" data-act="restore" data-key="' + esc(s.key) + '" data-confirm="再点一次，恢复">恢复</button></div>';
   }).join('') : '<span class="aux">还没有自动备份。有错题以后每天第一次打开会自动备份一份。</span>');
   var est = meInfo.est, photosN = meInfo.photos;
-  return '<h1 class="title">我的</h1>' +
+  return '<h1 class="title">我的</h1><div class="cards2">' +
     '<div class="g l pad" style="display:grid;gap:12px">' +
       '<div style="display:grid;gap:2px"><b style="font-size:15px">备份到别处</b><span class="aux">上次导出：' + last + '</span></div>' +
-      '<p class="warm" style="font-size:13.5px">错题只存在这台手机上。导出的备份文件（含照片）请存到网盘、微信“文件传输助手”或电脑上；换手机、清理浏览器之后可以用它找回。</p>' +
+      '<p class="warm" style="font-size:13.5px">错题只存在这台设备上，手机和 iPad / 电脑各存各的。导出的备份文件（含照片）请存到网盘、微信“文件传输助手”或电脑上；换设备、清理浏览器之后可以用它找回，也可以用它把手机上的题搬到 iPad 上。</p>' +
       '<div style="display:flex;gap:10px"><button class="btn p" style="flex:1" data-act="export">' + ic('download', 's') + '导出备份</button><button class="btn o" style="flex:1" data-act="import" data-confirm="再点一次，选择文件">导入备份</button></div>' +
       '<span class="aux">导入前会先自动备份现在的数据，导错了还能恢复回来。</span>' +
     '</div>' +
     '<div class="g pad" style="display:grid;gap:4px"><b style="font-size:15px">自动备份</b><span class="aux" style="margin-bottom:4px">每天第一次打开、升级新版本前、删除和恢复之前都会自动存一份。</span>' + snapHtml + '</div>' +
-    '<div class="g pad" style="display:grid;gap:6px;font-size:13.5px"><b style="font-size:15px">这台手机上的数据</b>' +
+    '<div class="g pad" style="display:grid;gap:6px;font-size:13.5px"><b style="font-size:15px">这台设备上的数据</b>' +
       '<span class="warm">错题 ' + S.items.length + ' 道 · 照片 ' + (photosN == null ? '…' : photosN) + ' 张' + (est && est.usage ? ' · 约占 ' + (est.usage / 1048576).toFixed(1) + ' MB' : '') + '</span>' +
       '<span class="warm">' + (meInfo.persisted === true ? '已设为“不自动清理”的存储。' : '浏览器在空间紧张时可能清理网页数据，所以记得导出备份。添加到主屏幕后更稳妥。') + '</span>' +
       '<span class="aux">自动备份和错题存在一起，能防止改错、删错，但防不了浏览器清除数据；只有导出的文件能防。</span></div>' +
     '<div class="g pad" style="display:grid;gap:6px;font-size:13.5px"><b style="font-size:15px">添加到主屏幕</b>' +
-      '<span class="warm">iPhone：用 Safari 打开，点底部的分享按钮 →“添加到主屏幕”。安卓：浏览器菜单 →“添加到主屏幕”或“安装应用”。以后从主屏幕图标打开，更新会自动出现。</span>' +
+      '<span class="warm">iPhone / iPad：用 Safari 打开，点分享按钮 →“添加到主屏幕”。安卓：浏览器菜单 →“添加到主屏幕”或“安装应用”。电脑：Chrome 或 Edge 地址栏右边的“安装”图标。以后从图标打开，更新会自动出现。</span>' +
       '<span class="aux">注意：主屏幕上的错题本和浏览器里打开的网页，数据是分开存的。选一个固定用。</span></div>' +
     '<button class="g pad" data-act="openAI" style="display:flex;align-items:center;gap:12px;text-align:left;width:100%">' + ic('sparkle', '" style="color:var(--caramel)') + '<span style="flex:1;display:grid"><b style="font-size:15px">AI 识别</b><span class="aux">' + (aiKey() ? '已设置 · ' + provName() + (AI.auto ? ' · 拍完自动识别' : '') : '拍照后自动识别题目，需要填一次密钥（Claude、Gemini 或智谱）') + '</span></span>' + ic('chev', 's" style="color:var(--muted)') + '</button>' +
     '<div class="g pad" style="display:grid;gap:6px"><div class="hd"><b style="font-size:15px">版本</b><span class="num" style="font-size:16px">' + APP_VERSION + '</span></div>' +
       CHANGELOG.map(function(c, i){ return '<div style="display:grid;gap:3px;font-size:13.5px"><span class="aux">' + c.v + ' · ' + c.date + (i === 0 ? ' · 当前版本' : '') + '</span>' + c.items.map(function(x){ return '<span class="warm">· ' + esc(x) + '</span>'; }).join('') + '</div>'; }).join('') +
       (CHANGELOG.length > 1 ? '<span class="aux" style="margin-top:6px">以前的版本：' + CHANGELOG.slice(1).map(function(c){ return '<a href="' + c.v + '/" style="color:var(--caramel)">' + c.v + '</a>'; }).join('、') + '（打开是旧版本预览，用数据副本）</span>' : '') +
-    '</div>';
+    '</div></div>';
 }
 async function loadMeInfo(){
   try { meInfo.snaps = await listSnaps(); } catch (e) { meInfo.snaps = []; }
@@ -894,7 +1062,17 @@ var ACT = {
   add: function(){ startAdd(false); },
   addPhoto: function(){ startAdd(true); },
   back: function(){ if (history.state && history.length > 1) history.back(); else go('book'); },
-  open: function(el){ go('item', { id: el.dataset.id }); },
+  open: function(el){
+    if (LAYOUT === 'wide') {
+      ui.bookSel = el.dataset.id;
+      if (route.name !== 'book') { go('book'); return; }
+      var p = document.getElementById('bookPanel');
+      if (p) { p.innerHTML = bookPanel(); p.scrollTop = 0; hydratePhotos(p); }
+      view.querySelectorAll('#bookList .item').forEach(function(b){ var on = b.dataset.id === ui.bookSel; b.classList.toggle('sel', on); if (on) b.setAttribute('aria-current', 'true'); else b.removeAttribute('aria-current'); });
+      return;
+    }
+    go('item', { id: el.dataset.id });
+  },
   edit: function(el){
     var it = byId(el.dataset.id); if (!it) return;
     draft = Object.assign(newDraft(), JSON.parse(JSON.stringify(it)), { tagInput: '' });
@@ -1033,6 +1211,15 @@ document.addEventListener('compositionend', function(e){
   if (e.target.id === 'searchBox') { ui.search = e.target.value; var l = document.getElementById('bookList'); if (l) { l.innerHTML = bookListHtml(); hydratePhotos(l); } }
 });
 document.addEventListener('keydown', function(e){
+  if (LAYOUT === 'wide' && route.name === 'book' && (e.key === 'ArrowDown' || e.key === 'ArrowUp') && !/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) {
+    var ids = bookList().map(function(it){ return it.id; }), i = ids.indexOf(ui.bookSel);
+    if (!ids.length) return;
+    e.preventDefault();
+    i = e.key === 'ArrowDown' ? Math.min(ids.length - 1, i + 1) : Math.max(0, i - 1);
+    var btn = view.querySelector('#bookList .item[data-id="' + ids[i] + '"]');
+    if (btn) { ACT.open(btn); btn.focus({ preventScroll: true }); btn.scrollIntoView({ block: 'nearest' }); }
+    return;
+  }
   if (e.target.id === 'f-tag' && e.key === 'Enter' && !e.isComposing) { e.preventDefault(); addTag(); }
 });
 function addTag(silent){
@@ -1288,12 +1475,12 @@ function aiLabel(d, f, text, forId){
 /* R1 框选 */
 function vCrop(){
   var b = route.box;
-  return '<div class="hd"><button class="cbtn g" data-act="cropSkip" aria-label="不识别">' + ic('x') + '</button><span class="hd-c">框出要识别的部分</span><button class="btn t" data-act="pickPhoto">重拍</button></div>' +
+  return '<div class="narrow" style="max-width:760px"><div class="hd"><button class="cbtn g" data-act="cropSkip" aria-label="不识别">' + ic('x') + '</button><span class="hd-c">框出要识别的部分</span><button class="btn t" data-act="pickPhoto">重拍</button></div>' +
     '<div class="crop-wrap"><div class="crop-stage"><img id="cropImg" data-photo="' + route.photo + '" alt="题目照片">' +
       '<div class="crop-box" id="cropBox" style="left:' + b.x * 100 + '%;top:' + b.y * 100 + '%;width:' + b.w * 100 + '%;height:' + b.h * 100 + '%">' +
         ['tl','tr','bl','br'].map(function(h){ return '<i class="crop-h ' + h + '" data-h="' + h + '"></i>'; }).join('') + '</div></div></div>' +
     '<p class="aux" style="text-align:center">拖四个角调整框的大小；不调也行，AI 会自己分出题目和你写的答案</p>' +
-    '<div class="g pad" style="font-size:13px;color:var(--warm)">AI 会填题目、我的答案、正确答案（照片上有批改时）和学科；你已经填了的格子不会被改。识别时这块照片会发给 ' + provName() + '。</div>';
+    '<div class="g pad" style="font-size:13px;color:var(--warm)">AI 会填题目、我的答案、正确答案（照片上有批改时）和学科；你已经填了的格子不会被改。识别时这块照片会发给 ' + provName() + '。</div></div>';
 }
 var cropDrag = null;
 document.addEventListener('pointerdown', function(e){
@@ -1429,6 +1616,7 @@ async function boot(){
     try { if (navigator.storage && navigator.storage.persist && S.items.length) navigator.storage.persist(); } catch (e) {}
     if ('serviceWorker' in navigator && location.protocol === 'https:') { try { navigator.serviceWorker.register('sw.js'); } catch (e) {} }
   }
+  booted = true;
   go('home', null, true);
 }
 window.__cuoti = { get S(){ return S; }, today: today, dayKey: dayKey };

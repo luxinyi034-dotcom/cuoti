@@ -224,9 +224,9 @@ async function test(name, fn){
   assert.deepStrictEqual(page.errors, []);
   await ctx.close();
 
-  await test('升级测试：用上一版 v2 录的题、照片和 AI 设置，打开 v3 后全部还在，并自动备份“升级到 v3 之前”', async () => {
+  await test('升级测试：用上一版 v3 录的题、照片和 AI 设置，打开 v4 后全部还在，并自动备份“升级到 v4 之前”', async () => {
     // 把 site/v1/ 存档还原成当时的正式版，放在主地址上运行
-    const v1 = fs.readFileSync(path.join(SITE, 'v2', 'index.html'), 'utf8').replace(/<script>window\.CUOTI_MODE='archive';[^<]*<\/script>\n/, '');
+    const v1 = fs.readFileSync(path.join(SITE, 'v3', 'index.html'), 'utf8').replace("'../' : '') + 'vendor/", "'../' : '') + 'vendor/").replace(/<script>window\.CUOTI_MODE='archive';[^<]*<\/script>\n/, '');
     assert.ok(!v1.includes("CUOTI_MODE='archive'"));
     const { ctx, page } = await newPhone(T0 - 3 * DAY);
     await page.route(base, r => r.fulfill({ contentType: 'text/html; charset=utf-8', body: v1 }));
@@ -235,20 +235,20 @@ async function test(name, fn){
     await page.getByRole('button', { name: '没有照片？手动输入' }).click();
     await page.setInputFiles('#photoInput', { name: 'q.png', mimeType: 'image/png', buffer: fs.readFileSync(path.join(SITE, 'icons', 'icon-192.png')) });
     await page.waitForSelector('.photo-box img[src^="blob:"]');
-    await page.fill('#f-q', 'v2 时录的题');
+    await page.fill('#f-q', 'v3 时录的题');
     await page.evaluate(() => new Promise(res => { const r = indexedDB.open('cuoti-data'); r.onsuccess = () => { const t = r.result.transaction('kv', 'readwrite'); t.objectStore('kv').put({ provider: 'gemini', keys: { gemini: 'old-gemini-key', zhipu: '' }, models: { gemini: 'gemini-3-flash', zhipu: 'glm-4.6v-flash' }, auto: true, count: { '2026-10': 3 } }, 'ai'); t.oncomplete = res; }; }));
     await page.fill('#f-my', '3');
     await page.fill('#f-right', '5');
     await page.getByRole('button', { name: '保存，明天复习' }).click();
     await page.getByText('今天没有要复习的题').waitFor();
     const before = await S(page);
-    assert.strictEqual(before.meta.lastVersion, 'v2');
+    assert.strictEqual(before.meta.lastVersion, 'v3');
     // 换成 v2（主地址上的新版本）
     await page.unroute(base);
     await page.clock.setFixedTime(T0);
     await page.reload(); await ready(page);
     const s = await S(page);
-    assert.strictEqual(s.meta.lastVersion, 'v3');
+    assert.strictEqual(s.meta.lastVersion, 'v4');
     assert.deepStrictEqual(s.items, before.items, '错题一条都不能变');
     const ai = await page.evaluate(() => new Promise(res => { const r = indexedDB.open('cuoti-data'); r.onsuccess = () => { const q = r.result.transaction('kv').objectStore('kv').get('ai'); q.onsuccess = () => res(q.result); }; }));
     assert.strictEqual(ai.keys.gemini, 'old-gemini-key', 'AI 设置要保留');
@@ -257,9 +257,9 @@ async function test(name, fn){
     await page.locator('#bookList .item').first().click();
     await page.waitForSelector('.photo-box img[src^="blob:"]');
     const snaps = await page.evaluate(() => new Promise(res => { const r = indexedDB.open('cuoti-data'); r.onsuccess = () => { const q = r.result.transaction('snaps').objectStore('snaps').getAll(); q.onsuccess = () => res(q.result); }; }));
-    const up = snaps.find(x => x.reason === '升级到 v3 之前');
+    const up = snaps.find(x => x.reason === '升级到 v4 之前');
     assert.ok(up, '要有升级前备份，现在有：' + snaps.map(x => x.reason + '@' + new Date(x.t).toISOString()).join('，'));
-    assert.strictEqual(JSON.parse(up.data).items[0].q, 'v2 时录的题');
+    assert.strictEqual(JSON.parse(up.data).items[0].q, 'v3 时录的题');
     assert.deepStrictEqual(page.errors, []);
     await ctx.close();
   });
@@ -525,12 +525,95 @@ async function test(name, fn){
     await ctx.close();
   });
 
-  await test('iPad 尺寸也能用（截图看）', async () => {
-    const ctx = await browser.newContext({ viewport: { width: 820, height: 1180 }, timezoneId: 'Asia/Shanghai' });
-    const page = await ctx.newPage();
+  // ===== iPad / 电脑排版（设计稿 I1–I5）=====
+  async function seed(page, n){
+    await page.evaluate(n => {
+      const subj = ['math', 'phys', 'chem', 'eng', 'chn'];
+      const qs = ['解不等式 |2x − 1| < x + 1，并写出解集。', '质量为 2 kg 的物块静止在倾角 30° 的斜面上，求斜面对物块的静摩擦力大小（g 取 10 m/s²）。', '配平：Cu + HNO₃（稀）→ Cu(NO₃)₂ + NO↑ + H₂O', 'Not until he came back ____ that he had lost his key.', '“________，天涯若比邻。”（王勃《送杜少府之任蜀州》）'];
+      const now = Date.now(), S = window.__cuoti.S;
+      for (let i = 0; i < n; i++) S.items.push({ id: 'seed' + i, subject: subj[i % 5], q: qs[i % 5] + (i > 4 ? '（第 ' + i + ' 题）' : ''), photo: null, my: 'x < 2', right: '0 < x < 2', explain: i % 2 ? '两边分别解出来再取交集。' : '', causes: [['read'], ['care', 'calc'], ['concept'], ['concept'], ['memory']][i % 5], note: i % 3 ? '' : '先看清条件。', tags: [['绝对值不等式'], ['斜面受力分析'], ['氧化还原配平'], ['倒装句'], ['古诗默写']][i % 5], source: '', created: now - i * 864e5 * 0.7, due: window.__cuoti.today(), level: i % 4 === 0 ? 2 : i % 3 === 0 ? 1 : 0, streak: 0, reviews: i % 2 ? [{ t: now - 864e5, g: 1 }] : [] });
+    }, n);
+  }
+  const big = async (w, h) => {
+    const ctx = await browser.newContext({ viewport: { width: w, height: h }, deviceScaleFactor: 1, timezoneId: 'Asia/Shanghai', locale: 'zh-CN' });
+    const page = await ctx.newPage(); page.errors = [];
+    page.on('pageerror', e => page.errors.push(e.message));
     await page.clock.setFixedTime(T0);
     await page.goto(base); await ready(page);
-    await page.screenshot({ path: path.join(SHOTS, 'iPad竖屏-第一次打开.png') });
+    return { ctx, page };
+  };
+
+  await test('iPad 横屏 1180×820：侧边栏、首页两栏、错题本左列表右详情、键盘切换', async () => {
+    const { ctx, page } = await big(1180, 820);
+    await page.screenshot({ path: path.join(SHOTS, 'I-横屏-第一次打开.png') });
+    await seed(page, 9);
+    await page.getByRole('button', { name: '首页' }).click();
+    assert.ok(await page.locator('#side .side-in').isVisible(), '有侧边栏');
+    assert.strictEqual(await page.locator('.tabbar').count(), 0, '没有手机底部导航');
+    assert.strictEqual(await page.locator('.home-grid > .col').count(), 2, '首页两栏');
+    await page.screenshot({ path: path.join(SHOTS, 'I1-横屏-首页.png') });
+    await page.locator('#side').getByRole('button', { name: /错题本/ }).click();
+    assert.ok(await page.locator('#bookPanel').isVisible(), '右边有详情');
+    const first = await page.locator('#bookList .item.sel').getAttribute('data-id');
+    await page.locator('#bookList .item').nth(2).click();
+    const third = await page.locator('#bookList .item').nth(2).getAttribute('data-id');
+    assert.strictEqual(await page.locator('#bookList .item.sel').getAttribute('data-id'), third, '点哪题右边就显示哪题');
+    assert.strictEqual(await page.evaluate(() => history.length), await page.evaluate(() => history.length));
+    await page.keyboard.press('ArrowDown');
+    assert.strictEqual(await page.locator('#bookList .item.sel').getAttribute('data-id'), await page.locator('#bookList .item').nth(3).getAttribute('data-id'), '↓ 换到下一题');
+    assert.notStrictEqual(first, third);
+    await page.screenshot({ path: path.join(SHOTS, 'I2-横屏-错题本.png') });
+    // 详情里编辑 → 回到错题本、还是这道题
+    await page.locator('#bookPanel').getByRole('button', { name: '编辑' }).click();
+    assert.strictEqual(await page.locator('.cols > .col').count(), 2, '录入页两栏');
+    assert.strictEqual(await page.locator('#side .side-in').count(), 0, '录入时隐藏侧边栏');
+    await page.fill('#f-note', '横屏里改的');
+    await page.getByRole('button', { name: '保存修改' }).click();
+    await page.locator('#bookPanel').getByText('横屏里改的').waitFor();
+    // 新录一道
+    await page.locator('#side').getByRole('button', { name: '录入错题' }).click();
+    await page.fill('#f-q', '横屏录的新题');
+    await page.getByRole('button', { name: '概念不清' }).click();
+    await page.screenshot({ path: path.join(SHOTS, 'I3-横屏-录入.png') });
+    await page.getByRole('button', { name: '保存，明天复习' }).click();
+    await page.getByText('横屏录的新题').first().waitFor();
+    // 复习两栏
+    await page.locator('#side').getByRole('button', { name: /复习/ }).click();
+    assert.strictEqual(await page.locator('.cols > .col').count(), 2, '复习两栏');
+    await page.getByRole('button', { name: '看答案' }).click();
+    await page.screenshot({ path: path.join(SHOTS, 'I4-横屏-复习.png') });
+    await page.getByRole('button', { name: /还不会/ }).click();
+    await page.getByRole('button', { name: '结束复习' }).click();
+    await page.locator('#side').getByRole('button', { name: '统计' }).click();
+    await page.screenshot({ path: path.join(SHOTS, 'I-横屏-统计.png') });
+    await page.locator('#side').getByRole('button', { name: '我的' }).click();
+    await page.screenshot({ path: path.join(SHOTS, 'I-横屏-我的.png') });
+    assert.deepStrictEqual(page.errors, []);
+    await ctx.close();
+  });
+
+  await test('iPad 竖屏 820×1180：图标窄栏；电脑 1440×900；转屏后排版跟着变、数据不丢', async () => {
+    const { ctx, page } = await big(820, 1180);
+    await seed(page, 7);
+    await page.getByRole('button', { name: '首页' }).click();
+    assert.ok(await page.locator('#side .side-in').isVisible());
+    assert.strictEqual(await page.evaluate(() => document.body.dataset.lay), 'mid');
+    await page.screenshot({ path: path.join(SHOTS, 'I5-竖屏-首页.png') });
+    await page.locator('#side').getByRole('button', { name: '错题本' }).click();
+    await page.screenshot({ path: path.join(SHOTS, 'I-竖屏-错题本.png') });
+    await page.locator('#bookList .item').first().click();
+    await page.getByText('错题详情').waitFor();
+    // 转成横屏：详情并到错题本右边
+    await page.setViewportSize({ width: 1180, height: 820 });
+    await page.locator('#bookPanel').waitFor();
+    // 再变手机宽：回到手机排版
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.waitForFunction(() => document.body.dataset.lay === 'phone');
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.locator('#side').getByRole('button', { name: '首页' }).click();
+    await page.screenshot({ path: path.join(SHOTS, 'I-电脑-首页.png') });
+    assert.strictEqual((await S(page)).items.length, 7);
+    assert.deepStrictEqual(page.errors, []);
     await ctx.close();
   });
 
